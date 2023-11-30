@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search">Cerca</string>
+    <string name="profile">Profilo</string>
+    <string name="settings">Impostazioni</string>
+    <string name="log_in">Accedi</string>
+    <string name="sign_up"><u>Registrati</u></string>
+    <string name="type_email">Inserisci la tua e-mail qui.</string>
+    <string name="type_password">Inserisci la tua password qui.</string>
+    <string name="dont_have_account">Non hai ancora un account?</string>
+    <string name="recently_listened">Ascoltati di recente</string>
+    <string name="default_title">Titolo</string>
+    <string name="panel">Pannello</string>
+    <string name="genres">Generi</string>
+    <string name="genre">Genere</string>
+    <string name="favourite_playlist">Playlist Preferite</string>
+    <string name="playlist">Playlist</string>
+</resources>
