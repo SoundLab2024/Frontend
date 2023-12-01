@@ -13,15 +13,19 @@
         android:theme="@style/Base.Theme.SoundLab"
         tools:targetApi="31">
         <activity
+            android:name="view.activity.SlideShow"
+            android:exported="false" />
+        <activity
             android:name="view.activity.LoginActivity"
             android:exported="true"
             android:theme="@style/Intro.Theme.SoundLab" />
         <activity
             android:name="view.activity.SplashActivity"
             android:exported="true"
-            android:theme = "@style/Theme.Design.NoActionBar">
+            android:theme="@style/Splash.Theme.SoundLab">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
