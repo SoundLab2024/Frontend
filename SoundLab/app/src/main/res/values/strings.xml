@@ -19,4 +19,6 @@
     <string name="genre">Genre</string>
     <string name="favourite_playlist">Favourite Playlist</string>
     <string name="playlist">Playlist</string>
+    <string name="next">Next</string>
+    <string name="Inizia">Inizia</string>
 </resources>

@@ -31,7 +31,7 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <model.CustomButton
+                <view.CustomButton
                     android:id="@+id/cover1"
                     android:layout_width="120dp"
                     android:layout_height="150dp"
@@ -46,7 +46,7 @@
                     android:textSize="12sp"
                     android:textStyle="italic"/>
 
-                <model.CustomButton
+                <view.CustomButton
                     android:id="@+id/cover2"
                     android:layout_width="120dp"
                     android:layout_height="150dp"
@@ -61,7 +61,7 @@
                     android:textSize="12sp"
                     android:textStyle="italic" />
 
-                <model.CustomButton
+                <view.CustomButton
                     android:id="@+id/cover3"
                     android:layout_width="120dp"
                     android:layout_height="150dp"
@@ -104,7 +104,7 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <model.CustomButton
+                <view.CustomButton
                     android:id="@+id/genere1"
                     android:layout_width="160dp"
                     android:layout_height="70dp"
@@ -116,7 +116,7 @@
                     android:textAllCaps="false"
                     android:textSize="16sp" />
 
-                <model.CustomButton
+                <view.CustomButton
                     android:id="@+id/genere2"
                     android:layout_width="160dp"
                     android:layout_height="70dp"
@@ -129,7 +129,7 @@
                     android:textAllCaps="false"
                     android:textSize="16sp" />
 
-                <model.CustomButton
+                <view.CustomButton
                     android:id="@+id/genere3"
                     android:layout_width="160dp"
                     android:layout_height="70dp"
@@ -169,7 +169,7 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <model.CustomButton
+                <view.CustomButton
                     android:id="@+id/playlist1"
                     android:layout_width="150dp"
                     android:layout_height="130dp"
@@ -184,7 +184,7 @@
                     android:textSize="12sp"
                     android:textStyle="italic" />
 
-                <model.CustomButton
+                <view.CustomButton
                     android:id="@+id/playlist2"
                     android:layout_width="150dp"
                     android:layout_height="130dp"
@@ -200,7 +200,7 @@
                     android:textSize="12sp"
                     android:textStyle="italic" />
 
-                <model.CustomButton
+                <view.CustomButton
                     android:id="@+id/playlist3"
                     android:layout_width="150dp"
                     android:layout_height="130dp"

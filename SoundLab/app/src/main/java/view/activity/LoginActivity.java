@@ -5,11 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import com.example.soundlab.R;
-import model.CustomButton;
+import view.CustomButton;
 
 public class LoginActivity extends AppCompatActivity {
 
-    CustomButton login;
+    private CustomButton login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
