@@ -21,4 +21,8 @@
     <string name="playlist">Playlist</string>
     <string name="next">Next</string>
     <string name="Inizia">Inizia</string>
+    <string name="artist">Artist</string>
+    <string name="most_played">Most played by users</string>
+    <string name="clicked_artist">Most clicked artists</string>
+    <string name="searchbar_hint">Tracks, Artists …</string>
 </resources>

@@ -2,8 +2,7 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.SoundLab" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/dark_purple</item>
-        <item name="colorSecondary">@color/purple</item>
-        <item name="android:colorAccent">@color/pink</item>
+        <item name="colorSecondary">@color/pink</item>
         <item name="android:colorBackground">@color/dark_purple</item>
         <item name="android:statusBarColor">@color/dark_purple</item>
         <item name="android:textColor">@color/white</item>
@@ -11,7 +10,6 @@
 
     <style name="Intro.Theme.SoundLab" parent="Base.Theme.SoundLab">
         <item name="colorPrimary">@color/purple</item>
-        <item name="colorSecondary">@color/dark_purple</item>
         <item name="android:colorBackground">@color/purple</item>
         <item name="android:statusBarColor">@color/purple</item>
         <item name="android:textColor">@color/white</item>

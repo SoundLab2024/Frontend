@@ -15,4 +15,8 @@
     <string name="genre">Genere</string>
     <string name="favourite_playlist">Playlist Preferite</string>
     <string name="playlist">Playlist</string>
+    <string name="artist">Artista</string>
+    <string name="most_played">Le più ascoltate dagli utenti</string>
+    <string name="clicked_artist">Gli artisti più cliccati</string>
+    <string name="searchbar_hint">Brani, Artisti …</string>
 </resources>
