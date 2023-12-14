@@ -120,7 +120,7 @@
                     android:contentDescription="@string/log_in"
                     android:text="@string/log_in"
                     android:textAllCaps="false"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"/>
 
                 <Space
                     android:layout_width="match_parent"
