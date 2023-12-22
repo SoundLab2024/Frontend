@@ -73,65 +73,163 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
 
-                    <view.CustomButton
-                        android:id="@+id/cover1"
-                        android:layout_width="75dp"
-                        android:layout_height="95dp"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:drawableTop="@drawable/cover_default_mini"
-                        android:scaleType="fitStart"
-                        android:singleLine="true"
-                        android:text="@string/default_title"
-                        android:textAllCaps="false"
-                        android:textIsSelectable="false"
-                        android:textSize="12sp"
-                        android:textStyle="italic" />
+                    <view.CustomCardView
+                        android:id="@+id/music_cardView1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/trasparent"
+                        android:clickable="true"
+                        app:cardElevation="0dp">
 
-                    <view.CustomButton
-                        android:id="@+id/cover2"
-                        android:layout_width="75dp"
-                        android:layout_height="95dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:drawableTop="@drawable/cover_default_mini"
-                        android:scaleType="fitStart"
-                        android:singleLine="true"
-                        android:text="@string/default_title"
-                        android:textAllCaps="false"
-                        android:textSize="12sp"
-                        android:textStyle="italic" />
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
 
-                    <view.CustomButton
-                        android:id="@+id/cover3"
-                        android:layout_width="75dp"
-                        android:layout_height="95dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:drawableTop="@drawable/cover_default_mini"
-                        android:scaleType="fitStart"
-                        android:singleLine="true"
-                        android:text="@string/default_title"
-                        android:textAllCaps="false"
-                        android:textSize="12sp"
-                        android:textStyle="italic" />
+                            <ImageView
+                                android:id="@+id/music_image1"
+                                android:layout_width="75dp"
+                                android:layout_height="75dp"
+                                android:src="@drawable/cover_default"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
 
-                    <view.CustomButton
-                        android:id="@+id/cover4"
-                        android:layout_width="75dp"
-                        android:layout_height="95dp"
+                            <TextView
+                                android:id="@+id/title1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="4dp"
+                                android:singleLine="true"
+                                android:text="@string/default_title"
+                                android:textAlignment="center"
+                                android:textSize="12sp"
+                                android:textStyle="italic"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/music_image1" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </view.CustomCardView>
+
+                    <view.CustomCardView
+                        android:id="@+id/music_cardView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="20dp"
+                        android:backgroundTint="@color/trasparent"
+                        android:clickable="true"
+                        app:cardElevation="0dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <ImageView
+                                android:id="@+id/music_image2"
+                                android:layout_width="75dp"
+                                android:layout_height="75dp"
+                                android:src="@drawable/cover_default"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/title2"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="4dp"
+                                android:singleLine="true"
+                                android:text="@string/default_title"
+                                android:textAlignment="center"
+                                android:textSize="12sp"
+                                android:textStyle="italic"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/music_image2" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </view.CustomCardView>
+
+                    <view.CustomCardView
+                        android:id="@+id/music_cardView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/trasparent"
+                        android:clickable="true"
+                        app:cardElevation="0dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <ImageView
+                                android:id="@+id/music_image3"
+                                android:layout_width="75dp"
+                                android:layout_height="75dp"
+                                android:src="@drawable/cover_default"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/title3"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="4dp"
+                                android:singleLine="true"
+                                android:text="@string/default_title"
+                                android:textAlignment="center"
+                                android:textSize="12sp"
+                                android:textStyle="italic"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/music_image3" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </view.CustomCardView>
+
+                    <view.CustomCardView
+                        android:id="@+id/music_cardView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:drawableTop="@drawable/cover_default_mini"
-                        android:scaleType="fitStart"
-                        android:singleLine="true"
-                        android:text="@string/default_title"
-                        android:textAllCaps="false"
-                        android:textSize="12sp"
-                        android:textStyle="italic" />
+                        android:backgroundTint="@color/trasparent"
+                        android:clickable="true"
+                        app:cardElevation="0dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <ImageView
+                                android:id="@+id/music_image4"
+                                android:layout_width="75dp"
+                                android:layout_height="75dp"
+                                android:src="@drawable/cover_default"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/title4"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="4dp"
+                                android:singleLine="true"
+                                android:text="@string/default_title"
+                                android:textAlignment="center"
+                                android:textSize="12sp"
+                                android:textStyle="italic"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/music_image4" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </view.CustomCardView>
 
                 </LinearLayout>
             </HorizontalScrollView>
@@ -158,68 +256,163 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
 
-                    <view.CustomButton
-                        android:id="@+id/artist1"
-                        android:layout_width="75dp"
-                        android:layout_height="95dp"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:drawableTop="@drawable/artist_default_mini"
-                        android:scaleType="fitStart"
-                        android:singleLine="true"
-                        android:text="@string/artist"
-                        android:textAllCaps="false"
-                        android:textIsSelectable="false"
-                        android:textSize="12sp"
-                        android:textStyle="italic" />
+                    <view.CustomCardView
+                        android:id="@+id/artist_cardView1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/trasparent"
+                        android:clickable="true"
+                        app:cardElevation="0dp">
 
-                    <view.CustomButton
-                        android:id="@+id/artist2"
-                        android:layout_width="75dp"
-                        android:layout_height="95dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:drawableTop="@drawable/artist_default_mini"
-                        android:scaleType="fitStart"
-                        android:singleLine="true"
-                        android:text="@string/artist"
-                        android:textAllCaps="false"
-                        android:textIsSelectable="false"
-                        android:textSize="12sp"
-                        android:textStyle="italic" />
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
 
-                    <view.CustomButton
-                        android:id="@+id/artist3"
-                        android:layout_width="75dp"
-                        android:layout_height="95dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:drawableTop="@drawable/artist_default_mini"
-                        android:scaleType="fitStart"
-                        android:singleLine="true"
-                        android:text="@string/artist"
-                        android:textAllCaps="false"
-                        android:textIsSelectable="false"
-                        android:textSize="12sp"
-                        android:textStyle="italic" />
+                            <ImageView
+                                android:id="@+id/artist_image1"
+                                android:layout_width="75dp"
+                                android:layout_height="75dp"
+                                android:src="@drawable/artist_default"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
 
-                    <view.CustomButton
-                        android:id="@+id/artist4"
-                        android:layout_width="75dp"
-                        android:layout_height="95dp"
+                            <TextView
+                                android:id="@+id/artist1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="4dp"
+                                android:singleLine="true"
+                                android:text="@string/artist"
+                                android:textAlignment="center"
+                                android:textSize="12sp"
+                                android:textStyle="italic"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/artist_image1" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </view.CustomCardView>
+
+                    <view.CustomCardView
+                        android:id="@+id/artist_cardView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="20dp"
+                        android:backgroundTint="@color/trasparent"
+                        android:clickable="true"
+                        app:cardElevation="0dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <ImageView
+                                android:id="@+id/artist_image2"
+                                android:layout_width="75dp"
+                                android:layout_height="75dp"
+                                android:src="@drawable/artist_default"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/artist2"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="4dp"
+                                android:singleLine="true"
+                                android:text="@string/artist"
+                                android:textAlignment="center"
+                                android:textSize="12sp"
+                                android:textStyle="italic"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/artist_image2" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </view.CustomCardView>
+
+                    <view.CustomCardView
+                        android:id="@+id/artist_cardView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/trasparent"
+                        android:clickable="true"
+                        app:cardElevation="0dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <ImageView
+                                android:id="@+id/artist_image3"
+                                android:layout_width="75dp"
+                                android:layout_height="75dp"
+                                android:src="@drawable/artist_default"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/artist3"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="4dp"
+                                android:singleLine="true"
+                                android:text="@string/artist"
+                                android:textAlignment="center"
+                                android:textSize="12sp"
+                                android:textStyle="italic"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/artist_image3" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </view.CustomCardView>
+
+                    <view.CustomCardView
+                        android:id="@+id/artist_cardView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:drawableTop="@drawable/artist_default_mini"
-                        android:scaleType="fitStart"
-                        android:singleLine="true"
-                        android:text="@string/artist"
-                        android:textAllCaps="false"
-                        android:textIsSelectable="false"
-                        android:textSize="12sp"
-                        android:textStyle="italic" />
+                        android:backgroundTint="@color/trasparent"
+                        android:clickable="true"
+                        app:cardElevation="0dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <ImageView
+                                android:id="@+id/artist_image4"
+                                android:layout_width="75dp"
+                                android:layout_height="75dp"
+                                android:src="@drawable/artist_default"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/artist4"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="4dp"
+                                android:singleLine="true"
+                                android:text="@string/artist"
+                                android:textAlignment="center"
+                                android:textSize="12sp"
+                                android:textStyle="italic"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/artist_image4" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </view.CustomCardView>
 
                 </LinearLayout>
             </HorizontalScrollView>

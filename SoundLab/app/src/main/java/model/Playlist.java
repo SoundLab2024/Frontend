@@ -24,6 +24,10 @@ public class Playlist {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     // Getter and Setter for 'genere'
     public String getGenere() {
         return genere;

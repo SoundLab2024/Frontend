@@ -1,13 +1,16 @@
 package presenter.adapter;
 
+import android.app.Dialog;
 import android.content.Context;
-
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -17,18 +20,23 @@ import com.example.soundlab.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import model.Playlist;
+import view.CustomButton;
 import view.CustomCardView;
+import view.fragment.ProfileFragment;
 
 public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHolder> {
 
     private final ArrayList<Playlist> playlistArrayList;
+    private final ProfileFragment profileFragment;
 
     // Costruttore per inizializzare l'adapter con la lista di playlist
-    public PlaylistAdapter(Context context, ArrayList<Playlist> playlistArrayList) {
+    public PlaylistAdapter(ProfileFragment profileFragment, ArrayList<Playlist> playlistArrayList) {
         this.playlistArrayList = playlistArrayList;
-        updatePlaylistOrder(); // Ordina le playlist iniziali
+        this.profileFragment = profileFragment;
+        updatePlaylistOrder();
     }
 
     // Metodo per aggiornare l'ordine delle playlist in base alle preferenze
@@ -43,6 +51,12 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
                 return Boolean.compare(playlist2.isFavorite(), playlist1.isFavorite());
             }
         });
+    }
+
+    public void addPlaylist(Playlist newPlaylist) {
+        // Aggiungi la nuova playlist alla lista e notifica alla UI
+        int index = addPlaylistInOrder(newPlaylist, newPlaylist.isFavorite());
+        new Handler().post(() -> notifyItemInserted(index));
     }
 
     // Metodo chiamato quando RecyclerView ha bisogno di un nuovo ViewHolder
@@ -88,7 +102,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
                 int index = addPlaylistInOrder(selectedPlaylist, isChecked);
 
                 // Notifica che l'elemento è stato spostato
-                notifyItemMoved(adapterPosition, index);
+                new Handler().post(() -> notifyItemMoved(adapterPosition, index));
             }
         });
 
@@ -116,24 +130,29 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
 
                 // Imposta il listener del bottone Elimina
                 elimina.setOnClickListener(v0 -> {
-                    // Esegue le azioni necessarie per l'eliminazione utilizzando la playlist specifica
-                    playlistArrayList.remove(selectedPlaylist);
-                    notifyItemRemoved(adapterPosition);
-                    // ...
-
                     // Chiude il BottomSheetDialog
                     bottomSheetDialog.dismiss();
+
+                    // Esegue le azioni necessarie per l'eliminazione utilizzando la playlist specifica
+                    showDialog_confermaElimina(holder.itemView.getContext(), selectedPlaylist, adapterPosition);
                 });
 
                 // Imposta il listener del bottone Rinomina
                 rinomina.setOnClickListener(v1 -> {
-                    // ...
+                    // Chiude il BottomSheetDialog
+                    bottomSheetDialog.dismiss();
 
+                    // Esegue le azioni necessarie per la rinomina utilizzando la playlist specifica
+                    showDialog_rinomina(holder.itemView.getContext(), selectedPlaylist, adapterPosition);
                 });
 
                 // Imposta il listener del bottone Cambia Genere
                 cambia_genere.setOnClickListener(v2 -> {
-                    // ...
+                    // Chiude il BottomSheetDialog
+                    bottomSheetDialog.dismiss();
+
+                    // Esegue le azioni necessarie per il cambio genere utilizzando la playlist specifica
+                    showDialog_cambiaGenere(holder.itemView.getContext(), selectedPlaylist, adapterPosition);
 
                 });
 
@@ -144,6 +163,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
             // Restituisce true per indicare che il long click è stato gestito
             return true;
         });
+
     }
 
 
@@ -181,6 +201,140 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
         // Restituisci l'indice della nuova playlist inserita
         return index;
     }
+
+    private void initializeDialogViews(Dialog dialog, Playlist selectedPlaylist) {
+        ImageView playlistImage = dialog.findViewById(R.id.playlist_image);
+        playlistImage.setImageResource(selectedPlaylist.getImage());
+
+        TextView playlistName = dialog.findViewById(R.id.playlist_name);
+        playlistName.setText(selectedPlaylist.getName());
+
+        TextView playlistGenere = dialog.findViewById(R.id.playlist_genere);
+        playlistGenere.setText(selectedPlaylist.getGenere());
+    }
+
+    private void showDialog_confermaElimina(Context context, Playlist selectedPlaylist, int adapterPosition) {
+        // Creazione e personalizzazione del Dialog
+        Dialog dialog = new Dialog(context, R.style.CustomDialogStyle);
+        dialog.setContentView(R.layout.popup_elimina_playlist);
+
+        // Inizializzazione degli elementi del layout del Dialog
+        initializeDialogViews(dialog, selectedPlaylist);
+
+        // Inizializzazione dei bottoni del Dialog
+        CustomButton conferma_elimina = dialog.findViewById(R.id.aggiungi);
+        CustomButton annulla = dialog.findViewById(R.id.annulla);
+
+        // Listener per il pulsante di conferma eliminazione
+        conferma_elimina.setOnClickListener(view -> {
+            // Rimuove la playlist dalla lista e aggiorna la UI
+            playlistArrayList.remove(selectedPlaylist);
+            notifyItemRemoved(adapterPosition);
+            dialog.dismiss();
+
+//            if(playlistArrayList.isEmpty()) {
+//                Log.d("msg", "Entrato");
+//                profileFragment.createZeroPlaylistTextView();
+//            } else {
+//                Log.d("array size", String.valueOf(playlistArrayList.size()));
+//                profileFragment.destroyZeroPlaylistTextView();
+//            }
+        });
+
+        // Listener per il pulsante di annullamento
+        annulla.setOnClickListener(view -> {
+            // Chiude il Dialog senza effettuare alcuna azione
+            dialog.dismiss();
+        });
+
+
+        // Mostra il Dialog
+        dialog.show();
+    }
+
+    private void showDialog_rinomina(Context context, Playlist selectedPlaylist, int adapterPosition) {
+        // Creazione e personalizzazione del Dialog
+        Dialog dialog = new Dialog(context, R.style.CustomDialogStyle);
+        dialog.setContentView(R.layout.popup_rinomina_playlist);
+
+        // Inizializzazione degli elementi del layout del Dialog
+        initializeDialogViews(dialog, selectedPlaylist);
+
+        // Inizializzazione degli elementi di input e bottoni del Dialog
+        EditText playlist_input = dialog.findViewById(R.id.playlist_input);
+        CustomButton rinomina = dialog.findViewById(R.id.rinomina);
+        CustomButton annulla = dialog.findViewById(R.id.annulla);
+
+        // Listener per il pulsante di rinomina
+        rinomina.setOnClickListener(view -> {
+            // Ottiene il nuovo nome dalla casella di input
+            String nuovo_nome_playlist = playlist_input.getText().toString();
+            if (!nuovo_nome_playlist.isEmpty()) {
+                // Aggiorna il nome della playlist, la UI e la posizione nella lista
+                selectedPlaylist.setName(nuovo_nome_playlist);
+                new Handler().post(() -> notifyItemChanged(adapterPosition));
+                playlistArrayList.remove(adapterPosition);
+                int index = addPlaylistInOrder(selectedPlaylist, selectedPlaylist.isFavorite());
+                new Handler().post(() -> notifyItemMoved(adapterPosition, index));
+                dialog.dismiss();
+            } else {
+                // Visualizza un messaggio Toast se il nome è vuoto
+                Toast toast = Toast.makeText(context, "Inserisci un nome valido", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+
+        // Listener per il pulsante di annullamento
+        annulla.setOnClickListener(view -> {
+            // Chiude il Dialog senza effettuare alcuna azione
+            dialog.dismiss();
+        });
+
+        // Mostra il Dialog
+        dialog.show();
+    }
+
+    private void showDialog_cambiaGenere(Context context, Playlist selectedPlaylist, int adapterPosition) {
+        // Creazione e personalizzazione del Dialog
+        Dialog dialog = new Dialog(context, R.style.CustomDialogStyle);
+        dialog.setContentView(R.layout.popup_rinomina_playlist);
+
+        // Inizializzazione degli elementi del layout del Dialog
+        initializeDialogViews(dialog, selectedPlaylist);
+
+        // Inizializzazione e modifica degli elementi di input e bottoni del Dialog
+        EditText playlist_input = dialog.findViewById(R.id.playlist_input);
+        playlist_input.setHint("Inserisci il nuovo genere qui.");
+        CustomButton rinomina = dialog.findViewById(R.id.rinomina);
+        rinomina.setText("Cambia");
+        CustomButton annulla = dialog.findViewById(R.id.annulla);
+
+        // Listener per il pulsante rinomina
+        rinomina.setOnClickListener(view -> {
+            // Ottiene il nuovo genere dalla casella di input
+            String nuovo_genere = playlist_input.getText().toString();
+            if (!nuovo_genere.isEmpty()) {
+                // Aggiorna il genere e la UI
+                selectedPlaylist.setGenere(nuovo_genere);
+                new Handler().post(() -> notifyItemChanged(adapterPosition));
+                dialog.dismiss();
+            } else {
+                // Visualizza un messaggio Toast se il genere è vuoto
+                Toast toast = Toast.makeText(context, "Inserisci un genere valido", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+
+        // Listener per il pulsante di annullamento
+        annulla.setOnClickListener(view -> {
+            // Chiude il Dialog senza effettuare alcuna azione
+            dialog.dismiss();
+        });
+
+        // Mostra il Dialog
+        dialog.show();
+    }
+
 
     // Restituisci il numero totale di elementi nella RecyclerView
     @Override

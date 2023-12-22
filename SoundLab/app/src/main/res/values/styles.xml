@@ -3,4 +3,11 @@
     <style name="bottomNavBarStyle" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">@color/transparent_pink</item>
     </style>
+
+    <style name="CustomDialogStyle" parent="Theme.AppCompat.Dialog">
+        <item name="android:background">@color/dark_purple</item>
+        <!-- Per impostare i bordi arrotondati del dialog-->
+        <item name="android:windowBackground">@drawable/custom_buttons_genres</item>
+    </style>
+
 </resources>
