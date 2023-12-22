@@ -10,6 +10,7 @@ import view.CustomButton;
 public class LoginActivity extends AppCompatActivity {
 
     private CustomButton login;
+    private CustomButton signup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +18,13 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         login = findViewById(R.id.login_button);
+        signup = findViewById(R.id.signup_button);
+
+        signup.setOnClickListener(view -> {
+            Intent intent= new Intent(LoginActivity.this, RegistrationActivity.class);
+            LoginActivity.this.startActivity(intent);
+            LoginActivity.this.finish();
+        });
 
         login.setOnClickListener(view -> {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
