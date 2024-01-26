@@ -62,21 +62,23 @@
 
                     <TextView
                         android:id="@+id/playlist_name"
-                        android:layout_width="wrap_content"
+                        android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-medium"
                         android:text="Nome Playlist"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        android:singleLine="true"/>
 
                     <TextView
                         android:id="@+id/playlist_genere"
-                        android:layout_width="wrap_content"
+                        android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:fontFamily="sans-serif-medium"
                         android:text="Genere"
                         android:textColor="@color/pink"
-                        android:textSize="10sp" />
+                        android:textSize="10sp"
+                        android:singleLine="true"/>
 
                 </LinearLayout>
 

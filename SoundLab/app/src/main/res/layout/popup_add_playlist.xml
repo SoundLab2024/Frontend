@@ -54,7 +54,7 @@
             android:orientation="horizontal">
 
             <view.CustomButton
-                android:id="@+id/aggiungi"
+                android:id="@+id/elimina"
                 android:layout_width="100dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center"

@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,25 +28,64 @@ import java.util.ArrayList;
 import model.Playlist;
 import presenter.adapter.PlaylistAdapter;
 import view.CustomButton;
+import view.Utilities;
+import view.activity.MainActivity;
 
 public class ProfileFragment extends Fragment {
 
     RecyclerView recyclerView;
     private TextView zeroPlaylistTextView;
+    private ArrayList<Playlist> playlistArrayList;
+    private PlaylistAdapter playlistAdapter;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Infla il layout del fragment
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        // Ottiene la RecyclerView dal layout
+        recyclerView = view.findViewById(R.id.playlists_recyclerView);
+        recyclerView.setNestedScrollingEnabled(false);
+
+        // Crea una nuova lista di playlist
+        playlistArrayList = new ArrayList<>();
+
+        // TODO: Carica le playlist dal backend
+
+        //playlistArrayList.add(new Playlist(...));
+
+        // Inizializza l'adapter e passa la lista di playlist
+        playlistAdapter = new PlaylistAdapter(this, playlistArrayList);
+
+        // Imposta un layout manager per la RecyclerView (lista verticale)
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
+
+        // Imposta il layout manager e l'adapter per la RecyclerView
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(playlistAdapter);
+
+        return view;
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Imposta il colore della barra di stato quando la vista è creata
-        changeStatusBarColor(view, R.color.blue);
+        Utilities.changeStatusBarColorFragment(this, R.color.blue);
 
         // Ottieni il riferimento al pulsante addButton e crea un listener
         CustomButton addButton = view.findViewById(R.id.addButton);
         addButton.setOnClickListener(v -> addNewPlaylist());
+
+        //Se non ci sono playlist crea la TextView zeroPlaylist
+        if (playlistArrayList.isEmpty()) {
+            createZeroPlaylistTextView();
+        }
+
     }
 
-    // Metodo per aggiungere una nuova playlist
     private void addNewPlaylist() {
 
         // Creazione e personalizzazione del Dialog
@@ -56,7 +95,7 @@ public class ProfileFragment extends Fragment {
         // Inizializzazione degli elementi di input e bottoni del Dialog
         EditText nome_input = dialog.findViewById(R.id.nome);
         EditText genere_input = dialog.findViewById(R.id.genere);
-        CustomButton aggiungi = dialog.findViewById(R.id.aggiungi);
+        CustomButton aggiungi = dialog.findViewById(R.id.elimina);
         CustomButton annulla = dialog.findViewById(R.id.annulla);
 
         // Listener per il pulsante di aggiunta
@@ -76,6 +115,8 @@ public class ProfileFragment extends Fragment {
                 }
                 //Chiude il Dialog
                 dialog.dismiss();
+                //Rimuove la TextView zeroPlaylist
+                destroyZeroPlaylistTextView();
             } else {
                 // Visualizza un messaggio Toast se il nome o il genere sono vuoti
                 Toast toast = Toast.makeText(this.requireContext(), "Inserisci un nome e un genere validi", Toast.LENGTH_SHORT);
@@ -92,96 +133,63 @@ public class ProfileFragment extends Fragment {
         dialog.show();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Infla il layout del fragment
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+    public void createZeroPlaylistTextView() {
+        ConstraintLayout constraintLayout = requireView().findViewById(R.id.constraintLayout1);
+        ScrollView scrollView = requireView().findViewById(R.id.scrollView);
 
-        // Ottiene la RecyclerView dal layout
-        recyclerView = view.findViewById(R.id.playlists_recyclerView);
-        recyclerView.setNestedScrollingEnabled(false);
+        // Crea la TextView
+        zeroPlaylistTextView = new TextView(requireContext());
+        zeroPlaylistTextView.setId(R.id.zeroPlaylistTextView);
+        zeroPlaylistTextView.setText("Non hai aggiunto ancora nessuna playlist");
+        zeroPlaylistTextView.setTextSize(14);
+        zeroPlaylistTextView.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        zeroPlaylistTextView.setGravity(Gravity.CENTER);
 
-        // Crea una nuova lista di playlist
-        ArrayList<Playlist> playlistArrayList = new ArrayList<>();
-        // Aggiungi i dati dal back-end...
+        // Aggiungi la TextView al ConstraintLayout
+        constraintLayout.addView(zeroPlaylistTextView);
 
-        // Inizializza l'adapter e passa la lista di playlist
-        PlaylistAdapter playlistAdapter = new PlaylistAdapter(this, playlistArrayList);
+        // Imposta "wrap_content"
+        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) zeroPlaylistTextView.getLayoutParams();
+        layoutParams.width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+        layoutParams.height = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+        zeroPlaylistTextView.setLayoutParams(layoutParams);
 
-        // Imposta un layout manager per la RecyclerView (lista verticale)
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
+        // Creazione di un oggetto ConstraintSet per impostare i constraint
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(constraintLayout);
 
-        // Imposta il layout manager e l'adapter per la RecyclerView
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(playlistAdapter);
+        // Impostazione dei constraint per la TextView
+        constraintSet.connect(zeroPlaylistTextView.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 0);
+        constraintSet.connect(zeroPlaylistTextView.getId(), ConstraintSet.TOP, scrollView.getId(), ConstraintSet.BOTTOM, 0);
+        constraintSet.connect(zeroPlaylistTextView.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, 0);
+        constraintSet.connect(zeroPlaylistTextView.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0);
 
-        return view;
+        // Applicazione dei constraint al ConstraintLayout
+        constraintSet.applyTo(constraintLayout);
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void destroyZeroPlaylistTextView() {
+        ConstraintLayout constraintLayout = requireView().findViewById(R.id.constraintLayout1);
 
-        // Ripristina colore della barra di stato quando la vista viene distrutta
-        if (getView() != null) {
-            changeStatusBarColor(getView(), R.color.dark_purple);
+        // Rimuovi la TextView se esiste
+        if (zeroPlaylistTextView != null) {
+            constraintLayout.removeView(zeroPlaylistTextView);
+            zeroPlaylistTextView = null;
         }
     }
 
-    private void changeStatusBarColor(View view, int color) {
-        int statusBarColor = ContextCompat.getColor(view.getContext(), color);
+    public void loadPlaylistFragment(Playlist playlist) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("playlist", playlist);
 
-        // Imposta il colore della barra di stato
-        if (getActivity() != null && getActivity().getWindow() != null) {
-            getActivity().getWindow().setStatusBarColor(statusBarColor);
+        Fragment playlistFragment = new PlaylistFragment();
+        playlistFragment.setArguments(bundle);
+
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).hideBottomNavigationView();
+            ((MainActivity) getActivity()).replaceFragment(playlistFragment, Utilities.playlistFragmentTag);
         }
     }
 
-//    public void createZeroPlaylistTextView() {
-//        ConstraintLayout constraintLayout = requireView().findViewById(R.id.constraintLayout);
-//
-//        // Crea la TextView solo se zeroPlaylist è true
-//        zeroPlaylistTextView = new TextView(requireContext());
-//        zeroPlaylistTextView.setId(R.id.zeroPlaylistTextView);
-//        zeroPlaylistTextView.setText("Non hai aggiunto ancora nessuna playlist");
-//        zeroPlaylistTextView.setTextSize(14);
-//        zeroPlaylistTextView.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-//        zeroPlaylistTextView.setGravity(Gravity.CENTER);
-//
-//        // Aggiungi la TextView al ConstraintLayout
-//        constraintLayout.addView(zeroPlaylistTextView);
-//
-//        // Imposta "wrap_content"
-//        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) zeroPlaylistTextView.getLayoutParams();
-//        layoutParams.width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
-//        layoutParams.height = 300;
-//        zeroPlaylistTextView.setLayoutParams(layoutParams);
-//
-//        // Creazione di un oggetto ConstraintSet per impostare i constraint
-//        ConstraintSet constraintSet = new ConstraintSet();
-//        constraintSet.clone(constraintLayout);
-//
-//        // Impostazione dei constraint per la TextView
-//        constraintSet.connect(zeroPlaylistTextView.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 0);
-//        constraintSet.connect(zeroPlaylistTextView.getId(), ConstraintSet.TOP, recyclerView.getId(), ConstraintSet.BOTTOM, 0);
-//        constraintSet.connect(zeroPlaylistTextView.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, 0);
-//        constraintSet.connect(zeroPlaylistTextView.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0);
-//
-//        // Applicazione dei vincoli al ConstraintLayout
-//        constraintSet.applyTo(constraintLayout);
-//
-//        // Rimuovi la TextView solo se zeroPlaylist è false e la TextView esiste
-//
-//    }
-//
-//    public void destroyZeroPlaylistTextView() {
-//        ConstraintLayout constraintLayout = requireView().findViewById(R.id.constraintLayout);
-//
-//        if (zeroPlaylistTextView != null) {
-//            constraintLayout.removeView(zeroPlaylistTextView);
-//            zeroPlaylistTextView = null;  // Imposta a null dopo la rimozione
-//        }
-//    }
 
 }

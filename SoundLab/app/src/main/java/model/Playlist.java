@@ -1,10 +1,14 @@
 package model;
 
-import android.graphics.drawable.Drawable;
+import java.io.Serializable;
 
+public class Playlist implements Serializable {
 
-public class Playlist {
+    private static final long serialVersionUID = 1L; // Numero di versione per la serializzazione
 
+    private static int nextId = 1;
+
+    private final int id;
     private String name;
     private String genere;
     private int image;
@@ -12,11 +16,31 @@ public class Playlist {
     private int numberOfSongs;
 
     public Playlist(String name, String genere, int image, boolean favorite) {
+        this.id = getNextId();
         this.name = name;
         this.genere = genere;
         this.image = image;
         this.favorite = favorite;
         this.numberOfSongs = 0;
+    }
+
+    public Playlist(int id, String name, String genere, int image, boolean favorite) {
+        this.id = id;
+        this.name = name;
+        this.genere = genere;
+        this.image = image;
+        this.favorite = favorite;
+        this.numberOfSongs = 0;
+    }
+
+    //Generatore di id
+    private static synchronized int getNextId() {
+        return nextId++;
+    }
+
+    // Getter and Setter for 'id'
+    public int getId() {
+        return id;
     }
 
     // Getter and Setter for 'name'
@@ -63,7 +87,4 @@ public class Playlist {
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
     }
-
 }
-
-

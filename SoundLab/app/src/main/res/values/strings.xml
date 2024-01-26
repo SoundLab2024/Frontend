@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name" translatable="false">SoundLab</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="home" translatable="false">Home</string>
     <string name="search">Search</string>
     <string name="profile">Profile</string>

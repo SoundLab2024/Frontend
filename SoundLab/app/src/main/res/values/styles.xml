@@ -10,4 +10,13 @@
         <item name="android:windowBackground">@drawable/custom_buttons_genres</item>
     </style>
 
+    <style name="OverflowButtonTheme" parent="Base.Theme.SoundLab">
+        ...
+        <item name="actionOverflowButtonStyle">@style/MyOverflowButtonStyle</item>
+    </style>
+
+    <style name="MyOverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">@color/pink</item>
+    </style>
+
 </resources>

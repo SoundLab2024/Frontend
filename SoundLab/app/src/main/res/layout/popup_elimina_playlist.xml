@@ -2,10 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -62,18 +64,20 @@
 
                     <TextView
                         android:id="@+id/playlist_name"
-                        android:layout_width="wrap_content"
+                        android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-medium"
+                        android:singleLine="true"
                         android:text="Nome Playlist"
                         android:textSize="14sp" />
 
                     <TextView
                         android:id="@+id/playlist_genere"
-                        android:layout_width="wrap_content"
+                        android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:fontFamily="sans-serif-medium"
+                        android:singleLine="true"
                         android:text="Genere"
                         android:textColor="@color/pink"
                         android:textSize="10sp" />
@@ -100,7 +104,7 @@
             android:orientation="horizontal">
 
             <view.CustomButton
-                android:id="@+id/aggiungi"
+                android:id="@+id/elimina"
                 android:layout_width="100dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center"

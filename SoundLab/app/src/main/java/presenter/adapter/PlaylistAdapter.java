@@ -3,7 +3,6 @@ package presenter.adapter;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,6 @@ import com.example.soundlab.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import model.Playlist;
 import view.CustomButton;
@@ -80,6 +78,13 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
         holder.playlistGenere.setText(playlist.getGenere());
         holder.favouriteButton.setChecked(playlist.isFavorite());
 
+
+        holder.itemView.setOnClickListener(v -> {
+            // Apri il fragment PlaylistFragment quando viene cliccata una playlist
+            profileFragment.loadPlaylistFragment(playlist);
+        });
+
+
         // Gestisci il cambiamento di preferenza quando il pulsante Preferito viene selezionato/deselezionato
         holder.favouriteButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
@@ -91,6 +96,8 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
 
                 // Ottieni la playlist selezionata
                 Playlist selectedPlaylist = playlistArrayList.get(adapterPosition);
+
+                // TODO: Aggiorna lo stato di preferenza nel backend
 
                 // Aggiorna lo stato di preferenza nel modello dei dati
                 selectedPlaylist.setFavorite(isChecked);
@@ -222,23 +229,23 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
         initializeDialogViews(dialog, selectedPlaylist);
 
         // Inizializzazione dei bottoni del Dialog
-        CustomButton conferma_elimina = dialog.findViewById(R.id.aggiungi);
+        CustomButton conferma_elimina = dialog.findViewById(R.id.elimina);
         CustomButton annulla = dialog.findViewById(R.id.annulla);
 
         // Listener per il pulsante di conferma eliminazione
         conferma_elimina.setOnClickListener(view -> {
+
+            // TODO: Elimina la playlist dal backend
+
             // Rimuove la playlist dalla lista e aggiorna la UI
             playlistArrayList.remove(selectedPlaylist);
             notifyItemRemoved(adapterPosition);
+            // Chiude il Dialog
             dialog.dismiss();
-
-//            if(playlistArrayList.isEmpty()) {
-//                Log.d("msg", "Entrato");
-//                profileFragment.createZeroPlaylistTextView();
-//            } else {
-//                Log.d("array size", String.valueOf(playlistArrayList.size()));
-//                profileFragment.destroyZeroPlaylistTextView();
-//            }
+            // Se non ci sono playlist crea la TextView zeroPlaylist
+            if(playlistArrayList.isEmpty()) {
+                profileFragment.createZeroPlaylistTextView();
+            }
         });
 
         // Listener per il pulsante di annullamento
@@ -270,6 +277,9 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
             // Ottiene il nuovo nome dalla casella di input
             String nuovo_nome_playlist = playlist_input.getText().toString();
             if (!nuovo_nome_playlist.isEmpty()) {
+
+                // TODO: Cambia il nome della playlist nel backend
+
                 // Aggiorna il nome della playlist, la UI e la posizione nella lista
                 selectedPlaylist.setName(nuovo_nome_playlist);
                 new Handler().post(() -> notifyItemChanged(adapterPosition));
@@ -314,6 +324,9 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
             // Ottiene il nuovo genere dalla casella di input
             String nuovo_genere = playlist_input.getText().toString();
             if (!nuovo_genere.isEmpty()) {
+
+                // TODO: Cambia il genere della playlist nel backend
+
                 // Aggiorna il genere e la UI
                 selectedPlaylist.setGenere(nuovo_genere);
                 new Handler().post(() -> notifyItemChanged(adapterPosition));
