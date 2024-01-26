@@ -36,7 +36,10 @@
                 android:background="@drawable/setting"
                 android:contentDescription="@string/settings"
                 android:scaleX="0.5"
-                android:scaleY="0.5" />
+                android:scaleY="0.5"
+                android:clickable="true"
+                android:onClick="openSettingsActivity"
+                />
 
         </FrameLayout>
 

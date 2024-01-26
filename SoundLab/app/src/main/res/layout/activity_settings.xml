@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="view.activity.SettingsActivity">
+
+    <ScrollView
+        android:layout_width="410dp"
+        android:layout_height="894dp"
+        android:layout_marginHorizontal="0dp"
+        android:layout_marginVertical="0dp"
+        android:scrollbars="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="405dp"
+                android:layout_height="890dp"
+                android:background="#0D0A24"
+                android:layout_marginTop="104dp"
+                android:layout_marginEnd="24dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:ignore="ExtraText">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="170dp"
+                    android:translationX="20dp"
+                    android:translationY="16dp"
+                    app:srcCompat="@drawable/user" />
+
+                <TextView
+                    android:id="@+id/username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Username"
+                    android:textAlignment="textStart"
+                    android:textSize="30sp"
+                    android:translationX="170dp"
+                    android:translationY="-100dp" />
+
+                <TextView
+                    android:id="@+id/cambio_username"
+                    android:layout_width="285dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Modifica username"
+                    android:textAlignment="textStart"
+                    android:textSize="24sp"
+                    android:translationX="15dp"
+                    android:translationY="20dp" />
+
+                <TextView
+                    android:id="@+id/cambio_foto"
+                    android:layout_width="285dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Modifica foto profilo"
+                    android:textAlignment="textStart"
+                    android:textSize="24sp"
+                    android:translationX="15dp"
+                    android:translationY="25dp" />
+
+                <view.CustomButton
+                    android:id="@+id/modifica"
+                    android:layout_width="150dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginTop="25dp"
+                    android:background="@drawable/button"
+                    android:text="Modifica"
+                    android:textAllCaps="false"
+                    android:textSize="18sp"
+                    app:layout_constraintTop_toBottomOf="@id/usernameEditText"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    />
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1.5dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="#801F1A3A"
+                    android:alpha="0.5"
+                    android:translationY="5dp" />
+
+                <TextView
+                    android:id="@+id/cambio_email"
+                    android:layout_width="285dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Modifica email"
+                    android:textAlignment="textStart"
+                    android:textSize="24sp"
+                    android:translationX="15dp"
+                    android:translationY="25dp" />
+
+                <TextView
+                    android:id="@+id/cambio_password"
+                    android:layout_width="285dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Modifica password"
+                    android:textAlignment="textStart"
+                    android:textSize="24sp"
+                    android:translationX="15dp"
+                    android:translationY="25dp" />
+
+                <ImageView
+                    android:id="@+id/ImageLogout"
+                    android:layout_width="45dp"
+                    android:layout_height="57dp"
+                    android:translationX="250dp"
+                    android:translationY="145dp"
+                    app:srcCompat="@drawable/logout" />
+
+                <TextView
+                    android:id="@+id/logout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:clickable="true"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Logout"
+                    android:textAlignment="textStart"
+                    android:textSize="24sp"
+                    android:translationX="300dp"
+                    android:translationY="85dp" />
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/fragment_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/linearLayout" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
