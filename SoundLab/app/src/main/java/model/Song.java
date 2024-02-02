@@ -19,7 +19,7 @@ public class Song implements Serializable {
     private final List<Artist> artists;  // Lista di Artist associati alla canzone
 
     // Costruttore
-    public Song(int id, String name, Date year, String genre, Type type, int numberOfSingers, int image) {
+    public Song(int id, String name, Date year, String genre, Type type, int numberOfSingers, Integer image) {
         this.id = id;
         this.name = name;
         this.year = year;
@@ -82,4 +82,5 @@ public class Song implements Serializable {
     public void addArtist(Artist artist) {
         artists.add(artist);
     }
+
 }

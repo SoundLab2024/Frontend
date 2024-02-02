@@ -1,6 +1,7 @@
 package view.fragment;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
@@ -32,6 +33,7 @@ import presenter.adapter.ProfileAdapter;
 import view.CustomButton;
 import view.Utilities;
 import view.activity.MainActivity;
+import view.activity.SettingsActivity;
 
 public class ProfileFragment extends Fragment {
 
@@ -89,6 +91,20 @@ public class ProfileFragment extends Fragment {
             createZeroPlaylistTextView();
         }
 
+        // Get the reference to the settings button
+        CustomButton settingsButton = view.findViewById(R.id.settings);
+
+        // Set an OnClickListener for the settings button
+        settingsButton.setOnClickListener(v -> openSettingsActivity());
+
+    }
+
+    private void openSettingsActivity() {
+        // Create an Intent to start the SettingsActivity
+        Intent intent = new Intent(requireContext(), SettingsActivity.class);
+
+        // Start the SettingsActivity
+        startActivity(intent);
     }
 
     private void addNewPlaylist() {

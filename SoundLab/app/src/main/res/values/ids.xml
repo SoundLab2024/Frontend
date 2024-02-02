@@ -2,4 +2,6 @@
 <resources>
     <item name="zeroPlaylistTextView" type="id" />
     <item name="fragment_container" type="id" />
+    <item name="textViewSearchItem" type="id" />
+    <item name="songs_recycleView" type="id" />
 </resources>
