@@ -54,7 +54,7 @@
                 android:singleLine="true"/>
 
             <TextView
-                android:id="@+id/playlist_genere"
+                android:id="@+id/artist"
                 android:layout_width="180dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"

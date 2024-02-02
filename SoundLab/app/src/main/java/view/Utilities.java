@@ -12,7 +12,7 @@ public class Utilities {
     public static final String searchFragmentTag = "search";
     public static final String profileFragmentTag = "profile";
     public static final String playlistFragmentTag = "playlist";
-
+    public static final String addToPlaylistFragmentTag = "addToPlaylist";
     /**
      * Imposta il colore della barra di stato per un'Activity.
      *

@@ -6,23 +6,12 @@ public class Playlist implements Serializable {
 
     private static final long serialVersionUID = 1L; // Numero di versione per la serializzazione
 
-    private static int nextId = 1;
-
     private final int id;
     private String name;
     private String genere;
     private int image;
     private boolean favorite;
     private int numberOfSongs;
-
-    public Playlist(String name, String genere, int image, boolean favorite) {
-        this.id = getNextId();
-        this.name = name;
-        this.genere = genere;
-        this.image = image;
-        this.favorite = favorite;
-        this.numberOfSongs = 0;
-    }
 
     public Playlist(int id, String name, String genere, int image, boolean favorite) {
         this.id = id;
@@ -31,11 +20,6 @@ public class Playlist implements Serializable {
         this.image = image;
         this.favorite = favorite;
         this.numberOfSongs = 0;
-    }
-
-    //Generatore di id
-    private static synchronized int getNextId() {
-        return nextId++;
     }
 
     // Getter and Setter for 'id'

@@ -1,5 +1,8 @@
 package view.fragment;
 
+import static model.Song.Type.COVER;
+import static model.Song.Type.ORIGINAL;
+
 import android.app.Dialog;
 import android.os.Bundle;
 
@@ -12,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,10 +30,12 @@ import android.widget.ToggleButton;
 import com.example.soundlab.R;
 
 import java.util.ArrayList;
+import java.util.Date;
 
+import model.Artist;
 import model.Playlist;
 import model.Song;
-import presenter.adapter.SongAdapter;
+import presenter.adapter.PlaylistAdapter;
 import view.CustomButton;
 import view.Utilities;
 import view.activity.MainActivity;
@@ -41,13 +47,15 @@ public class PlaylistFragment extends Fragment {
     private TextView genere;
     private RecyclerView recyclerView;
     private ArrayList<Song> songArrayList;
-    private SongAdapter songAdapter;
+    private PlaylistAdapter playlistAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_playlist, container, false);
+
+        Log.d("PlaylistFragment", "onCreateView called");
 
         // Necessario per il funzionamento del menuItem
         Toolbar toolbar = view.findViewById(R.id.toolbar);
@@ -89,18 +97,26 @@ public class PlaylistFragment extends Fragment {
         // Crea una nuova lista di playlist
         songArrayList = new ArrayList<>();
 
-        // TODO: Carica le tracce dal backend
+        // TODO: Carica le tracce e relativi artisti dal backend
 
-        //songsArrayList.add(new Song(...));
+        // Aggiunge le tracce alla lista ed aggiunge alla traccia i relativi artisti
+        Song song1 = new Song(1, "Canzone1", new Date(1 / 2000), "Rock", ORIGINAL, 1, R.drawable.cover_default);
+        song1.addArtist(new Artist(7, "Gio", new Date(5 / 1985), "Inghilterra"));
+        songArrayList.add(song1);
+
+        Song song2 = new Song(2, "Canzone2", new Date(3 / 2000), "Rock", COVER, 2, R.drawable.cover_default);
+        song2.addArtist(new Artist(36, "Ale", new Date(7 / 1995), "Italia"));
+        song2.addArtist(new Artist(31, "Ren", new Date(3 / 1998), "Italia"));
+        songArrayList.add(song2);
 
         // Inizializza l'adapter e passa la lista di tracce
-        songAdapter = new SongAdapter(this, songArrayList);
+        playlistAdapter = new PlaylistAdapter(this, songArrayList);
         // Imposta un layout manager per la RecyclerView (lista verticale)
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
 
         // Imposta il layout manager e l'adapter per la RecyclerView
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(songAdapter);
+        recyclerView.setAdapter(playlistAdapter);
 
         return view;
     }
@@ -157,11 +173,8 @@ public class PlaylistFragment extends Fragment {
 
             // TODO: eliminare la playlist dal backend
 
-            // Mostra la bottomNavigationView e rimpiazza il fragmet attuale con ProfileFragment
-            if (getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).showBottomNavigationView();
-                ((MainActivity) getActivity()).replaceFragment(new ProfileFragment(), Utilities.profileFragmentTag);
-            }
+            realoadProfileFragment();
+
             // Chiude il Dialog
             dialog.dismiss();
         });
@@ -267,6 +280,27 @@ public class PlaylistFragment extends Fragment {
 
         // Mostra il Dialog
         dialog.show();
+    }
+
+    // Mostra la bottomNavigationView e rimpiazza il fragmet attuale con ProfileFragment
+    private void realoadProfileFragment(){
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).showBottomNavigationView();
+            ((MainActivity) getActivity()).replaceFragment(new ProfileFragment(), Utilities.profileFragmentTag);
+        }
+    }
+
+    public void loadAddToPlaylistFragment(Song song) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("song", song);
+
+        Fragment addToPlaylistFragment = new AddToPlaylistFragment();
+        addToPlaylistFragment.setArguments(bundle);
+
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).hideBottomNavigationView();
+            ((MainActivity) getActivity()).replaceFragmentWithoutPopStack(addToPlaylistFragment, Utilities.addToPlaylistFragmentTag);
+        }
     }
 
 

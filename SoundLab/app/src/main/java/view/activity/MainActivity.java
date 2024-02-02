@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import view.Utilities;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
             return true;
         });
+
     }
 
     @Override
@@ -54,22 +56,25 @@ public class MainActivity extends AppCompatActivity {
         String currentfragmentTag = getTopFragmentTag();
 
         if (Objects.equals(currentfragmentTag, Utilities.searchFragmentTag) || Objects.equals(currentfragmentTag, Utilities.profileFragmentTag)) {
-            replaceFragment(new HomeFragment(), Utilities.homeFragmentTag);
+
+            // Seleziono l'item home nella bottomNavigationView viene invocato quindi il listener(setOnItemSelectedListener) che chiama replaceFragment
             bottomNavigationView.setSelectedItemId(R.id.home);
+
         } else if (Objects.equals(currentfragmentTag, Utilities.homeFragmentTag)) {
             this.finish();
-        }
-        else if (Objects.equals(currentfragmentTag, Utilities.playlistFragmentTag)) {
+
+        } else if (Objects.equals(currentfragmentTag, Utilities.playlistFragmentTag)) {
             showBottomNavigationView();
-            replaceFragment(new ProfileFragment(), Utilities.profileFragmentTag);
-        }
-        else {
+            replaceFragmentWithoutPopStack(new ProfileFragment(), Utilities.profileFragmentTag);
+
+        } else {
             super.onBackPressed();
         }
     }
 
     /**
      * Ottiene il tag del fragment in cima allo stack.
+     *
      * @return Il tag del fragment in cima allo stack o null se lo stack è vuoto.
      */
     private String getTopFragmentTag() {
@@ -119,7 +124,15 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    public void openSettingsActivity (View view){
+    public void replaceFragmentWithoutPopStack(Fragment fragment, String tag) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.layout_fragments, fragment);
+        fragmentTransaction.addToBackStack(tag);
+        fragmentTransaction.commit();
+    }
+
+    public void openSettingsActivity(View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }

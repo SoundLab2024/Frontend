@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +28,7 @@ import com.example.soundlab.R;
 import java.util.ArrayList;
 
 import model.Playlist;
-import presenter.adapter.PlaylistAdapter;
+import presenter.adapter.ProfileAdapter;
 import view.CustomButton;
 import view.Utilities;
 import view.activity.MainActivity;
@@ -36,13 +38,15 @@ public class ProfileFragment extends Fragment {
     RecyclerView recyclerView;
     private TextView zeroPlaylistTextView;
     private ArrayList<Playlist> playlistArrayList;
-    private PlaylistAdapter playlistAdapter;
+    private ProfileAdapter profileAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Infla il layout del fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        Log.d("ProfileFragment", "onCreateView called");
 
         // Ottiene la RecyclerView dal layout
         recyclerView = view.findViewById(R.id.playlists_recyclerView);
@@ -53,17 +57,18 @@ public class ProfileFragment extends Fragment {
 
         // TODO: Carica le playlist dal backend
 
-        //playlistArrayList.add(new Playlist(...));
+        // Aggiungi le playlist
+        playlistArrayList.add(new Playlist(1, "Playlist1", "Rock", R.drawable.playlist_default, false));
 
         // Inizializza l'adapter e passa la lista di playlist
-        playlistAdapter = new PlaylistAdapter(this, playlistArrayList);
+        profileAdapter = new ProfileAdapter(this, playlistArrayList);
 
         // Imposta un layout manager per la RecyclerView (lista verticale)
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
 
         // Imposta il layout manager e l'adapter per la RecyclerView
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(playlistAdapter);
+        recyclerView.setAdapter(profileAdapter);
 
         return view;
     }
@@ -106,12 +111,16 @@ public class ProfileFragment extends Fragment {
 
             if (!nome_playlist.isEmpty() && !genere_playlist.isEmpty()) {
                 // Crea una nuova playlist con i dati inseriti dall'utente
-                Playlist newPlaylist = new Playlist(nome_playlist, genere_playlist, R.drawable.playlist_default, false);
+
+                // TODO: Inserire la playlist nel backend ed ottenere l'id.
+
+                int idPlaylist = 1; // Da cambiare con l'id ottenuto nel backend
+                Playlist newPlaylist = new Playlist(idPlaylist, nome_playlist, genere_playlist, R.drawable.playlist_default, false);
                 // Ottiene l'adapter dalla RecyclerView
-                PlaylistAdapter playlistAdapter = (PlaylistAdapter) recyclerView.getAdapter();
+                ProfileAdapter profileAdapter = (ProfileAdapter) recyclerView.getAdapter();
                 // Aggiungi la nuova playlist all'adapter
-                if (playlistAdapter != null) {
-                    playlistAdapter.addPlaylist(newPlaylist);
+                if (profileAdapter != null) {
+                    profileAdapter.addPlaylist(newPlaylist);
                 }
                 //Chiude il Dialog
                 dialog.dismiss();
@@ -140,7 +149,7 @@ public class ProfileFragment extends Fragment {
         // Crea la TextView
         zeroPlaylistTextView = new TextView(requireContext());
         zeroPlaylistTextView.setId(R.id.zeroPlaylistTextView);
-        zeroPlaylistTextView.setText("Non hai aggiunto ancora nessuna playlist");
+        zeroPlaylistTextView.setText( "Non hai aggiunto ancora nessuna playlist");
         zeroPlaylistTextView.setTextSize(14);
         zeroPlaylistTextView.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         zeroPlaylistTextView.setGravity(Gravity.CENTER);
@@ -168,7 +177,7 @@ public class ProfileFragment extends Fragment {
         constraintSet.applyTo(constraintLayout);
     }
 
-    public void destroyZeroPlaylistTextView() {
+    private void destroyZeroPlaylistTextView() {
         ConstraintLayout constraintLayout = requireView().findViewById(R.id.constraintLayout1);
 
         // Rimuovi la TextView se esiste
