@@ -40,7 +40,6 @@ public class ProfileFragment extends Fragment {
     RecyclerView recyclerView;
     private TextView zeroPlaylistTextView;
     private ArrayList<Playlist> playlistArrayList;
-    private ProfileAdapter profileAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,7 +62,7 @@ public class ProfileFragment extends Fragment {
         playlistArrayList.add(new Playlist(1, "Playlist1", "Rock", R.drawable.playlist_default, false));
 
         // Inizializza l'adapter e passa la lista di playlist
-        profileAdapter = new ProfileAdapter(this, playlistArrayList);
+        ProfileAdapter profileAdapter = new ProfileAdapter(this, playlistArrayList);
 
         // Imposta un layout manager per la RecyclerView (lista verticale)
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);

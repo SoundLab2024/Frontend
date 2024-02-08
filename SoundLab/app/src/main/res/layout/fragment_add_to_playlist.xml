@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <view.CustomCardView
-        android:id="@+id/customCardView"
+        android:id="@+id/nuovaPlaylistCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -70,11 +70,12 @@
     </view.CustomCardView>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlists_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/customCardView" >
+        app:layout_constraintTop_toBottomOf="@+id/nuovaPlaylistCardView">
 
     </androidx.recyclerview.widget.RecyclerView>
 

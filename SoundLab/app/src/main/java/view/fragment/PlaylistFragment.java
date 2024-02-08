@@ -45,9 +45,7 @@ public class PlaylistFragment extends Fragment {
     private Playlist playlist;
     private TextView nomePlaylist;
     private TextView genere;
-    private RecyclerView recyclerView;
-    private ArrayList<Song> songArrayList;
-    private PlaylistAdapter playlistAdapter;
+    private TextView numeroBrani;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,17 +65,6 @@ public class PlaylistFragment extends Fragment {
 
         if (bundle != null) {
             playlist = (Playlist) bundle.getSerializable("playlist");
-
-            if (playlist != null) {
-                nomePlaylist = view.findViewById(R.id.nomePlaylist);
-                genere = view.findViewById(R.id.genere);
-                nomePlaylist.setText(playlist.getName());
-                genere.setText(playlist.getGenere());
-
-                TextView numeroBrani = view.findViewById(R.id.numeroBrani);
-                String numBrani = playlist.getNumberOfSongs() + " brani";
-                numeroBrani.setText(numBrani);
-            }
         }
 
         ToggleButton favouriteButton = view.findViewById(R.id.favourite_button);
@@ -91,11 +78,11 @@ public class PlaylistFragment extends Fragment {
         });
 
         // Ottiene la RecyclerView dal layout
-        recyclerView = view.findViewById(R.id.songs_recyclerView);
+        RecyclerView recyclerView = view.findViewById(R.id.songs_recyclerView);
         recyclerView.setNestedScrollingEnabled(false);
 
         // Crea una nuova lista di playlist
-        songArrayList = new ArrayList<>();
+        ArrayList<Song> songArrayList = new ArrayList<>();
 
         // TODO: Carica le tracce e relativi artisti dal backend
 
@@ -109,8 +96,11 @@ public class PlaylistFragment extends Fragment {
         song2.addArtist(new Artist(31, "Ren", new Date(3 / 1998), "Italia"));
         songArrayList.add(song2);
 
+        playlist.setNumberOfSongs(2);
+
+
         // Inizializza l'adapter e passa la lista di tracce
-        playlistAdapter = new PlaylistAdapter(this, songArrayList);
+        PlaylistAdapter playlistAdapter = new PlaylistAdapter(this, songArrayList, playlist);
         // Imposta un layout manager per la RecyclerView (lista verticale)
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
 
@@ -126,6 +116,20 @@ public class PlaylistFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         // Imposta il colore della barra di stato quando la vista è creata
         Utilities.changeStatusBarColorFragment(this, R.color.alternative_purple);
+
+        if (playlist != null) {
+            nomePlaylist = view.findViewById(R.id.nomePlaylist);
+            genere = view.findViewById(R.id.genere);
+            nomePlaylist.setText(playlist.getName());
+            genere.setText(playlist.getGenere());
+            numeroBrani = view.findViewById(R.id.numeroBrani);
+            aggiornaTextViewNumeroBraniPlaylist(playlist);
+        }
+    }
+
+    public void aggiornaTextViewNumeroBraniPlaylist(Playlist playlist){
+        String numBrani = playlist.getNumberOfSongs() + " brani";
+        numeroBrani.setText(numBrani);
     }
 
     @Override

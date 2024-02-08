@@ -1,6 +1,5 @@
 package presenter.adapter;
 
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,7 +7,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.soundlab.R;
@@ -21,20 +19,20 @@ import model.Playlist;
 import model.Song;
 import view.CustomButton;
 import view.CustomCardView;
-import view.Utilities;
-import view.activity.MainActivity;
 import view.fragment.PlaylistFragment;
 
-public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHolder>{
+public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHolder> {
 
     private final ArrayList<Song> songArrayList;
     private final PlaylistFragment playlistFragment;
+    private final Playlist playlist;
 
 
     // Costruttore per inizializzare l'adapter con la lista di tracce
-    public PlaylistAdapter(PlaylistFragment playlistFragment, ArrayList<Song> songArrayList) {
+    public PlaylistAdapter(PlaylistFragment playlistFragment, ArrayList<Song> songArrayList, Playlist playlist) {
         this.songArrayList = songArrayList;
         this.playlistFragment = playlistFragment;
+        this.playlist = playlist;
     }
 
     @NonNull
@@ -47,33 +45,32 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull PlaylistAdapter.ViewHolder holder, int position) {
-        // Ottieni la traccia dalla posizione corrente
-        Song song = songArrayList.get(position);
+        int adapterPosition = holder.getAdapterPosition();
+        if (adapterPosition != RecyclerView.NO_POSITION) {
+            Song selectedSong = songArrayList.get(adapterPosition);
 
-        String artistNames = ottieniArtistiDellaTracciaInStringa(song);
+            String artistNames = ottieniArtistiDellaTracciaInStringa(selectedSong);
 
-        //Popola il ViewHolder con i dati delle tracce
-        holder.songImage.setImageResource(song.getImage());
-        holder.songName.setText(song.getName());
-        holder.songArtist.setText(artistNames);
+            //Popola il ViewHolder con i dati delle tracce
+            holder.songImage.setImageResource(selectedSong.getImage());
+            holder.songName.setText(selectedSong.getName());
+            holder.songArtist.setText(artistNames);
 
-        holder.removeButton.setOnClickListener(view -> {
-            int adapterPosition = holder.getAdapterPosition();
-            if (adapterPosition != RecyclerView.NO_POSITION) {
-                Song selectedSong = songArrayList.get(adapterPosition);
+            holder.removeButton.setOnClickListener(view -> {
 
-                // TODO: Rimuovi l'associaizone Playlist<->Traccia dal backend
+                // TODO: Rimuovi l'associaizone Playlist<->Traccia dal backend, aggiorna il numero di canzoni della playlist
+
+                playlist.setNumberOfSongs(playlist.getNumberOfSongs() - 1);
+
+
+                playlistFragment.aggiornaTextViewNumeroBraniPlaylist(playlist);
 
                 songArrayList.remove(selectedSong);
                 notifyItemRemoved(adapterPosition);
-            }
-        });
 
-        holder.itemView.setOnLongClickListener(v -> {
+            });
 
-            int adapterPosition = holder.getAdapterPosition();
-            if (adapterPosition != RecyclerView.NO_POSITION) {
-                Song selectedSong = songArrayList.get(adapterPosition);
+            holder.itemView.setOnLongClickListener(v -> {
 
                 // Crea il BottomSheetDialog
                 BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(holder.itemView.getContext());
@@ -96,9 +93,11 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
 
                     playlistFragment.loadAddToPlaylistFragment(selectedSong);
                 });
-            }
-            return true;
-        });
+
+                return true;
+            });
+
+        }
 
     }
 
