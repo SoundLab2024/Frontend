@@ -3,8 +3,6 @@ package presenter.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -36,7 +34,6 @@ public class CercaAdapter extends RecyclerView.Adapter<CercaAdapter.ViewHolder> 
             titleTextView = view.findViewById(R.id.song_title);
             artistTextView = view.findViewById(R.id.song_artist);
         }
-
     }
 
     // Override i metodi necessari
@@ -56,7 +53,7 @@ public class CercaAdapter extends RecyclerView.Adapter<CercaAdapter.ViewHolder> 
 
     private String ottieniArtistiDellaTracciaInStringa(Song song) {
         // Ottieni i relativi artisti
-        ArrayList<Artist> artistArrayList = new ArrayList<>(song.getArtists());
+        ArrayList<Artist> artistArrayList = (ArrayList<Artist>) song.getArtists(); // Assicurati che il metodo getArtists restituisca una lista di artisti
         StringBuilder artistString = new StringBuilder();
 
         for (Artist artist : artistArrayList) {

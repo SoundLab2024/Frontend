@@ -55,6 +55,7 @@ public class SearchFragment extends Fragment {
         song2.addArtist(new Artist(31, "Ren", new Date(3 / 1998), "Italia"));
         allSongs.add(song2);
 
+
         // Inizializza la RecyclerView e l'Adapter
         RecyclerView recyclerView = view.findViewById(R.id.songs_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -81,13 +82,21 @@ public class SearchFragment extends Fragment {
         return view;
     }
 
-
     private void filterResults(String query) {
         displayedSongs.clear();
         if (!TextUtils.isEmpty(query)) {
             for (Song song : allSongs) {
+                // Controlla se il nome della canzone contiene la query
                 if (song.getName().toLowerCase().contains(query.toLowerCase())) {
                     displayedSongs.add(song);
+                } else {
+                    // Controlla ogni artista associato alla canzone
+                    for (Artist artist : song.getArtists()) {
+                        if (artist.getName().toLowerCase().contains(query.toLowerCase())) {
+                            displayedSongs.add(song);
+                            break; // Trovato un artista corrispondente, non è necessario cercare altri artisti per questa canzone
+                        }
+                    }
                 }
             }
         }

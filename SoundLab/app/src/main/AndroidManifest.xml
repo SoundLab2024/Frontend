@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.SoundLab"
         tools:targetApi="31">
-
+        <!--<activity
+            android:name="view.activity.ProfileAdminActivity"
+            android:exported="false" />-->
         <activity
             android:name="view.activity.ChangePasswordActivity"
             android:exported="false" />
@@ -22,7 +24,6 @@
         <activity
             android:name="view.activity.SettingsActivity"
             android:exported="false" />
-
         <activity
             android:name="view.activity.RegistrationActivity"
             android:exported="true"

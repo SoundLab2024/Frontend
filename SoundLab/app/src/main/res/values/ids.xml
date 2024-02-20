@@ -4,4 +4,5 @@
     <item name="fragment_container" type="id" />
     <item name="textViewSearchItem" type="id" />
     <item name="songs_recycleView" type="id" />
+    <item name="tableLayout" type="id" />
 </resources>

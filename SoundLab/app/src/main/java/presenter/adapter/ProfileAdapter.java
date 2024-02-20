@@ -78,7 +78,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         holder.playlistGenere.setText(playlist.getGenere());
         holder.favouriteButton.setChecked(playlist.isFavorite());
 
-
         holder.itemView.setOnClickListener(v -> {
             // Apri il fragment PlaylistFragment quando viene cliccata una playlist
             profileFragment.loadPlaylistFragment(playlist);
@@ -362,10 +361,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
     // ViewHolder che contiene i riferimenti agli elementi della playlist
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private final ImageView playlistImage;
-        private final TextView playlistName;
-        private final TextView playlistGenere;
-        private final ToggleButton favouriteButton;
+        final ImageView playlistImage;
+        final TextView playlistName;
+        final TextView playlistGenere;
+        final ToggleButton favouriteButton;
 
         // Costruttore che inizializza i riferimenti agli elementi della playlist
         public ViewHolder(@NonNull View itemView) {

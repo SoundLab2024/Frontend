@@ -10,6 +10,8 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,6 +31,7 @@ import com.example.soundlab.R;
 import java.util.ArrayList;
 
 import model.Playlist;
+import model.User;
 import presenter.adapter.ProfileAdapter;
 import view.CustomButton;
 import view.Utilities;
@@ -40,7 +43,7 @@ public class ProfileFragment extends Fragment {
     RecyclerView recyclerView;
     private TextView zeroPlaylistTextView;
     private ArrayList<Playlist> playlistArrayList;
-
+    User utente = new User(20,"lucia",true);
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -96,6 +99,25 @@ public class ProfileFragment extends Fragment {
         // Set an OnClickListener for the settings button
         settingsButton.setOnClickListener(v -> openSettingsActivity());
 
+        CustomButton analiticheButton = view.findViewById(R.id.analiticheButton);
+        if(!utente.isAdmin()){
+            analiticheButton.setVisibility(View.GONE);
+        }
+
+        analiticheButton.setOnClickListener(v -> {
+            AnaliticheFragment analiticheFragment = new AnaliticheFragment();
+            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+
+
+            // Sostituisci il fragment corrente con il nuovo fragment
+            transaction.replace(android.R.id.content, new AnaliticheFragment());
+
+            // Aggiungi la transazione al back stack, così l'utente può tornare indietro
+            transaction.addToBackStack(null);
+
+            // Esegui la transazione
+            transaction.commit();
+        });
     }
 
     private void openSettingsActivity() {
