@@ -37,7 +37,7 @@ import model.Playlist;
 import model.Song;
 import presenter.adapter.PlaylistAdapter;
 import view.CustomButton;
-import view.Utilities;
+import utils.Utilities;
 import view.activity.MainActivity;
 
 public class PlaylistFragment extends Fragment {
@@ -205,7 +205,7 @@ public class PlaylistFragment extends Fragment {
         }
 
         // Inizializzazione degli elementi di input e bottoni del Dialog
-        EditText playlist_input = dialog.findViewById(R.id.playlist_input);
+        EditText playlist_input = dialog.findViewById(R.id.email_input);
         CustomButton rinomina = dialog.findViewById(R.id.rinomina);
         CustomButton annulla = dialog.findViewById(R.id.annulla);
 
@@ -251,7 +251,7 @@ public class PlaylistFragment extends Fragment {
         }
 
         // Inizializzazione e modifica degli elementi di input e bottoni del Dialog
-        EditText playlist_input = dialog.findViewById(R.id.playlist_input);
+        EditText playlist_input = dialog.findViewById(R.id.email_input);
         playlist_input.setHint("Inserisci il nuovo genere qui.");
         CustomButton rinomina = dialog.findViewById(R.id.rinomina);
         rinomina.setText("Cambia");

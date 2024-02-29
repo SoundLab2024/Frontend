@@ -26,7 +26,7 @@ import java.util.List;
 import model.Artist;
 import model.Song;
 import presenter.adapter.CercaAdapter;
-import view.Utilities;
+import utils.Utilities;
 
 
 public class SearchFragment extends Fragment {

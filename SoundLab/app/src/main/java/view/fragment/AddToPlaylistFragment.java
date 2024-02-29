@@ -24,7 +24,7 @@ import model.Playlist;
 import model.Song;
 import presenter.adapter.AddToPlaylistAdapter;
 import view.CustomButton;
-import view.Utilities;
+import utils.Utilities;
 
 public class AddToPlaylistFragment extends Fragment {
 

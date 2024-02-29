@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,7 +33,7 @@ import model.Playlist;
 import model.User;
 import presenter.adapter.ProfileAdapter;
 import view.CustomButton;
-import view.Utilities;
+import utils.Utilities;
 import view.activity.MainActivity;
 import view.activity.SettingsActivity;
 

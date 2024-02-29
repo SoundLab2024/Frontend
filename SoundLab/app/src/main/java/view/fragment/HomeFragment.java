@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 import com.example.soundlab.R;
 
-import view.Utilities;
+import utils.Utilities;
 
 public class HomeFragment extends Fragment {
 

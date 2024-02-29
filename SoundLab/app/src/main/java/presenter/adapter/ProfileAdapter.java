@@ -271,7 +271,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         initializeDialogViews(dialog, selectedPlaylist);
 
         // Inizializzazione degli elementi di input e bottoni del Dialog
-        EditText playlist_input = dialog.findViewById(R.id.playlist_input);
+        EditText playlist_input = dialog.findViewById(R.id.email_input);
         CustomButton rinomina = dialog.findViewById(R.id.rinomina);
         CustomButton annulla = dialog.findViewById(R.id.annulla);
 
@@ -316,7 +316,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         initializeDialogViews(dialog, selectedPlaylist);
 
         // Inizializzazione e modifica degli elementi di input e bottoni del Dialog
-        EditText playlist_input = dialog.findViewById(R.id.playlist_input);
+        EditText playlist_input = dialog.findViewById(R.id.email_input);
         playlist_input.setHint("Inserisci il nuovo genere qui.");
         CustomButton rinomina = dialog.findViewById(R.id.rinomina);
         rinomina.setText("Cambia");

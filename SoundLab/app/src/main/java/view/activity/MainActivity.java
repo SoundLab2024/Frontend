@@ -7,10 +7,9 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
-import view.Utilities;
+import utils.Utilities;
 import view.fragment.HomeFragment;
 import view.fragment.ProfileFragment;
 

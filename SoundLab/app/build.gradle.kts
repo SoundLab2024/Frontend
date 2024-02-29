@@ -40,4 +40,14 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
+    // Richieste e affini
+    // Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    // Gson Converter per Retrofit
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    // OKHttp3
+    implementation ("com.squareup.okhttp3:okhttp:4.9.0")
+    // Logging Interceptor per OKHttp (eventuale debug)
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
+
 }

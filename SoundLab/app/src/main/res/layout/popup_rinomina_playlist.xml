@@ -86,7 +86,7 @@
         </view.CustomCardView>
 
         <EditText
-            android:id="@+id/playlist_input"
+            android:id="@+id/email_input"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:autofillHints="emailAddress"
