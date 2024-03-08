@@ -1,8 +1,5 @@
 package view.fragment;
 
-import static model.Song.Type.COVER;
-import static model.Song.Type.ORIGINAL;
-
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -46,11 +43,11 @@ public class SearchFragment extends Fragment {
         allSongs = new ArrayList<>();
 
         // Aggiunge le tracce alla lista ed aggiunge alla traccia i relativi artisti
-        Song song1 = new Song(1, "Canzone1", new Date(1 / 2000), "Rock", ORIGINAL, 1, R.drawable.cover_default);
+        Song song1 = new Song(1, "Canzone1","Rock",  R.drawable.cover_default);
         song1.addArtist(new Artist(7, "Gio", new Date(5 / 1985), "Inghilterra"));
         allSongs.add(song1);
 
-        Song song2 = new Song(2, "Canzone2", new Date(3 / 2000), "Rock", COVER, 2, R.drawable.cover_default);
+        Song song2 = new Song(2, "Canzone2", "Rock", R.drawable.cover_default);
         song2.addArtist(new Artist(36, "Ale", new Date(7 / 1995), "Italia"));
         song2.addArtist(new Artist(31, "Ren", new Date(3 / 1998), "Italia"));
         allSongs.add(song2);

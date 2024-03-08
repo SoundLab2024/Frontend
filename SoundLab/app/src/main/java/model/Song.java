@@ -2,7 +2,6 @@ package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Song implements Serializable {
@@ -11,21 +10,15 @@ public class Song implements Serializable {
 
     private final int id;
     private final String name;
-    private final Date year;
     private final String genre;
-    private final Type type;  // Enum Type
-    private final int numberOfSingers;
     private  int image;
     private final List<Artist> artists;  // Lista di Artist associati alla canzone
 
     // Costruttore
-    public Song(int id, String name, Date year, String genre, Type type, int numberOfSingers, Integer image) {
+    public Song(int id, String name, String genre, Integer image) {
         this.id = id;
         this.name = name;
-        this.year = year;
         this.genre = genre;
-        this.type = type;
-        this.numberOfSingers = numberOfSingers;
         this.image = image;
         this.artists = new ArrayList<>();
     }
@@ -40,29 +33,9 @@ public class Song implements Serializable {
         return name;
     }
 
-    // Getter per year
-    public Date getYear() {
-        return year;
-    }
-
     // Getter per genre
     public String getGenre() {
         return genre;
-    }
-
-    // Getter per type
-    public Type getType() {
-        return type;
-    }
-
-    // Getter per numberOfSingers
-    public int getNumberOfSingers() {
-        return numberOfSingers;
-    }
-
-    // Enum Type
-    public enum Type {
-        ORIGINAL, COVER, REMASTER
     }
 
     // Getter and Setter for 'image'
@@ -76,6 +49,10 @@ public class Song implements Serializable {
 
     public List<Artist> getArtists() {
         return artists;
+    }
+
+    public Artist getMainArtist() {
+        return artists.get(0);
     }
 
     // Aggiunge un artista alla lista degli artisti associati alla canzone

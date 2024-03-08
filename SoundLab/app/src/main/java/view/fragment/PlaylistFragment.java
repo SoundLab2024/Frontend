@@ -1,8 +1,5 @@
 package view.fragment;
 
-import static model.Song.Type.COVER;
-import static model.Song.Type.ORIGINAL;
-
 import android.app.Dialog;
 import android.os.Bundle;
 
@@ -81,17 +78,17 @@ public class PlaylistFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.songs_recyclerView);
         recyclerView.setNestedScrollingEnabled(false);
 
-        // Crea una nuova lista di playlist
+        // Crea una nuova lista di canzoni
         ArrayList<Song> songArrayList = new ArrayList<>();
 
-        // TODO: Carica le tracce e relativi artisti dal backend
+        //TODO: Carica le tracce e relativi artisti dal backend
 
         // Aggiunge le tracce alla lista ed aggiunge alla traccia i relativi artisti
-        Song song1 = new Song(1, "Canzone1", new Date(1 / 2000), "Rock", ORIGINAL, 1, R.drawable.cover_default);
+        Song song1 = new Song(1, "Canzone1","Rock", R.drawable.cover_default);
         song1.addArtist(new Artist(7, "Gio", new Date(5 / 1985), "Inghilterra"));
         songArrayList.add(song1);
 
-        Song song2 = new Song(2, "Canzone2", new Date(3 / 2000), "Rock", COVER, 2, R.drawable.cover_default);
+        Song song2 = new Song(2, "Canzone2","Rock", R.drawable.cover_default);
         song2.addArtist(new Artist(36, "Ale", new Date(7 / 1995), "Italia"));
         song2.addArtist(new Artist(31, "Ren", new Date(3 / 1998), "Italia"));
         songArrayList.add(song2);
@@ -125,6 +122,9 @@ public class PlaylistFragment extends Fragment {
             numeroBrani = view.findViewById(R.id.numeroBrani);
             aggiornaTextViewNumeroBraniPlaylist(playlist);
         }
+
+        CardView add_songCardView = view.findViewById(R.id.add_songcardview);
+        add_songCardView.setOnClickListener(v -> loadFragment(Utilities.searchFragmentTag));
     }
 
     public void aggiornaTextViewNumeroBraniPlaylist(Playlist playlist){
@@ -177,7 +177,7 @@ public class PlaylistFragment extends Fragment {
 
             // TODO: eliminare la playlist dal backend
 
-            realoadProfileFragment();
+            loadFragment(Utilities.profileFragmentTag);
 
             // Chiude il Dialog
             dialog.dismiss();
@@ -287,10 +287,22 @@ public class PlaylistFragment extends Fragment {
     }
 
     // Mostra la bottomNavigationView e rimpiazza il fragmet attuale con ProfileFragment
-    private void realoadProfileFragment(){
+    private void loadFragment(String fragmentTag){
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).showBottomNavigationView();
-            ((MainActivity) getActivity()).replaceFragment(new ProfileFragment(), Utilities.profileFragmentTag);
+            ((MainActivity) getActivity()).selectRightItemBottomNavView(fragmentTag);
+        }
+    }
+
+    public void loadArtistFragment(Artist artist) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("artist", artist);
+
+        Fragment artistFragment = new ArtistFragment();
+        artistFragment.setArguments(bundle);
+
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).replaceFragmentWithoutPopStack(artistFragment, Utilities.artistFragmentTag);
         }
     }
 

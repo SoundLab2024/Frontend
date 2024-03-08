@@ -53,6 +53,11 @@ public class LoginActivity extends AppCompatActivity {
         login.setOnClickListener(view -> {
             email = email_input.getText().toString();
             password = password_input.getText().toString();
+
+            //da eliminare
+            email = "email@mail.com";
+            password = "password";
+
             if(controlloCampi(email, password)){
 
                 Retrofit retrofit = RetrofitClient.getClient(BASE_URL);

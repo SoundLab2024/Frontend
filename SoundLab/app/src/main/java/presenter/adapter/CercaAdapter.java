@@ -15,6 +15,7 @@ import java.util.List;
 
 import model.Artist;
 import model.Song;
+import utils.Utilities;
 
 public class CercaAdapter extends RecyclerView.Adapter<CercaAdapter.ViewHolder> {
     private List<Song> songList;
@@ -48,24 +49,7 @@ public class CercaAdapter extends RecyclerView.Adapter<CercaAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         Song song = songList.get(position);
         holder.titleTextView.setText(song.getName());
-        holder.artistTextView.setText(ottieniArtistiDellaTracciaInStringa(song));
-    }
-
-    private String ottieniArtistiDellaTracciaInStringa(Song song) {
-        // Ottieni i relativi artisti
-        ArrayList<Artist> artistArrayList = (ArrayList<Artist>) song.getArtists(); // Assicurati che il metodo getArtists restituisca una lista di artisti
-        StringBuilder artistString = new StringBuilder();
-
-        for (Artist artist : artistArrayList) {
-            artistString.append(artist.getName()).append(", ");
-        }
-
-        // Rimuovi l'ultima virgola e lo spazio (se presenti)
-        if (artistString.length() > 0) {
-            artistString.setLength(artistString.length() - 2);
-        }
-
-        return artistString.toString();
+        holder.artistTextView.setText(Utilities.ottieniArtistiDellaTracciaInStringa(song));
     }
 
     @Override

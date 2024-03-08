@@ -57,14 +57,14 @@ public class MainActivity extends AppCompatActivity {
         if (Objects.equals(currentfragmentTag, Utilities.searchFragmentTag) || Objects.equals(currentfragmentTag, Utilities.profileFragmentTag)) {
 
             // Seleziono l'item home nella bottomNavigationView viene invocato quindi il listener(setOnItemSelectedListener) che chiama replaceFragment
-            bottomNavigationView.setSelectedItemId(R.id.home);
+            selectRightItemBottomNavView(Utilities.homeFragmentTag);
 
         } else if (Objects.equals(currentfragmentTag, Utilities.homeFragmentTag)) {
             this.finish();
 
         } else if (Objects.equals(currentfragmentTag, Utilities.playlistFragmentTag)) {
             showBottomNavigationView();
-            replaceFragmentWithoutPopStack(new ProfileFragment(), Utilities.profileFragmentTag);
+            replaceFragment(new ProfileFragment(), Utilities.profileFragmentTag);
 
         } else {
             super.onBackPressed();
@@ -108,6 +108,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void selectRightItemBottomNavView(String fragmentTag) {
+        if (Objects.equals(fragmentTag, Utilities.homeFragmentTag)) {
+            bottomNavigationView.setSelectedItemId(R.id.home);
+        }
+        else if (Objects.equals(fragmentTag, Utilities.searchFragmentTag)){
+            bottomNavigationView.setSelectedItemId(R.id.search);
+        }
+        else if (Objects.equals(fragmentTag, Utilities.profileFragmentTag)) {
+            bottomNavigationView.setSelectedItemId(R.id.profile);
+        }
+    }
+
 
     /**
      * Rimpiazza il fragment attuale con quello passato per parametro
@@ -116,7 +128,9 @@ public class MainActivity extends AppCompatActivity {
      */
     public void replaceFragment(Fragment fragment, String tag) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.popBackStack();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+        }
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.layout_fragments, fragment);
         fragmentTransaction.addToBackStack(tag);
