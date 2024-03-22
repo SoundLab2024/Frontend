@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<view.CustomCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.soundlab.app.view.CustomCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/songcardview"
     android:layout_width="match_parent"
@@ -67,7 +67,7 @@
 
         </LinearLayout>
 
-        <view.CustomButton
+        <com.soundlab.app.view.CustomButton
             android:id="@+id/remove_button"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -83,4 +83,4 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</view.CustomCardView>
+</com.soundlab.app.view.CustomCardView>

@@ -31,7 +31,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ImageContrastCheck" />
 
-            <view.CustomButton
+            <com.soundlab.app.view.CustomButton
                 android:id="@+id/settings"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -88,7 +88,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <view.CustomButton
+            <com.soundlab.app.view.CustomButton
                 android:id="@+id/addButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -99,7 +99,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView4" />
 
-            <view.CustomButton
+            <com.soundlab.app.view.CustomButton
                 android:id="@+id/analiticheButton"
                 android:layout_width="68dp"
                 android:layout_height="69dp"

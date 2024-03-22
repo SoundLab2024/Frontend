@@ -7,7 +7,7 @@
     android:layout_marginHorizontal="16dp"
     android:paddingTop="24dp"
     android:scrollbars="none"
-    tools:context="view.fragment.SearchFragment">
+    tools:context="com.soundlab.app.view.fragment.SearchFragment">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -73,7 +73,7 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
 
-                    <view.CustomCardView
+                    <com.soundlab.app.view.CustomCardView
                         android:id="@+id/music_cardView1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -110,9 +110,9 @@
                                 app:layout_constraintTop_toBottomOf="@+id/music_image1" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    </view.CustomCardView>
+                    </com.soundlab.app.view.CustomCardView>
 
-                    <view.CustomCardView
+                    <com.soundlab.app.view.CustomCardView
                         android:id="@+id/music_cardView2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -150,9 +150,9 @@
                                 app:layout_constraintTop_toBottomOf="@+id/music_image2" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    </view.CustomCardView>
+                    </com.soundlab.app.view.CustomCardView>
 
-                    <view.CustomCardView
+                    <com.soundlab.app.view.CustomCardView
                         android:id="@+id/music_cardView3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -189,9 +189,9 @@
                                 app:layout_constraintTop_toBottomOf="@+id/music_image3" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    </view.CustomCardView>
+                    </com.soundlab.app.view.CustomCardView>
 
-                    <view.CustomCardView
+                    <com.soundlab.app.view.CustomCardView
                         android:id="@+id/music_cardView4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -229,7 +229,7 @@
                                 app:layout_constraintTop_toBottomOf="@+id/music_image4" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    </view.CustomCardView>
+                    </com.soundlab.app.view.CustomCardView>
 
                 </LinearLayout>
             </HorizontalScrollView>
@@ -256,7 +256,7 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
 
-                    <view.CustomCardView
+                    <com.soundlab.app.view.CustomCardView
                         android:id="@+id/artist_cardView1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -293,9 +293,9 @@
                                 app:layout_constraintTop_toBottomOf="@+id/artist_image1" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    </view.CustomCardView>
+                    </com.soundlab.app.view.CustomCardView>
 
-                    <view.CustomCardView
+                    <com.soundlab.app.view.CustomCardView
                         android:id="@+id/artist_cardView2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -333,9 +333,9 @@
                                 app:layout_constraintTop_toBottomOf="@+id/artist_image2" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    </view.CustomCardView>
+                    </com.soundlab.app.view.CustomCardView>
 
-                    <view.CustomCardView
+                    <com.soundlab.app.view.CustomCardView
                         android:id="@+id/artist_cardView3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -372,9 +372,9 @@
                                 app:layout_constraintTop_toBottomOf="@+id/artist_image3" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    </view.CustomCardView>
+                    </com.soundlab.app.view.CustomCardView>
 
-                    <view.CustomCardView
+                    <com.soundlab.app.view.CustomCardView
                         android:id="@+id/artist_cardView4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -412,7 +412,7 @@
                                 app:layout_constraintTop_toBottomOf="@+id/artist_image4" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    </view.CustomCardView>
+                    </com.soundlab.app.view.CustomCardView>
 
                 </LinearLayout>
             </HorizontalScrollView>

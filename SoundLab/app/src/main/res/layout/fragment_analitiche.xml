@@ -50,7 +50,7 @@
             android:translationY="90dp" />
     </LinearLayout>
 
-    <view.CustomButton
+    <com.soundlab.app.view.CustomButton
         android:id="@+id/casuale"
         android:layout_width="80dp"
         android:layout_height="80dp"

@@ -29,7 +29,7 @@
             android:orientation="horizontal">
 
             <!-- CustomButton per "Modifica Foto" -->
-            <view.CustomButton
+            <com.soundlab.app.view.CustomButton
                 android:id="@+id/modificafoto"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
@@ -41,7 +41,7 @@
                 android:textSize="14sp" />
 
             <!-- CustomButton per "Elimina Foto" -->
-            <view.CustomButton
+            <com.soundlab.app.view.CustomButton
                 android:id="@+id/cancellafoto"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
@@ -66,7 +66,7 @@
             android:maxLines="1" />
 
         <!-- CustomButton per salvare le modifiche -->
-        <view.CustomButton
+        <com.soundlab.app.view.CustomButton
             android:id="@+id/salva"
             android:layout_width="150dp"
             android:layout_height="60dp"

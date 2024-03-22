@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="view.activity.SettingsActivity">
+    tools:context="com.soundlab.app.view.activity.SettingsActivity">
 
     <ScrollView
         android:layout_width="410dp"
@@ -78,7 +78,7 @@
                     android:translationX="15dp"
                     android:translationY="25dp" />
 
-                <view.CustomButton
+                <com.soundlab.app.view.CustomButton
                     android:id="@+id/modifica"
                     android:layout_width="150dp"
                     android:layout_height="60dp"

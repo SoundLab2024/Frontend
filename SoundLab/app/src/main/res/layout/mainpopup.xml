@@ -47,7 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="15dp" />
 
-        <view.CustomButton
+        <com.soundlab.app.view.CustomButton
             android:id="@+id/indietro_button"
             android:layout_width="118dp"
             android:layout_height="34dp"

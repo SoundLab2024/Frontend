@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/dark_purple"
-    tools:context="view.fragment.PlaylistFragment">
+    tools:context="com.soundlab.app.view.fragment.PlaylistFragment">
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -106,7 +106,7 @@
                     app:layout_constraintEnd_toEndOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <view.CustomCardView
+            <com.soundlab.app.view.CustomCardView
                 android:id="@+id/add_songcardview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -160,7 +160,7 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </view.CustomCardView>
+            </com.soundlab.app.view.CustomCardView>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/songs_recyclerView"

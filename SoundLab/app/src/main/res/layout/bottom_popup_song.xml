@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <view.CustomCardView
+    <com.soundlab.app.view.CustomCardView
         android:id="@+id/songCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </view.CustomCardView>
+    </com.soundlab.app.view.CustomCardView>
 
     <!-- Linea separatrice -->
     <View
@@ -95,7 +95,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/songCardView">
 
-        <view.CustomCardView
+        <com.soundlab.app.view.CustomCardView
             android:id="@+id/add_to_playlist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -129,11 +129,11 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </view.CustomCardView>
+        </com.soundlab.app.view.CustomCardView>
 
         <!-- Linea separatrice -->
 
-        <view.CustomCardView
+        <com.soundlab.app.view.CustomCardView
             android:id="@+id/goto_album"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -168,11 +168,11 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </view.CustomCardView>
+        </com.soundlab.app.view.CustomCardView>
 
         <!-- Linea separatrice -->
 
-        <view.CustomCardView
+        <com.soundlab.app.view.CustomCardView
             android:id="@+id/goto_artist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -207,7 +207,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </view.CustomCardView>
+        </com.soundlab.app.view.CustomCardView>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,28 +16,28 @@
             android:name="view.activity.ProfileAdminActivity"
             android:exported="false" />-->
         <activity
-            android:name="view.activity.ChangePasswordActivity"
+            android:name="com.soundlab.app.view.activity.ChangePasswordActivity"
             android:exported="false" />
         <activity
-            android:name="view.activity.ChangeEmailActivity"
+            android:name="com.soundlab.app.view.activity.ChangeEmailActivity"
             android:exported="false" />
         <activity
-            android:name="view.activity.SettingsActivity"
+            android:name="com.soundlab.app.view.activity.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name="view.activity.RegistrationActivity"
+            android:name="com.soundlab.app.view.activity.RegistrationActivity"
             android:exported="true"
             android:theme="@style/Intro.Theme.SoundLab" />
         <activity
-            android:name="view.activity.SlideActivity"
+            android:name="com.soundlab.app.view.activity.SlideActivity"
             android:exported="true"
             android:theme="@style/Intro.Theme.SoundLab" />
         <activity
-            android:name="view.activity.LoginActivity"
+            android:name="com.soundlab.app.view.activity.LoginActivity"
             android:exported="true"
             android:theme="@style/Intro.Theme.SoundLab" />
         <activity
-            android:name="view.activity.SplashActivity"
+            android:name="com.soundlab.app.view.activity.SplashActivity"
             android:exported="true"
             android:theme="@style/Splash.Theme.SoundLab">
             <intent-filter>
@@ -47,7 +47,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="view.activity.MainActivity"
+            android:name="com.soundlab.app.view.activity.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:windowSoftInputMode="adjustPan" />

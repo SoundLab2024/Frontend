@@ -20,7 +20,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <view.CustomCardView
+        <com.soundlab.app.view.CustomCardView
             android:id="@+id/playlistCardView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
                 </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-        </view.CustomCardView>
+        </com.soundlab.app.view.CustomCardView>
 
         <TextView
             android:id="@+id/textView"
@@ -103,7 +103,7 @@
             android:layout_marginTop="32dp"
             android:orientation="horizontal">
 
-            <view.CustomButton
+            <com.soundlab.app.view.CustomButton
                 android:id="@+id/elimina"
                 android:layout_width="100dp"
                 android:layout_height="48dp"
@@ -115,7 +115,7 @@
                 android:textAllCaps="false"
                 android:textSize="14sp" />
 
-            <view.CustomButton
+            <com.soundlab.app.view.CustomButton
                 android:id="@+id/annulla"
                 android:layout_width="100dp"
                 android:layout_height="48dp"
