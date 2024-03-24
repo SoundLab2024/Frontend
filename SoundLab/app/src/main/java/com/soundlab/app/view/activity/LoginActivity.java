@@ -4,8 +4,11 @@ import static com.soundlab.app.utils.Constants.BASE_URL;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -13,7 +16,7 @@ import com.example.soundlab.R;
 
 import com.soundlab.app.presenter.api.endpoint.ApiService;
 import com.soundlab.app.presenter.api.request.LoginRequest;
-import com.soundlab.app.presenter.api.response.LoginResponse;
+import com.soundlab.app.presenter.api.response.Payload;
 import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,12 +24,14 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import com.soundlab.app.view.CustomButton;
 
+
 public class LoginActivity extends AppCompatActivity {
 
     private CustomButton login;
     private CustomButton signup;
     private EditText email_input, password_input;
     private String email, password;
+    private static final String TAG = "LOGIN";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +58,9 @@ public class LoginActivity extends AppCompatActivity {
             email = email_input.getText().toString();
             password = password_input.getText().toString();
 
-            //da eliminare
-            email = "email@mail.com";
-            password = "password";
+            //da commentare
+            //email = "email@mail.com";
+            //password = "password";
 
             if(controlloCampi(email, password)){
 
@@ -63,15 +68,23 @@ public class LoginActivity extends AppCompatActivity {
                 ApiService apiService = retrofit.create(ApiService.class);
                 LoginRequest loginRequest = new LoginRequest(email, password);
 
-                Call<LoginResponse> call = apiService.loginUser(loginRequest);
-                call.enqueue(new Callback<LoginResponse>() {
+                Call<Payload> call = apiService.loginUser(loginRequest);
+                call.enqueue(new Callback<Payload>() {
                     @Override
-                    public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                    public void onResponse(Call<Payload> call, Response<Payload> response) {
                         if (response.isSuccessful()) {
                             // Login riuscito, prendiamo il body dalla risposta
-                            LoginResponse loginResponse = response.body();
+                            Payload payload = response.body();
 
-                            //gestiamo le risposte del body
+                            // Gestiamo le risposte del body
+                            String token = payload.getMsg();
+                            Log.d(TAG, token);
+
+                            // Per salvare il token
+                            SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("AuthToken", token);
+                            editor.apply();
 
                             // Vado avanti...
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -85,8 +98,9 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<LoginResponse> call, Throwable t) {
+                    public void onFailure(Call<Payload> call, Throwable t) {
                         // Gestisci l'errore di rete o la conversione della risposta qui
+                        Log.d(TAG, "Richiesta fallita.");
                     }
                 });
 
