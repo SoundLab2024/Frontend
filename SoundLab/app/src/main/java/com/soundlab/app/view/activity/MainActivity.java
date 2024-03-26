@@ -26,6 +26,7 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
+    private static final String TAG = "LOGIN";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         // Per recuperare il token
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("AuthToken", null); //null è il valore di default se il token non esiste
-        Log.d("TOKEN", token);
+        //Log.d(TAG, token);
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 

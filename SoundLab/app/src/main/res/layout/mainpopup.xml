@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="210dp"
         android:layout_marginStart="30dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="30dp"
@@ -22,7 +22,7 @@
             android:src="@drawable/popupframe"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/popup_title"
@@ -41,8 +41,9 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:gravity="center_horizontal|top"
-            android:text="Torna alla schermata di login per effettuare l’accesso"
+            android:text="Clicca qui in basso per essere reindirizzato alla Home Page."
             android:textSize="18dp" />
+
         <Space
             android:layout_width="match_parent"
             android:layout_height="15dp" />
@@ -50,11 +51,11 @@
         <com.soundlab.app.view.CustomButton
             android:id="@+id/indietro_button"
             android:layout_width="118dp"
-            android:layout_height="34dp"
+            android:layout_height="48dp"
             android:layout_gravity="center"
             android:background="@drawable/button"
-            android:contentDescription="Indietro"
-            android:text="Indietro"
+            android:contentDescription="Continua"
+            android:text="Continua"
             android:textAllCaps="false"
             android:textSize="18sp" />
     </LinearLayout>

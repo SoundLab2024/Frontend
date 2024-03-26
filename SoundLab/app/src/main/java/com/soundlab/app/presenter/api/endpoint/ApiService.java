@@ -1,6 +1,7 @@
 package com.soundlab.app.presenter.api.endpoint;
 
 import com.soundlab.app.presenter.api.request.LoginRequest;
+import com.soundlab.app.presenter.api.request.RegisterRequest;
 import com.soundlab.app.presenter.api.response.Payload;
 
 import retrofit2.Call;
@@ -12,5 +13,9 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     @POST("authenticate")
     Call<Payload> loginUser(@Body LoginRequest loginRequest);
+
+    @Headers("Content-Type: application/json")
+    @POST("register")
+    Call<Payload> registerUser(@Body RegisterRequest registerRequest);
 
 }

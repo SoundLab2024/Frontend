@@ -26,11 +26,11 @@
     <string name="searchbar_hint">Tracks, Artists …</string>
     <string name="type_username" translatable="false" />
     <string-array name="Seleziona">
+        <item> </item>
         <item>Uomo</item>
         <item>Donna</item>
         <item>Altro</item>
 
     </string-array>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

@@ -1,5 +1,7 @@
 package com.soundlab.app.presenter.api.retrofit;
 
+import com.google.gson.GsonBuilder;
+
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import okhttp3.OkHttpClient;
@@ -22,7 +24,11 @@ public class RetrofitClient {
             // Costruisce l'oggetto Retrofit
             instance = new Retrofit.Builder()
                     .baseUrl(url)  // Imposta l'URL base per le chiamate API
-                    .addConverterFactory(GsonConverterFactory.create())  // Aggiunge il convertitore Gson per la serializzazione dei dati
+                    .addConverterFactory(GsonConverterFactory.create(
+                            new GsonBuilder()
+                                    .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                                    .create()
+                    ))  // Aggiunge il convertitore Gson per la serializzazione dei dati
                     .client(httpClient.build())  // Imposta il client HTTP personalizzato con l'interceptor
                     .build();
         }

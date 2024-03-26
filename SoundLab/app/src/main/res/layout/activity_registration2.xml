@@ -74,7 +74,7 @@
                     android:layout_height="32dp"
                     android:autofillHints="username"
                     android:background="@drawable/custom_text_input"
-                    android:hint="type your username here"
+                    android:hint="Type your username here"
                     android:inputType="textPersonName"
                     android:paddingStart="15dp"
                     android:paddingEnd="15dp"
@@ -173,14 +173,14 @@
                 <!--Campo data di nascita-->
                 <Space
                     android:layout_width="match_parent"
-                    android:layout_height="20dp" />
+                    android:layout_height="10dp" />
 
                 <com.soundlab.app.view.CustomButton
                     android:id="@+id/datadinascita"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="#00404040"
-                    android:text="Seleziona data di nascita"
+                    android:text="Clicca per inserire la tua data di nascita"
                     android:textAllCaps="false" />
 
                 <TextView

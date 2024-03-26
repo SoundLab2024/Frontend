@@ -1,10 +1,15 @@
 package com.soundlab.app.view.activity;
 
+import static com.soundlab.app.utils.Constants.BASE_URL;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,17 +18,35 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.soundlab.R;
+import com.soundlab.app.presenter.api.endpoint.ApiService;
+import com.soundlab.app.presenter.api.request.RegisterRequest;
+import com.soundlab.app.presenter.api.response.Payload;
+import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
+
+import java.sql.Date;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class RegistrationActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    private Spinner spinner;
-    private Button datadinascita;
-    private TextView text;
+    private Spinner SceltaGenderSpinner;
+    private Button dataDiNascitaButton;
+    private TextView dataNascitaText;
+    private String scelta;
+    private String dataStringa = "";
+    private Date dataConverted;
+    private EditText email_input, password_input, username_input;
+    private String email, password, username;
+    private static final String TAG = "REGISTER";
 
     // Variabile di controllo
     private boolean userSelected = false;
@@ -33,28 +56,79 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration2);
 
-        datadinascita = findViewById(R.id.datadinascita);
-        text = findViewById(R.id.showText);
-        datadinascita.setOnClickListener(new View.OnClickListener() {
+        dataDiNascitaButton = findViewById(R.id.datadinascita);
+        dataNascitaText = findViewById(R.id.showText);
+        dataDiNascitaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openDialog();
             }
         });
 
-        spinner = findViewById(R.id.spinner);
+        SceltaGenderSpinner = findViewById(R.id.spinner);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.Seleziona, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        spinner.setOnItemSelectedListener(this);
+        SceltaGenderSpinner.setAdapter(adapter);
+        SceltaGenderSpinner.setOnItemSelectedListener(this);
 
         Button continuaButton = findViewById(R.id.continua_button);
+
+        email_input = findViewById(R.id.email_input);
+        password_input = findViewById(R.id.password_input);
+        username_input = findViewById(R.id.username_input);
+
         continuaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPopup();
+
+                email = email_input.getText().toString();
+                password = password_input.getText().toString();
+                username = username_input.getText().toString();
+
+                if(controlloCampi(email, password, username, scelta, dataStringa)){
+
+                    Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
+                    ApiService apiService = retrofit.create(ApiService.class);
+                    RegisterRequest registerRequest = new RegisterRequest(email, password, username, scelta, dataConverted);
+                    Log.d(TAG, registerRequest.getBirth().toString());
+
+                    Call<Payload> call = apiService.registerUser(registerRequest);
+                    call.enqueue(new Callback<Payload>() {
+                        @Override
+                        public void onResponse(Call<Payload> call, Response<Payload> response) {
+                            if (response.isSuccessful()) {
+                                // Registrazione riuscita, prendiamo il body dalla risposta
+                                Payload payload = response.body();
+
+                                // Gestiamo le risposte del body
+                                String token = payload.getMsg();
+                                Log.d(TAG, token);
+
+                                // Per salvare il token
+                                SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("AuthToken", token);
+                                editor.apply();
+
+                                // Vado col popup
+                                showPopup();
+
+                            } else {
+                                // Gestisci la risposta di errore, es. credenziali non valide
+                                Toast.makeText(RegistrationActivity.this, "Login fallito, riprova.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Payload> call, Throwable t) {
+                            // Gestisci l'errore di rete o la conversione della risposta qui
+                            Log.d(TAG, "Richiesta fallita.");
+                        }
+                    });
+
+                }
+
             }
         });
     }
@@ -68,51 +142,63 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 true);
 
-        // TextView popupText = popupView.findViewById(R.id.popupText);
-        Button indietroButton = popupView.findViewById(R.id.indietro_button);
+        Button nextButton = popupView.findViewById(R.id.indietro_button);
 
-        indietroButton.setOnClickListener(new View.OnClickListener() {
+        nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 popupWindow.dismiss(); // Chiudere il popup
-                goToLoginActivity();
+                goToHome();
             }
         });
 
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
     }
 
-    private void goToLoginActivity() {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-        finish();
+    private void goToHome() {
+        Intent intent = new Intent(this, MainActivity.class);
+        this.startActivity(intent);
+        this.finish();
     }
 
     private void openDialog() {
         DatePickerDialog dialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int anno, int mese, int giorno) {
-                text.setText(String.valueOf(anno) + "." + String.valueOf(mese + 1) + "." + String.valueOf(giorno));
-                datadinascita.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
-                datadinascita.setText("Modifica data");
+                dataStringa = String.valueOf(anno) + "-" + String.valueOf(mese + 1) + "-" + String.valueOf(giorno);
+                dataConverted = Date.valueOf(dataStringa);
+
+                Log.d("DATA", dataStringa);
+                Log.d("DATA SQL", String.valueOf(dataConverted));
+                dataNascitaText.setText(dataStringa);
+                dataDiNascitaButton.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+                dataDiNascitaButton.setText("Modifica data");
             }
-        }, 2022, 0, 15);
+        }, 1985, 0, 15);
         dialog.show();
     }
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        if (userSelected) {
-            String scelta = adapterView.getItemAtPosition(i).toString();
-            Toast.makeText(getApplicationContext(), scelta, Toast.LENGTH_LONG).show();
-        } else {
-            userSelected = true;
-        }
+        scelta = adapterView.getItemAtPosition(i).toString();
+        //Toast.makeText(getApplicationContext(), scelta, Toast.LENGTH_LONG).show();
+        Log.d("GENDER", scelta);
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
         // Questo metodo è chiamato quando nessun elemento è selezionato nello spinner
     }
+
+    // Validazione dei campi
+    private boolean controlloCampi(String email, String password, String username, String scelta, String dataStringa){
+        if((email.isEmpty()) || (password.isEmpty()) || (username.isEmpty()) || (scelta.isEmpty()) || (dataStringa.isEmpty())) {
+            Toast.makeText(this, "Tutti i campi sono obbligatori, riempili!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
 }
 
