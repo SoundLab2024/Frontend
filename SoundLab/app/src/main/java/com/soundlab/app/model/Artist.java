@@ -5,21 +5,20 @@ import java.util.Date;
 
 public class Artist implements Serializable {
 
-    private static final long serialVersionUID = 1L; // Numero di versione per la serializzazione
-
-    private int id;
+    //private static final long serialVersionUID = 1L; // Numero di versione per la serializzazione
+    private long id;
     private String name;
     private Date dataDiNascita;
     private String nazionalita;
 
-    public Artist(int id, String name, Date dataDiNascita, String nazionalita) {
+    public Artist(long id, String name, Date dataDiNascita, String nazionalita) {
         this.id = id;
         this.name = name;
         this.dataDiNascita = dataDiNascita;
         this.nazionalita = nazionalita;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

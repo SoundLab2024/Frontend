@@ -42,7 +42,7 @@ public class ProfileFragment extends Fragment {
     RecyclerView recyclerView;
     private TextView zeroPlaylistTextView;
     private ArrayList<Playlist> playlistArrayList;
-    User utente = new User(20,"lucia",true);
+    User utente = new User("mail@mail.it","lucia","USER");
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -61,7 +61,7 @@ public class ProfileFragment extends Fragment {
         // TODO: Carica le playlist dal backend
 
         // Aggiungi le playlist
-        playlistArrayList.add(new Playlist(1, "Playlist1", "Rock", R.drawable.playlist_default, false));
+        playlistArrayList.add(new Playlist(1, "Playlist1", "Rock", R.drawable.playlist_default, false, null));
 
         // Inizializza l'adapter e passa la lista di playlist
         ProfileAdapter profileAdapter = new ProfileAdapter(this, playlistArrayList);
@@ -99,7 +99,7 @@ public class ProfileFragment extends Fragment {
         settingsButton.setOnClickListener(v -> openSettingsActivity());
 
         CustomButton analiticheButton = view.findViewById(R.id.analiticheButton);
-        if(!utente.isAdmin()){
+        if(utente.getRole() != "ADMIN"){
             analiticheButton.setVisibility(View.GONE);
         }
 
@@ -151,7 +151,7 @@ public class ProfileFragment extends Fragment {
                 // TODO: Inserire la playlist nel backend ed ottenere l'id.
 
                 int idPlaylist = 1; // Da cambiare con l'id ottenuto nel backend
-                Playlist newPlaylist = new Playlist(idPlaylist, nome_playlist, genere_playlist, R.drawable.playlist_default, false);
+                Playlist newPlaylist = new Playlist(idPlaylist, nome_playlist, genere_playlist, R.drawable.playlist_default, false, null);
                 // Ottiene l'adapter dalla RecyclerView
                 ProfileAdapter profileAdapter = (ProfileAdapter) recyclerView.getAdapter();
                 // Aggiungi la nuova playlist all'adapter

@@ -1,29 +1,32 @@
 package com.soundlab.app.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Playlist implements Serializable {
 
-    private static final long serialVersionUID = 1L; // Numero di versione per la serializzazione
-
-    private final int id;
+    //private static final long serialVersionUID = 1L; // Numero di versione per la serializzazione
+    private final long id;
     private String name;
     private String genere;
     private int image;
     private boolean favorite;
+    private final List<Song> songs;
     private int numberOfSongs;
 
-    public Playlist(int id, String name, String genere, int image, boolean favorite) {
+    public Playlist(int id, String name, String genere, int image, boolean favorite, List<Song> songs) {
         this.id = id;
         this.name = name;
         this.genere = genere;
         this.image = image;
         this.favorite = favorite;
+        this.songs = new ArrayList<>();
         this.numberOfSongs = 0;
     }
 
     // Getter and Setter for 'id'
-    public int getId() {
+    public long getId() {
         return id;
     }
 

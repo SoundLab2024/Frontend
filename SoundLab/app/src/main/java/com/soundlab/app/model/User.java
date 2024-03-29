@@ -1,25 +1,34 @@
 package com.soundlab.app.model;
 
 public class User {
-    private final int id;
-    private final String name;
-    private final boolean isAdmin;
+    private final String email;
+    private final String username;
+    private final String role;
+    private Library lib;
 
-    public User(int id, String name, boolean isAdmin) {
-        this.id = id;
-        this.name = name;
-        this.isAdmin = isAdmin;
+    public User(String email, String username, String role) {
+        this.email = email;
+        this.username = username;
+        this.role = role;
     }
 
-    public int getId() {
-        return id;
+    public String getEmail() {
+        return email;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public boolean isAdmin() {
-        return isAdmin;
+    public String getRole() {
+        return role;
+    }
+
+    public Library getLibreria() {
+        return lib;
+    }
+
+    public void setLibreria(Library libreria) {
+        this.lib = libreria;
     }
 }

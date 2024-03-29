@@ -6,16 +6,15 @@ import java.util.List;
 
 public class Song implements Serializable {
 
-    private static final long serialVersionUID = 1L; // Numero di versione per la serializzazione
-
-    private final int id;
+    //private static final long serialVersionUID = 1L; // Numero di versione per la serializzazione
+    private final long id;
     private final String name;
     private final String genre;
     private  int image;
     private final List<Artist> artists;  // Lista di Artist associati alla canzone
 
     // Costruttore
-    public Song(int id, String name, String genre, Integer image) {
+    public Song(long id, String name, String genre, Integer image) {
         this.id = id;
         this.name = name;
         this.genre = genre;
@@ -24,7 +23,7 @@ public class Song implements Serializable {
     }
 
     // Getter per id
-    public int getId() {
+    public long getId() {
         return id;
     }
 

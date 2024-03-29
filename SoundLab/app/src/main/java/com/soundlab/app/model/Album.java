@@ -2,17 +2,19 @@ package com.soundlab.app.model;
 
 public class Album {
 
-    private int id;
+    private long id;
     private String nome;
     private int anno;
+    private Artist artist;
 
-    public Album(int id, String nome, int anno) {
+    public Album(long id, String nome, int anno, Artist artist) {
         this.id = id;
         this.nome = nome;
         this.anno = anno;
+        this.artist = artist;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -35,4 +37,9 @@ public class Album {
     public void setAnno(int anno) {
         this.anno = anno;
     }
+
+    public Artist getArtist() {
+        return artist;
+    }
+
 }

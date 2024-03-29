@@ -36,12 +36,12 @@ public class MainActivity extends AppCompatActivity {
         // Per recuperare il token
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("AuthToken", null); //null è il valore di default se il token non esiste
-        //Log.d(TAG, token);
+        Log.d(TAG, token);
+
+        
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
-
         replaceFragment(new HomeFragment(), Utilities.homeFragmentTag);
-
         bottomNavigationView.setOnItemSelectedListener(item -> {
 
             String currentfragmentTag = getTopFragmentTag();
