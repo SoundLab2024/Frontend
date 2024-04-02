@@ -2,6 +2,8 @@ package com.soundlab.app.presenter.api.retrofit;
 
 import com.google.gson.GsonBuilder;
 
+import java.util.concurrent.TimeUnit;
+
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import okhttp3.OkHttpClient;
@@ -18,7 +20,9 @@ public class RetrofitClient {
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
             // Crea un client OkHttpClient e aggiungi l'interceptor
-            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+            OkHttpClient.Builder httpClient = new OkHttpClient.Builder()
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .connectTimeout(30, TimeUnit.SECONDS);
             httpClient.addInterceptor(logging);  // Aggiunge l'interceptor per il logging
 
             // Costruisce l'oggetto Retrofit
