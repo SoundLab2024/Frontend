@@ -15,6 +15,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
 
+import com.soundlab.app.model.Album;
 import com.soundlab.app.model.Artist;
 import com.soundlab.app.model.Playlist;
 import com.soundlab.app.model.Song;
@@ -111,6 +112,8 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
                     // Chiude il BottomSheetDialog
                     bottomSheetDialog.dismiss();
 
+                    Album album = new Album(7, "Album", 2015, selectedSong.getArtists().get(0));
+                    playlistFragment.loadAlbumFragment(album);
                 });
 
                 return true;

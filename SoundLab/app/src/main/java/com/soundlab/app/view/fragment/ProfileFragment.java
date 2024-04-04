@@ -29,6 +29,7 @@ import com.example.soundlab.R;
 
 import java.util.ArrayList;
 
+import com.soundlab.app.model.Library;
 import com.soundlab.app.model.Playlist;
 import com.soundlab.app.model.User;
 import com.soundlab.app.presenter.adapter.ProfileAdapter;
@@ -42,6 +43,7 @@ public class ProfileFragment extends Fragment {
     RecyclerView recyclerView;
     private TextView zeroPlaylistTextView;
     private ArrayList<Playlist> playlistArrayList;
+    private Library library;
     User utente = new User("mail@mail.it","lucia","USER");
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,6 +57,8 @@ public class ProfileFragment extends Fragment {
         recyclerView = view.findViewById(R.id.playlists_recyclerView);
         recyclerView.setNestedScrollingEnabled(false);
 
+
+
         // Crea una nuova lista di playlist
         playlistArrayList = new ArrayList<>();
 
@@ -62,6 +66,8 @@ public class ProfileFragment extends Fragment {
 
         // Aggiungi le playlist
         playlistArrayList.add(new Playlist(1, "Playlist1", "Rock", R.drawable.playlist_default, false, null));
+
+        library = new Library(playlistArrayList);
 
         // Inizializza l'adapter e passa la lista di playlist
         ProfileAdapter profileAdapter = new ProfileAdapter(this, playlistArrayList);

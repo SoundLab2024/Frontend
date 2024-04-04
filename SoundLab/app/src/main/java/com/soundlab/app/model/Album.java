@@ -1,17 +1,23 @@
 package com.soundlab.app.model;
 
-public class Album {
+import com.example.soundlab.R;
+
+import java.io.Serializable;
+
+public class Album implements Serializable {
 
     private long id;
     private String nome;
     private int anno;
-    private Artist artist;
+    private final Artist artist;
+    private int image;
 
     public Album(long id, String nome, int anno, Artist artist) {
         this.id = id;
         this.nome = nome;
         this.anno = anno;
         this.artist = artist;
+        this.image = R.drawable.album_cover;
     }
 
     public long getId() {
@@ -40,6 +46,10 @@ public class Album {
 
     public Artist getArtist() {
         return artist;
+    }
+
+    public int getImage() {
+        return image;
     }
 
 }

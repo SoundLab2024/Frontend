@@ -47,8 +47,8 @@ public class ArtistFragment extends Fragment {
         viewPager = view.findViewById(R.id.view_pager);
 
         ArrayList<Fragment> fragments = new ArrayList<>();
-        fragments.add(new SongArtistFragment());
-        fragments.add(new AlbumArtistFragment());
+        fragments.add(new SongArtistFragment(artist));
+        fragments.add(new AlbumArtistFragment(artist));
 
         Lifecycle lifecycle = getViewLifecycleOwner().getLifecycle();
 
@@ -107,6 +107,5 @@ public class ArtistFragment extends Fragment {
         });
 
     }
-
 
 }

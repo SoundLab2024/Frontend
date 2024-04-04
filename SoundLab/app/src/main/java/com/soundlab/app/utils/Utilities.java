@@ -19,6 +19,7 @@ public class Utilities {
     public static final String playlistFragmentTag = "playlist";
     public static final String addToPlaylistFragmentTag = "addToPlaylist";
     public static final String artistFragmentTag  = "artist";
+    public static final String albumFragmentTag = "album";
 
     /**
      * Imposta il colore della barra di stato per un'Activity.

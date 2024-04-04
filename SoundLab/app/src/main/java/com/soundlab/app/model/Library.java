@@ -8,6 +8,7 @@ public class Library {
 
     public Library(List<Playlist> playlists){
         this.playlists = playlists;
+        this.playlistNumber = playlists.size();
     }
 
     public List<Playlist> getPlaylists() {

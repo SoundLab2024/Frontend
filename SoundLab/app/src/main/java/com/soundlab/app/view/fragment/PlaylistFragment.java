@@ -29,6 +29,7 @@ import com.example.soundlab.R;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.soundlab.app.model.Album;
 import com.soundlab.app.model.Artist;
 import com.soundlab.app.model.Playlist;
 import com.soundlab.app.model.Song;
@@ -316,6 +317,18 @@ public class PlaylistFragment extends Fragment {
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).hideBottomNavigationView();
             ((MainActivity) getActivity()).replaceFragmentWithoutPopStack(addToPlaylistFragment, Utilities.addToPlaylistFragmentTag);
+        }
+    }
+
+    public void loadAlbumFragment(Album album){
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("album", album);
+
+        Fragment albumFragment = new AlbumFragment();
+        albumFragment.setArguments(bundle);
+
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).replaceFragmentWithoutPopStack(albumFragment, Utilities.albumFragmentTag);
         }
     }
 
