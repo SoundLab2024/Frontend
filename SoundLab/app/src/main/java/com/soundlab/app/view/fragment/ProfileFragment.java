@@ -44,7 +44,7 @@ public class ProfileFragment extends Fragment {
     private TextView zeroPlaylistTextView;
     private ArrayList<Playlist> playlistArrayList;
     private Library library;
-    User utente = new User("mail@mail.it","lucia","USER");
+    User utente = new User("mail@mail.it","lucia","ADMIN");
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

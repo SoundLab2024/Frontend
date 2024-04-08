@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         // Per recuperare il token e l'utente
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         String tokenDevice = sharedPreferences.getString("AuthToken", null); //null è il valore di default se il token non esiste
-        Log.d(TAG, tokenDevice);
+        //Log.d(TAG, tokenDevice);
         String token = "Bearer " + tokenDevice;
 
         // Metodo che contiene la chiamata al retrieve dell'utente
