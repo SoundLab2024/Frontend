@@ -1,40 +1,30 @@
 package com.soundlab.app.view.activity;
 
-import static com.soundlab.app.utils.Constants.BASE_URL;
+import static com.soundlab.app.utils.Constants.USER_EMAIL;
+import static com.soundlab.app.utils.Constants.USER_NAME;
+import static com.soundlab.app.utils.Constants.USER_ROLE;
+import static com.soundlab.app.utils.Constants.USER_TOKEN;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-
+import com.example.soundlab.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.soundlab.app.model.User;
-import com.soundlab.app.presenter.api.endpoint.ApiService;
-import com.soundlab.app.presenter.api.response.UserFromTokenResponse;
-import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
 import com.soundlab.app.utils.Utilities;
 import com.soundlab.app.view.fragment.HomeFragment;
 import com.soundlab.app.view.fragment.ProfileFragment;
-
-import com.example.soundlab.R;
-
 import com.soundlab.app.view.fragment.SearchFragment;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import java.util.Objects;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
@@ -43,20 +33,19 @@ public class MainActivity extends AppCompatActivity {
     private String email;
     private String username;
     private String role;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Per recuperare il token e l'utente
+        // Per recuperare l'utente
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
-        String tokenDevice = sharedPreferences.getString("AuthToken", null); //null è il valore di default se il token non esiste
-        //Log.d(TAG, tokenDevice);
-        String token = "Bearer " + tokenDevice;
-
-        // Metodo che contiene la chiamata al retrieve dell'utente
-        retrieveUser(token, tokenDevice);
+        token = sharedPreferences.getString(USER_TOKEN, null);
+        email = sharedPreferences.getString(USER_EMAIL, null);
+        username = sharedPreferences.getString(USER_NAME, null);
+        role = sharedPreferences.getString(USER_ROLE, null);
 
         User u = new User(email, username, role);
 
@@ -77,41 +66,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
             return true;
-        });
-
-    }
-
-    private void retrieveUser(String token, String tokenDevice) {
-
-        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
-        ApiService apiService = retrofit.create(ApiService.class);
-
-        Call<UserFromTokenResponse> call = apiService.userToken(token, tokenDevice);
-        call.enqueue(new Callback<UserFromTokenResponse>() {
-            @Override
-            public void onResponse(Call<UserFromTokenResponse> call, Response<UserFromTokenResponse> response) {
-                if (response.isSuccessful()) {
-                    // Riuscito, prendiamo il body dalla risposta
-                    UserFromTokenResponse payload = response.body();
-
-                    // Gestiamo le risposte del body
-                    email = payload.getEmail();
-                    username = payload.getUsername();
-                    role = payload.getRole();
-                    Log.d(TAG, email + " "+ username + " " + role);
-
-
-                } else {
-                    // Gestisci la risposta di errore, es. credenziali non valide
-                    Toast.makeText(MainActivity.this, "Utente non recuperato.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserFromTokenResponse> call, Throwable t) {
-                // Gestisci l'errore di rete o la conversione della risposta qui
-                Log.d(TAG, "Richiesta fallita.");
-            }
         });
 
     }

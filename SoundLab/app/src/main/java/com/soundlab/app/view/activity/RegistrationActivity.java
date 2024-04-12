@@ -1,6 +1,11 @@
 package com.soundlab.app.view.activity;
 
 import static com.soundlab.app.utils.Constants.BASE_URL;
+import static com.soundlab.app.utils.Constants.USER_EMAIL;
+import static com.soundlab.app.utils.Constants.USER_LIB;
+import static com.soundlab.app.utils.Constants.USER_NAME;
+import static com.soundlab.app.utils.Constants.USER_ROLE;
+import static com.soundlab.app.utils.Constants.USER_TOKEN;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,6 +33,7 @@ import com.example.soundlab.R;
 import com.soundlab.app.presenter.api.endpoint.ApiService;
 import com.soundlab.app.presenter.api.request.RegisterRequest;
 import com.soundlab.app.presenter.api.response.Payload;
+import com.soundlab.app.presenter.api.response.UserPayload;
 import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
 
 import java.sql.Date;
@@ -93,22 +99,22 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
                     RegisterRequest registerRequest = new RegisterRequest(email, password, username, scelta, dataConverted);
                     Log.d(TAG, registerRequest.getBirth().toString());
 
-                    Call<Payload> call = apiService.registerUser(registerRequest);
-                    call.enqueue(new Callback<Payload>() {
+                    Call<UserPayload> call = apiService.registerUser(registerRequest);
+                    call.enqueue(new Callback<UserPayload>() {
                         @Override
-                        public void onResponse(Call<Payload> call, Response<Payload> response) {
+                        public void onResponse(Call<UserPayload> call, Response<UserPayload> response) {
                             if (response.isSuccessful()) {
                                 // Registrazione riuscita, prendiamo il body dalla risposta
-                                Payload payload = response.body();
+                                UserPayload payload = response.body();
 
-                                // Gestiamo le risposte del body
-                                String token = payload.getMsg();
-                                Log.d(TAG, token);
-
-                                // Per salvare il token
+                                // Per salvare l'utente
                                 SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.putString("AuthToken", token);
+                                editor.putString(USER_TOKEN, payload.getToken());
+                                editor.putString(USER_NAME, payload.getUsername());
+                                editor.putString(USER_EMAIL, payload.getEmail());
+                                editor.putString(USER_ROLE, payload.getRole());
+                                editor.putLong(USER_LIB, payload.getLibraryId());
                                 editor.apply();
 
                                 // Vado col popup
@@ -121,7 +127,7 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
                         }
 
                         @Override
-                        public void onFailure(Call<Payload> call, Throwable t) {
+                        public void onFailure(Call<UserPayload> call, Throwable t) {
                             // Gestisci l'errore di rete o la conversione della risposta qui
                             Log.d(TAG, "Richiesta fallita.");
                         }
