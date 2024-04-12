@@ -50,6 +50,8 @@ public class SongArtistAdapter extends RecyclerView.Adapter<SongArtistAdapter.Vi
             holder.songName.setText(selectedSong.getName());
             holder.songArtist.setText(artistNames);
 
+            holder.itemView.setOnClickListener(view -> songArtistFragment.loadPlayer(songArrayList.indexOf(selectedSong), songArrayList));
+
             holder.addToPlaylist.setOnClickListener(view -> songArtistFragment.loadAddToPlaylistFragment(selectedSong));
         }
 

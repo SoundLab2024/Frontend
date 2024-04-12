@@ -54,11 +54,11 @@ public class AlbumFragment extends Fragment {
         //TODO: Carica le tracce dell'album e relativi artisti dal backend
 
         // Aggiunge le tracce alla lista ed aggiunge alla traccia i relativi artisti
-        Song song1 = new Song(1, "Canzone1","Rock", R.drawable.cover_default);
+        Song song1 = new Song(1, "Canzone1","Rock", R.raw.canzone1);
         song1.addArtist(album.getArtist());
         songArrayList.add(song1);
 
-        Song song2 = new Song(2, "Canzone2","Rock", R.drawable.cover_default);
+        Song song2 = new Song(2, "Canzone2","Rock", R.raw.canzone2);
         song2.addArtist(album.getArtist());
         song2.addArtist(new Artist(31, "Ren", new Date(3 / 1998), "Italia"));
         songArrayList.add(song2);
@@ -104,6 +104,10 @@ public class AlbumFragment extends Fragment {
             ((MainActivity) getActivity()).hideBottomNavigationView();
             ((MainActivity) getActivity()).replaceFragmentWithoutPopStack(addToPlaylistFragment, Utilities.addToPlaylistFragmentTag);
         }
+    }
+
+    public void loadPlayer(int songPosition, ArrayList<Song> songArrayList) {
+        Utilities.loadPlayer(getActivity(), songPosition, songArrayList);
     }
 
 }

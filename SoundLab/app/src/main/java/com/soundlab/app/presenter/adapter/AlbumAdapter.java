@@ -49,6 +49,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
             holder.songName.setText(selectedSong.getName());
             holder.songArtist.setText(artistNames);
 
+            holder.itemView.setOnClickListener(view -> albumFragment.loadPlayer(songArrayList.indexOf(selectedSong), songArrayList));
+
             holder.addToPlaylist.setOnClickListener(view -> albumFragment.loadAddToPlaylistFragment(selectedSong));
         }
     }

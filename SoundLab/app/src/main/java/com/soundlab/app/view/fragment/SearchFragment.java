@@ -24,12 +24,13 @@ import com.soundlab.app.model.Artist;
 import com.soundlab.app.model.Song;
 import com.soundlab.app.presenter.adapter.CercaAdapter;
 import com.soundlab.app.utils.Utilities;
+import com.soundlab.app.view.activity.MainActivity;
 
 
 public class SearchFragment extends Fragment {
     //aggiunta
     private List<Song> allSongs;
-    private List<Song> displayedSongs;
+    private ArrayList<Song> displayedSongs;
     private CercaAdapter cercaAdapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,11 +44,11 @@ public class SearchFragment extends Fragment {
         allSongs = new ArrayList<>();
 
         // Aggiunge le tracce alla lista ed aggiunge alla traccia i relativi artisti
-        Song song1 = new Song(1, "Canzone1","Rock",  R.drawable.cover_default);
+        Song song1 = new Song(1, "Canzone1","Rock",  R.raw.canzone1);
         song1.addArtist(new Artist(7, "Gio", new Date(5 / 1985), "Inghilterra"));
         allSongs.add(song1);
 
-        Song song2 = new Song(2, "Canzone2", "Rock", R.drawable.cover_default);
+        Song song2 = new Song(2, "Canzone2", "Rock", R.raw.canzone2);
         song2.addArtist(new Artist(36, "Ale", new Date(7 / 1995), "Italia"));
         song2.addArtist(new Artist(31, "Ren", new Date(3 / 1998), "Italia"));
         allSongs.add(song2);
@@ -57,7 +58,7 @@ public class SearchFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.songs_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         displayedSongs = new ArrayList<>();
-        cercaAdapter = new CercaAdapter(displayedSongs);
+        cercaAdapter = new CercaAdapter(displayedSongs, this);
         recyclerView.setAdapter(cercaAdapter);
 
         // Inizializza la SearchView
@@ -98,5 +99,20 @@ public class SearchFragment extends Fragment {
             }
         }
         cercaAdapter.notifyDataSetChanged();
+    }
+
+    public void loadPlayer(int songPosition, ArrayList<Song> songArrayList){
+        Bundle bundle = new Bundle();
+        bundle.putInt("songPosition", songPosition);
+
+        Object[] objectArray = songArrayList.toArray();
+        bundle.putSerializable("songArrayList", objectArray);
+
+        Fragment playerFragment = new PlayerFragment();
+        playerFragment.setArguments(bundle);
+
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).replaceFragmentWithoutPopStack(playerFragment, Utilities.playerFragmentTag);
+        }
     }
 }

@@ -1,5 +1,7 @@
 package com.soundlab.app.model;
 
+import com.example.soundlab.R;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +14,25 @@ public class Song implements Serializable {
     private final String genre;
     private  int image;
     private final List<Artist> artists;  // Lista di Artist associati alla canzone
+    private final int track;
 
     // Costruttore
-    public Song(long id, String name, String genre, Integer image) {
+    public Song(long id, String name, String genre, Integer image, int track) {
         this.id = id;
         this.name = name;
         this.genre = genre;
         this.image = image;
         this.artists = new ArrayList<>();
+        this.track = track;
+    }
+
+    public Song(long id, String name, String genre, int track) {
+        this.id = id;
+        this.name = name;
+        this.genre = genre;
+        this.image = R.drawable.cover_default;
+        this.artists = new ArrayList<>();
+        this.track = track;
     }
 
     // Getter per id
@@ -57,6 +70,10 @@ public class Song implements Serializable {
     // Aggiunge un artista alla lista degli artisti associati alla canzone
     public void addArtist(Artist artist) {
         artists.add(artist);
+    }
+
+    public int getTrack() {
+        return track;
     }
 
 }

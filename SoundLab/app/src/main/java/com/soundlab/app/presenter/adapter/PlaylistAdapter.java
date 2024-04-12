@@ -59,6 +59,8 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
             holder.songName.setText(selectedSong.getName());
             holder.songArtist.setText(artistNames);
 
+            holder.itemView.setOnClickListener(view -> playlistFragment.loadPlayer(songArrayList.indexOf(selectedSong), songArrayList));
+
             holder.removeButton.setOnClickListener(view -> {
 
                 // TODO: Rimuovi l'associaizone Playlist<->Traccia dal backend, aggiorna il numero di canzoni della playlist

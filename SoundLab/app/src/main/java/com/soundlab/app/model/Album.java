@@ -40,9 +40,6 @@ public class Album implements Serializable {
         return anno;
     }
 
-    public void setAnno(int anno) {
-        this.anno = anno;
-    }
 
     public Artist getArtist() {
         return artist;

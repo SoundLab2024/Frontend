@@ -1,6 +1,7 @@
 package com.soundlab.app.utils;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.view.Window;
 
 import androidx.core.content.ContextCompat;
@@ -10,6 +11,8 @@ import java.util.ArrayList;
 
 import com.soundlab.app.model.Artist;
 import com.soundlab.app.model.Song;
+import com.soundlab.app.view.activity.MainActivity;
+import com.soundlab.app.view.fragment.PlayerFragment;
 
 public class Utilities {
 
@@ -20,6 +23,7 @@ public class Utilities {
     public static final String addToPlaylistFragmentTag = "addToPlaylist";
     public static final String artistFragmentTag  = "artist";
     public static final String albumFragmentTag = "album";
+    public static final String playerFragmentTag = "player";
 
     /**
      * Imposta il colore della barra di stato per un'Activity.
@@ -63,6 +67,21 @@ public class Utilities {
         }
 
         return artistString.toString();
+    }
+
+    public static void loadPlayer(Activity activity, int songPosition, ArrayList<Song> songArrayList){
+        Bundle bundle = new Bundle();
+        bundle.putInt("songPosition", songPosition);
+
+        Object[] objectArray = songArrayList.toArray();
+        bundle.putSerializable("songArrayList", objectArray);
+
+        Fragment playerFragment = new PlayerFragment();
+        playerFragment.setArguments(bundle);
+
+        if (activity instanceof MainActivity) {
+            ((MainActivity) activity).replaceFragmentWithoutPopStack(playerFragment, Utilities.playerFragmentTag);
+        }
     }
 
 }

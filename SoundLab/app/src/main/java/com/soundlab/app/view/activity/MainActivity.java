@@ -121,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
         String currentfragmentTag = getTopFragmentTag();
 
         if (Objects.equals(currentfragmentTag, Utilities.searchFragmentTag) || Objects.equals(currentfragmentTag, Utilities.profileFragmentTag)) {
-
             // Seleziono l'item home nella bottomNavigationView viene invocato quindi il listener(setOnItemSelectedListener) che chiama replaceFragment
             selectRightItemBottomNavView(Utilities.homeFragmentTag);
 
@@ -132,10 +131,37 @@ public class MainActivity extends AppCompatActivity {
             showBottomNavigationView();
             replaceFragment(new ProfileFragment(), Utilities.profileFragmentTag);
 
+        } else if (Objects.equals(currentfragmentTag, Utilities.playerFragmentTag)) {
+            // Controlla il fragment immediatamente sotto il playerFragment
+            String previousFragmentTag = getPreviousFragmentTag();
+
+            if (Objects.equals(previousFragmentTag, Utilities.searchFragmentTag)) {
+                showBottomNavigationView();
+                getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                replaceFragment(new SearchFragment(), Utilities.searchFragmentTag); // Sostituisci con il tuo fragment desiderato e il suo tag
+
+            } else {
+                super.onBackPressed();
+            }
+
         } else {
             super.onBackPressed();
         }
     }
+
+    // Metodo per ottenere il tag del fragment immediatamente sotto il fragment corrente
+    private String getPreviousFragmentTag() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        int backStackEntryCount = fragmentManager.getBackStackEntryCount();
+
+        if (backStackEntryCount > 1) {
+            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(backStackEntryCount - 2);
+            return backStackEntry.getName();
+        }
+
+        return null;
+    }
+
 
     /**
      * Ottiene il tag del fragment in cima allo stack.
