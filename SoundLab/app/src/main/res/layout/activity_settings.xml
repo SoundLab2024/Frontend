@@ -7,10 +7,11 @@
     tools:context="com.soundlab.app.view.activity.SettingsActivity">
 
     <ScrollView
-        android:layout_width="410dp"
-        android:layout_height="894dp"
+        android:layout_width="409dp"
+        android:layout_height="912dp"
         android:layout_marginHorizontal="0dp"
         android:layout_marginVertical="0dp"
+        android:background="#0D0A24"
         android:scrollbars="none"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,136 +21,182 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <TextView
+                android:id="@+id/impostazioni"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="⚙️ Impostazioni"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.068"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <View
+                android:id="@+id/separatore1"
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:background="#55FFFFFF"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/impostazioni"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:id="@+id/generali"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="GENERALI"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.193"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/separatore1" />
+
+            <View
+                android:id="@+id/separatore2"
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:background="#55FFFFFF"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/generali"
+                android:layout_marginTop="16dp"/>
+
+
+            <TextView
+                android:id="@+id/account"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="···· Account"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.059"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/separatore2" />
+
+            <View
+                android:id="@+id/separatore3"
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:background="#22FFFFFF"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/account"
+                android:layout_marginTop="12dp"/>
+
+
+            <TextView
+                android:id="@+id/modificaEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="✎ Modifica email"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.073"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/separatore3" />
+
+            <View
+                android:id="@+id/separatore4"
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:background="#22FFFFFF"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/modificaEmail"
+                android:layout_marginTop="12dp"/>
+
+
+            <TextView
+                android:id="@+id/modificaPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="✎ Modifica password"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.086"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/separatore4" />
+
+            <View
+                android:id="@+id/separatore5"
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:background="#22FFFFFF"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/modificaPassword"
+                android:layout_marginTop="12dp"/>
+
+
+            <TextView
+                android:id="@+id/logout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="↩ Logout"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.057"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/separatore5" />
+
+            <View
+                android:id="@+id/separatore6"
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:background="#22FFFFFF"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/logout"
+                android:layout_marginTop="12dp"/>
+
+
+            <TextView
+                android:id="@+id/cancellaAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="✖ Elimina account"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.076"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/separatore6" />
+
             <LinearLayout
                 android:id="@+id/linearLayout"
-                android:layout_width="405dp"
-                android:layout_height="890dp"
-                android:background="#0D0A24"
-                android:layout_marginTop="104dp"
+                android:layout_width="406dp"
+                android:layout_height="912dp"
                 android:layout_marginEnd="24dp"
+                android:background="#0D0A24"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                tools:ignore="ExtraText">
-
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="170dp"
-                    android:translationX="20dp"
-                    android:translationY="16dp"
-                    app:srcCompat="@drawable/user" />
-
-                <TextView
-                    android:id="@+id/username"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="Username"
-                    android:textAlignment="textStart"
-                    android:textSize="30sp"
-                    android:translationX="170dp"
-                    android:translationY="-100dp" />
-
-                <TextView
-                    android:id="@+id/cambio_username"
-                    android:layout_width="285dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="Modifica username"
-                    android:textAlignment="textStart"
-                    android:textSize="24sp"
-                    android:translationX="15dp"
-                    android:translationY="20dp" />
-
-                <TextView
-                    android:id="@+id/cambio_foto"
-                    android:layout_width="285dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="Modifica foto profilo"
-                    android:textAlignment="textStart"
-                    android:textSize="24sp"
-                    android:translationX="15dp"
-                    android:translationY="25dp" />
-
-                <com.soundlab.app.view.CustomButton
-                    android:id="@+id/modifica"
-                    android:layout_width="150dp"
-                    android:layout_height="60dp"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="15dp"
-                    android:layout_marginTop="25dp"
-                    android:background="@drawable/button"
-                    android:text="Modifica"
-                    android:textAllCaps="false"
-                    android:textSize="18sp"
-                    app:layout_constraintTop_toBottomOf="@id/usernameEditText"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    />
-
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1.5dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="#801F1A3A"
-                    android:alpha="0.5"
-                    android:translationY="5dp" />
-
-                <TextView
-                    android:id="@+id/cambio_email"
-                    android:layout_width="285dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="Modifica email"
-                    android:textAlignment="textStart"
-                    android:textSize="24sp"
-                    android:translationX="15dp"
-                    android:translationY="25dp" />
-
-                <TextView
-                    android:id="@+id/cambio_password"
-                    android:layout_width="285dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="Modifica password"
-                    android:textAlignment="textStart"
-                    android:textSize="24sp"
-                    android:translationX="15dp"
-                    android:translationY="25dp" />
-
-                <ImageView
-                    android:id="@+id/ImageLogout"
-                    android:layout_width="45dp"
-                    android:layout_height="57dp"
-                    android:translationX="250dp"
-                    android:translationY="145dp"
-                    app:srcCompat="@drawable/logout" />
-
-                <TextView
-                    android:id="@+id/logout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:clickable="true"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="Logout"
-                    android:textAlignment="textStart"
-                    android:textSize="24sp"
-                    android:translationX="300dp"
-                    android:translationY="85dp" />
-
-            </LinearLayout>
+                app:layout_constraintTop_toBottomOf="@id/cancellaAccount"
+                tools:ignore="ExtraText"/>
 
             <FrameLayout
                 android:id="@+id/fragment_container"

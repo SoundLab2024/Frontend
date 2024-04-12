@@ -1,12 +1,9 @@
 package com.soundlab.app.view.fragment;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -14,14 +11,11 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-//import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import com.example.soundlab.R;
 import com.soundlab.app.model.Artist;
 import com.soundlab.app.model.Listening;
 import com.soundlab.app.view.CustomButton;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,125 +27,175 @@ public class AnaliticheFragment extends Fragment {
     private List<Listening> listeningList;
     private List<Listening> songStatsList;
     private EditText searchInput;
-    private String songTitle;
-    private boolean isTableVisible = false;
     private boolean searchByUser = true;
-    private boolean searchSong = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        // Inizializzazione delle liste di UserStats e SongStats con dati fittizi
-        listeningList = new ArrayList<>();
-        listeningList.add(new Listening("Utente1",null,null,null,10,"Mattina"));
-        listeningList.add(new Listening("Utente2",null,null,null,11,"Pomeriggio"));
-        listeningList.add(new Listening("Utente3",null,null,null,12,"Notte"));
-
-
-
-        List<Artist> singers = new ArrayList<>();
-        singers.add(new Artist(1, "Artista1",new Date(2002,12,12),"Italiano"));
-
-        songStatsList = new ArrayList<>();
-        songStatsList.add(new Listening(null,"Canzone1","Original",null,11,null));
-        songStatsList.add(new Listening(null,"Canzone2","Original",null,10,null));
-        songStatsList.add(new Listening(null,"Canzone3","Original",null,20,null));
-
+        initializeLists();
 
         View view = inflater.inflate(R.layout.fragment_analitiche, container, false);
+        initializeViews(view);
+        return view;
+    }
 
-        // Definizione del RadioGroup
+    private void initializeLists() {
+        // Lista per memorizzare gli ascolti di un utente
+        listeningList = new ArrayList<>();
+        listeningList.add(new Listening("Utente1", null, null, null, 10, "Mattina"));
+        listeningList.add(new Listening("Utente2", null, null, null, 11, "Pomeriggio"));
+        listeningList.add(new Listening("Utente3", null, null, null, 12, "Notte"));
+
+        // Lista per memorizzare le informazioni sugli artisti
+        List<Artist> singers = new ArrayList<>();
+        singers.add(new Artist(1, "Artista1", new Date(2002, 12, 12), "Italiano"));
+        singers.add(new Artist(2, "Artista2", new Date(2002, 12, 12), "Italiano"));
+
+        // Lista per memorizzare le statistiche di una canzone
+        songStatsList = new ArrayList<>();
+        songStatsList.add(new Listening(null, "Canzone1", "Original", Arrays.asList(singers.get(0)), 11, null));
+        songStatsList.add(new Listening(null, "Canzone2", "Original", null, 10, null));
+        songStatsList.add(new Listening(null, "Canzone3", "Original", null, 20, null));
+    }
+
+
+    /**
+     * Inizializza le View all'interno del layout del frammento.
+     *
+     * @param view La View radice del layout del frammento.
+     */
+    private void initializeViews(View view) {
         RadioGroup radioGroup = view.findViewById(R.id.radioGroup);
         RadioButton userRadioButton = view.findViewById(R.id.user_radio_button);
         RadioButton songRadioButton = view.findViewById(R.id.song_radio_button);
 
         searchInput = view.findViewById(R.id.search);
-        songTitle = searchInput.getText().toString();
-
-        // Implementazione della ricerca
         CustomButton searchButton = view.findViewById(R.id.searchButton);
-        searchButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                performSearch(searchInput.getText().toString());
-            }
-        });
 
-        // Listener per il cambio di selezione nel RadioGroup
+        // Imposta un listener per il click sul pulsante di ricerca
+        searchButton.setOnClickListener(v -> performSearch(searchInput.getText().toString()));
+
+        // Imposta un listener per il cambio di selezione nel RadioGroup
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            // Controlla quale radio button è stato selezionato e imposta il flag corrispondente
-            if (checkedId == userRadioButton.getId()) {
-                searchByUser = true;
-                searchSong = false;
-            } else if (checkedId == songRadioButton.getId()) {
-                searchByUser = false;
-                searchSong = true;
-            }
+            searchByUser = checkedId == userRadioButton.getId();
         });
-
-        return view;
     }
 
-    // Filtro la ricerca
+
+    /**
+     * Esegue una ricerca in base alla query specificata.
+     *
+     * @param query La stringa di ricerca inserita dall'utente.
+     */
     private void performSearch(String query) {
+        // Verifica se la query è vuota
         if (query.isEmpty()) {
-            Toast.makeText(getContext(), "Inserisci elementi validi per la ricerca", Toast.LENGTH_SHORT).show();
+            showToast("Inserisci elementi validi per la ricerca");
             return;
-        } else if (searchByUser && !searchSong) {
-            searchUser(query);
-        } else if (!searchByUser && searchSong) {
-            searchSong(query);
-        } else {
-            Toast.makeText(getContext(), "Errore: Seleziona una categoria valida per la ricerca", Toast.LENGTH_SHORT).show();
         }
+
+        // Verifica se la ricerca è basata sull'utente e la query non corrisponde agli ascolti
+        if (searchByUser && !searchInListeningList(query)) {
+            showToast("Errore: La ricerca non corrisponde al tipo selezionato");
+            return;
+        }
+
+        // Verifica se la ricerca è basata sulla canzone e la query non corrisponde alle statistiche delle canzoni
+        if (!searchByUser && !searchInSongStatsList(query)) {
+            showToast("Errore: La ricerca non corrisponde al tipo selezionato");
+            return;
+        }
+
+        // Esegue la ricerca in base al tipo selezionato e la mostro
+        List<Listening> searchResults = searchByUser ? searchUser(query) : searchSong(query);
+        displaySearchResults(searchResults);
     }
 
-    private void searchUser(String query) {
+
+    /**
+     * Cerca la query specificata nella lista degli ascolti degli utenti.
+     *
+     * @param query La stringa di ricerca da cercare.
+     * @return True se la query corrisponde a un utente nella lista degli ascolti, altrimenti False.
+     */
+    private boolean searchInListeningList(String query) {
+        for (Listening user : listeningList) {
+            // Controlla se l'utente corrente non è nullo e se il suo nome contiene la query
+            // No sensitive-case
+            if (user.getUtente() != null && user.getUtente().toLowerCase().contains(query.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Cerca la query specificata nella lista delle statistiche delle canzoni.
+     *
+     * @param query La stringa di ricerca da cercare.
+     * @return True se la query corrisponde al nome di una canzone nella lista delle statistiche delle canzoni, altrimenti False.
+     */
+    private boolean searchInSongStatsList(String query) {
+        for (Listening song : songStatsList) {
+            // Controlla se il nome della canzone corrente non è nullo e se contiene la query
+            if (song.getCanzone() != null && song.getCanzone().toLowerCase().contains(query.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Esegue una ricerca degli ascolti corrispondenti all'utente specificato dalla query.
+     *
+     * @param query La stringa di ricerca dell'utente.
+     * @return Una lista contenente gli ascolti corrispondenti all'utente specificato.
+     */
+    private List<Listening> searchUser(String query) {
+        // Lista per memorizzare i risultati della ricerca
         List<Listening> searchResults = new ArrayList<>();
         for (Listening user : listeningList) {
+            // Controlla se l'utente corrente non è nullo e se il suo nome contiene la query
             if (user.getUtente() != null && user.getUtente().toLowerCase().contains(query.toLowerCase())) {
                 searchResults.add(user);
             }
         }
-
-        if (searchResults.isEmpty()) {
-            Toast.makeText(getContext(), "Nessun risultato trovato", Toast.LENGTH_SHORT).show();
-        } else {
-            displaySearchResults(searchResults);
-        }
+        return searchResults;
     }
 
-    private void searchSong(String query) {
+
+    /**
+     * Esegue una ricerca delle statistiche delle canzoni corrispondenti al nome specificato dalla query.
+     *
+     * @param query La stringa di ricerca del nome della canzone.
+     * @return Una lista contenente le statistiche delle canzoni corrispondenti al nome specificato.
+     */
+    private List<Listening> searchSong(String query) {
         List<Listening> searchResults = new ArrayList<>();
         for (Listening song : songStatsList) {
+            // Controlla se il nome della canzone corrente non è nullo e se contiene la query
             if (song.getCanzone() != null && song.getCanzone().toLowerCase().contains(query.toLowerCase())) {
                 searchResults.add(song);
             }
         }
-
-        if (searchResults.isEmpty()) {
-            Toast.makeText(getContext(), "Nessun risultato trovato", Toast.LENGTH_SHORT).show();
-        } else {
-            displaySearchResults(searchResults);
-        }
+        return searchResults;
     }
 
 
-
+    /**
+     * Visualizza i risultati della ricerca nella tabella dell'interfaccia utente.
+     *
+     * @param searchResults La lista dei risultati della ricerca da visualizzare.
+     */
     private void displaySearchResults(List<Listening> searchResults) {
         TableLayout tableLayout = getView().findViewById(R.id.table);
-
-        // Rimuove le righe precedenti
         tableLayout.removeAllViews();
 
-        List<String> columns;
-        if (searchByUser) {
-            columns = Arrays.asList("ㅤ", "Utente","ㅤ","Numero Ascolti", "Fascia Oraria");
-        } else {
-            columns = Arrays.asList("ㅤ", "Canzone", "Tipo", "Numero Ascolti");
-        }
+        // Determina le colonne da visualizzare in base al tipo di ricerca (utente o canzone)
+        List<String> columns = searchByUser ? Arrays.asList("ㅤ", "Utente", "ㅤ", "Numero Ascolti", "Fascia Oraria") :
+                Arrays.asList("ㅤ", "Canzone", "Tipo", "Artista", "Numero Ascolti");
 
-        // Aggiungi la riga delle intestazioni
         TableRow headerRow = new TableRow(getContext());
         for (String columnName : columns) {
             TextView headerTextView = new TextView(getContext());
@@ -160,37 +204,69 @@ public class AnaliticheFragment extends Fragment {
         }
         tableLayout.addView(headerRow);
 
-        // Aggiungi righe alla tabella per ogni risultato della ricerca
         for (int i = 0; i < searchResults.size(); i++) {
             Listening listening = searchResults.get(i);
-            // Creo una nuova riga
             TableRow row = new TableRow(getContext());
-
-            // Aggiunta il numero di riga
             TextView numberTextView = new TextView(getContext());
-            numberTextView.setText(String.valueOf(i + 1)); // Inizia da 1 invece di 0
+            numberTextView.setText(String.valueOf(i + 1));
             row.addView(numberTextView);
-
-            // Aggiunta celle dei dati corrispondenti
-            if (searchByUser) {
-                addCellToRow(row, listening.getUtente());
-                addCellToRow(row, listening.getSongType());
-                addCellToRow(row, String.valueOf(listening.getTotalListens()));
-                addCellToRow(row, listening.getTimeSlot());
-            } else {
-                addCellToRow(row, listening.getCanzone());
-                addCellToRow(row, listening.getSongType());
-                addCellToRow(row, String.valueOf(listening.getTotalListens()));
-                addCellToRow(row, listening.getTimeSlot());
+            addCellToRow(row, searchByUser ? listening.getUtente() : listening.getCanzone());
+            addCellToRow(row, listening.getSongType());
+            if (!searchByUser) {
+                // Se la ricerca è basata sulla canzone, aggiunge il nome dell'artista per quella canzone
+                String artistName = getArtistNameForSong(listening.getCanzone());
+                addCellToRow(row, artistName != null ? artistName : " "); // Se non ci sono informazioni sull'artista, aggiunge uno spazio vuoto
             }
 
-            // Aggiungo la riga alla tabella
+            // Aggiunge il numero totale di ascolti e la fascia oraria alla riga corrente
+            addCellToRow(row, String.valueOf(listening.getTotalListens()));
+            addCellToRow(row, listening.getTimeSlot());
             tableLayout.addView(row);
         }
     }
+
+
+    /**
+     * Ottiene il nome dell'artista per una determinata canzone.
+     *
+     * @param songTitle Il titolo della canzone di cui ottenere l'artista.
+     * @return Il nome dell'artista per la canzone specificata, se presente, altrimenti null.
+     */
+    private String getArtistNameForSong(String songTitle) {
+        for (Listening song : songStatsList) {
+
+            // Controlla se il nome della canzone corrente non è nullo e se corrisponde al titolo della canzone specificato
+            if (song.getCanzone() != null && song.getCanzone().equalsIgnoreCase(songTitle)) {
+                List<Artist> songArtists = song.getSingers(); // Ottiene gli artisti associati alla canzone
+                // Se sono presenti artisti associati alla canzone, restituisce il nome del primo artista
+                if (songArtists != null && !songArtists.isEmpty()) {
+                    return songArtists.get(0).getName();
+                }
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * Aggiunge una cella di testo a una riga della tabella.
+     *
+     * @param row  La riga a cui aggiungere la cella di testo.
+     * @param text Il testo da visualizzare nella cella.
+     */
     private void addCellToRow(TableRow row, String text) {
         TextView textView = new TextView(getContext());
         textView.setText(text);
         row.addView(textView);
+    }
+
+
+    /**
+     * Mostra un messaggio Toast con il messaggio specificato.
+     *
+     * @param message Il messaggio da mostrare nel Toast.
+     */
+    private void showToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

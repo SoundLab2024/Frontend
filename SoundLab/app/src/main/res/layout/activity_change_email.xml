@@ -5,69 +5,168 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0D0A24"
-    tools:context="com.soundlab.app.view.activity.ChangeEmailActivity">
+    tools:context="com.soundlab.app.view.activity.ChangePasswordActivity">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="170dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/user" />
-
-    <TextView
-        android:id="@+id/currentEmailLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:fontFamily="sans-serif-medium"
-        android:text="Email attuale:"
-        android:textSize="18sp"
-        android:layout_marginStart="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
-
-    <TextView
-        android:id="@+id/currentEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="user@example.com"
-        android:textSize="16sp"
-        android:layout_marginStart="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/currentEmailLabel" />
-
-    <EditText
-        android:id="@+id/newEmailEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginStart="20dp"
-        android:hint="Nuova email"
-        android:inputType="textEmailAddress"
+    <ScrollView
+        android:layout_width="409dp"
+        android:layout_height="912dp"
+        android:layout_marginHorizontal="0dp"
+        android:layout_marginVertical="0dp"
+        android:background="#0D0A24"
+        android:scrollbars="none"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/currentEmail" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <com.soundlab.app.view.CustomButton
-        android:id="@+id/saveButton"
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/button"
-        android:text="Salva"
-        android:textAllCaps="false"
-        android:textSize="18sp"
-        android:translationX="100dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/newEmailEditText" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+            <TextView
+                android:id="@+id/impostazioni"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="✎ Modifica email"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.068"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <View
+                android:id="@+id/separatore1"
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:background="#55FFFFFF"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/impostazioni"
+                android:layout_marginTop="8dp"/>
+
+
+            <TextView
+                android:id="@+id/emailCorrente"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Inserisci email corrente"
+                android:textSize="16sp"
+                android:textStyle="normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.226"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/separatore1" />
+
+            <EditText
+                android:id="@+id/email_input"
+                android:layout_width="300dp"
+                android:layout_height="55dp"
+                android:layout_marginEnd="61dp"
+                android:autofillHints="emailAddress"
+                android:background="@drawable/custom_text_input"
+                android:hint="@string/type_email"
+                android:inputType="textEmailAddress"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:textColor="@color/black"
+                android:textColorHint="#59000000"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/emailCorrente"
+                tools:ignore="TextContrastCheck" />
+
+            <TextView
+                android:id="@+id/nuovaEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Inserisci la nuova email"
+                android:textSize="16sp"
+                android:textStyle="normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.226"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/email_input" />
+
+            <EditText
+                android:id="@+id/new_email_input"
+                android:layout_width="300dp"
+                android:layout_height="55dp"
+                android:layout_marginEnd="61dp"
+                android:autofillHints="emailAddress"
+                android:background="@drawable/custom_text_input"
+                android:hint="@string/type_email"
+                android:inputType="textEmailAddress"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:textColor="@color/black"
+                android:textColorHint="#59000000"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/nuovaEmail"
+                tools:ignore="TextContrastCheck" />
+
+            <TextView
+                android:id="@+id/confermaEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Conferma la nuova email"
+                android:textSize="16sp"
+                android:textStyle="normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.226"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/new_email_input" />
+
+            <EditText
+                android:id="@+id/confirm_email"
+                android:layout_width="300dp"
+                android:layout_height="55dp"
+                android:layout_marginEnd="61dp"
+                android:autofillHints="emailAddress"
+                android:background="@drawable/custom_text_input"
+                android:hint="@string/type_email"
+                android:inputType="textEmailAddress"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:textColor="@color/black"
+                android:textColorHint="#59000000"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/confermaEmail"
+                tools:ignore="TextContrastCheck" />
+
+            <com.soundlab.app.view.CustomButton
+                android:id="@+id/salvaButton"
+                android:layout_width="150dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="45dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/button"
+                android:text="Salva"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:translationX="100dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.022"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/confirm_email" />
+
+            <FrameLayout
+                android:id="@+id/fragment_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/confirm_email" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,7 +15,7 @@ public class ChangeEmailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_email);
 
-        Button btnSave = findViewById(R.id.saveButton);
+        Button btnSave = findViewById(R.id.salvaButton);
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

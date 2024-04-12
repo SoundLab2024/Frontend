@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:background="#0D0A24">
 
-    <!-- Contenitore principale -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -17,43 +16,16 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/user"
+            android:src="@drawable/changephoto"
             android:scaleType="centerCrop" />
 
-        <!-- LinearLayout orizzontale per i pulsanti "Modifica Foto" e "Elimina Foto" -->
         <LinearLayout
             android:id="@+id/buttonsLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"/>
 
-            <!-- CustomButton per "Modifica Foto" -->
-            <com.soundlab.app.view.CustomButton
-                android:id="@+id/modificafoto"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:background="@drawable/button"
-                android:text="Modifica"
-                android:textAllCaps="false"
-                android:textSize="14sp" />
-
-            <!-- CustomButton per "Elimina Foto" -->
-            <com.soundlab.app.view.CustomButton
-                android:id="@+id/cancellafoto"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:background="@drawable/button"
-                android:text="Elimina"
-                android:textAllCaps="false"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <!-- EditText per l'username -->
         <EditText
             android:id="@+id/usernameEditText"
             android:layout_width="match_parent"
@@ -61,17 +33,16 @@
             android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:hint="Username"
+            android:hint="Inserisci il nuovo username"
             android:inputType="text"
             android:maxLines="1" />
 
-        <!-- CustomButton per salvare le modifiche -->
         <com.soundlab.app.view.CustomButton
             android:id="@+id/salva"
             android:layout_width="150dp"
             android:layout_height="60dp"
-            android:layout_marginTop="16dp"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
             android:background="@drawable/button"
             android:text="Salva"
             android:textAllCaps="false"
