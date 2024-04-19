@@ -193,8 +193,9 @@ public class AnaliticheFragment extends Fragment {
         tableLayout.removeAllViews();
 
         // Determina le colonne da visualizzare in base al tipo di ricerca (utente o canzone)
-        List<String> columns = searchByUser ? Arrays.asList("ㅤ", "Utente", "ㅤ", "Numero Ascolti", "Fascia Oraria") :
-                Arrays.asList("ㅤ", "Canzone", "Tipo", "Artista", "Numero Ascolti");
+        List<String> columns = searchByUser ? Arrays.asList(" ", "Utente", " ", "Numero Ascolti", "Fascia Oraria") :
+                Arrays.asList(" ", "Canzone", "Tipo", "Artista", "Numero Ascolti");
+
 
         TableRow headerRow = new TableRow(getContext());
         for (String columnName : columns) {

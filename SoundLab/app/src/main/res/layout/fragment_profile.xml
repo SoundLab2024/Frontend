@@ -22,8 +22,8 @@
 
             <ImageView
                 android:id="@+id/imageView4"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="404dp"
+                android:layout_height="319dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/ellipse_profile"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -42,42 +42,8 @@
                 android:scaleX="0.5"
                 android:scaleY="0.5"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <LinearLayout
-                android:id="@+id/linearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="32dp"
-                android:layout_marginEnd="32dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView4"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/userimg"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:scaleX="0.75"
-                    android:scaleY="0.75"
-                    android:src="@drawable/user" />
-
-                <TextView
-                    android:id="@+id/username"
-                    android:layout_width="250dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="Username"
-                    android:textAlignment="center"
-                    android:textSize="20sp"
-                    android:singleLine="true"/>
-
-
-            </LinearLayout>
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="invisible"/>
 
             <FrameLayout
                 android:id="@+id/fragment_container"
@@ -86,7 +52,40 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <LinearLayout
+                    android:id="@+id/linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:orientation="vertical"
+                    android:translationY="50dp">
+
+                    <ImageView
+                        android:id="@+id/userimg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:scaleX="0.75"
+                        android:scaleY="0.75"
+                        android:src="@drawable/user" />
+
+                    <TextView
+                        android:id="@+id/username"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="sans-serif-medium"
+                        android:singleLine="true"
+                        android:text="Username"
+                        android:textAlignment="center"
+                        android:textSize="20sp" />
+
+
+                </LinearLayout>
+            </FrameLayout>
 
             <com.soundlab.app.view.CustomButton
                 android:id="@+id/addButton"
@@ -105,6 +104,7 @@
                 android:layout_height="69dp"
                 android:layout_marginTop="348dp"
                 android:background="@drawable/analytics"
+                android:translationY="-80dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.775"
                 app:layout_constraintStart_toStartOf="parent"
