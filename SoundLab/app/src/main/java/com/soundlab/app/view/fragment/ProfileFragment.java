@@ -1,7 +1,13 @@
 package com.soundlab.app.view.fragment;
 
+import static com.soundlab.app.utils.Constants.USER_EMAIL;
+import static com.soundlab.app.utils.Constants.USER_NAME;
+import static com.soundlab.app.utils.Constants.USER_ROLE;
+
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
@@ -44,7 +50,9 @@ public class ProfileFragment extends Fragment {
     private TextView zeroPlaylistTextView;
     private ArrayList<Playlist> playlistArrayList;
     private Library library;
-    User utente = new User("mail@mail.it","lucia","ADMIN");
+    private String email;
+    private String username;
+    private String role;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -53,11 +61,15 @@ public class ProfileFragment extends Fragment {
 
         Log.d("ProfileFragment", "onCreateView called");
 
+        // roba dell'utente
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        role = sharedPreferences.getString(USER_ROLE, null);
+        email = sharedPreferences.getString(USER_EMAIL, null);
+        username = sharedPreferences.getString(USER_NAME, null);
+
         // Ottiene la RecyclerView dal layout
         recyclerView = view.findViewById(R.id.playlists_recyclerView);
         recyclerView.setNestedScrollingEnabled(false);
-
-
 
         // Crea una nuova lista di playlist
         playlistArrayList = new ArrayList<>();
@@ -105,7 +117,7 @@ public class ProfileFragment extends Fragment {
         settingsButton.setOnClickListener(v -> openSettingsActivity());
 
         CustomButton analiticheButton = view.findViewById(R.id.analiticheButton);
-        if(utente.getRole() != "ADMIN"){
+        if(!role.equals("ADMIN")){
             analiticheButton.setVisibility(View.GONE);
         }
 

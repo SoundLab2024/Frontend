@@ -34,14 +34,18 @@
                 android:layout_height="48dp"
                 android:layout_gravity="center|end"
                 android:background="@drawable/setting"
-                android:contentDescription="@string/settings"
-                android:scaleX="0.5"
-                android:scaleY="0.5"
                 android:clickable="true"
+                android:contentDescription="@string/settings"
                 android:onClick="openSettingsActivity"
-                />
+                android:scaleX="0.5"
+                android:scaleY="0.5" />
 
         </FrameLayout>
+
+        <TextView
+            android:id="@+id/welcome"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <TextView
             android:id="@+id/textView2"
