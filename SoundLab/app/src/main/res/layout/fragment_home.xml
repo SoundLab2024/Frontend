@@ -45,7 +45,12 @@
         <TextView
             android:id="@+id/welcome"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:textSize="42sp"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="16dp"/>
 
         <TextView
             android:id="@+id/textView2"

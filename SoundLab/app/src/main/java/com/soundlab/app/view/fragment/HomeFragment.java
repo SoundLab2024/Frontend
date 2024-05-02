@@ -34,7 +34,7 @@ public class HomeFragment extends Fragment {
         userName = sharedPreferences.getString(USER_NAME, null);
 
         welcomeView = view.findViewById(R.id.welcome);
-        welcomeView.setText("Benvenuto, " + userName);
+        welcomeView.setText("Ehy " + userName + ", cosa vuoi ascoltare oggi?");
 
         return view;
     }
