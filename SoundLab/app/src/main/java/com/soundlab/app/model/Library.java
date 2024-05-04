@@ -1,14 +1,15 @@
 package com.soundlab.app.model;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-public class Library {
-
-    private List<Playlist> playlists;
+public class Library implements Serializable {
+    private List<Playlist> playlists = new ArrayList<>();
     private int playlistNumber;
 
-    public Library(List<Playlist> playlists){
+    public Library(List<Playlist> playlists, int playlistNumber){
         this.playlists = playlists;
-        this.playlistNumber = playlists.size();
+        this.playlistNumber = playlistNumber;
     }
 
     public List<Playlist> getPlaylists() {
@@ -17,10 +18,6 @@ public class Library {
 
     public int getPlaylistNumber() {
         return playlistNumber;
-    }
-
-    public void setPlaylistNumber(int playlistNumber) {
-        this.playlistNumber = playlistNumber;
     }
 
 }

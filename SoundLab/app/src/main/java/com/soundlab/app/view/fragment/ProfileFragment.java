@@ -74,12 +74,13 @@ public class ProfileFragment extends Fragment {
         // Crea una nuova lista di playlist
         playlistArrayList = new ArrayList<>();
 
-        // TODO: Carica le playlist dal backend
+        // TODO: Carica le playlist dal backend come nel HomeFragment!
+        //returnLib();
 
         // Aggiungi le playlist
         playlistArrayList.add(new Playlist(1, "Playlist1", "Rock", R.drawable.playlist_default, false, null));
 
-        library = new Library(playlistArrayList);
+        library = new Library(playlistArrayList, 0);
 
         // Inizializza l'adapter e passa la lista di playlist
         ProfileAdapter profileAdapter = new ProfileAdapter(this, playlistArrayList);

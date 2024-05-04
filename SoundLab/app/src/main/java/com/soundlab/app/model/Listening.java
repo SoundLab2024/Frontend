@@ -1,8 +1,9 @@
 package com.soundlab.app.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Listening {
+public class Listening implements Serializable {
     private String utente;
     private String canzone;
     private String songType;

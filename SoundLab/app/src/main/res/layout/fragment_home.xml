@@ -18,7 +18,7 @@
             android:id="@+id/frameLayout_head"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp">
+            android:layout_marginBottom="5dp">
 
             <TextView
                 android:id="@+id/head"
@@ -46,11 +46,11 @@
             android:id="@+id/welcome"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textSize="42sp"/>
+            android:textSize="20sp" />
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="16dp"/>
+            android:layout_height="20dp" />
 
         <TextView
             android:id="@+id/textView2"
