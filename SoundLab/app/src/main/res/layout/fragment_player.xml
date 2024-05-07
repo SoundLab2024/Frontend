@@ -91,7 +91,7 @@
             android:layout_height="85dp"
             android:layout_marginHorizontal="40dp"
             android:layout_weight="1"
-            android:background="@drawable/play" />
+            android:background="@drawable/pause" />
 
         <com.soundlab.app.view.CustomButton
             android:id="@+id/next"

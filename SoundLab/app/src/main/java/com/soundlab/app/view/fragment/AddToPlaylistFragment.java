@@ -136,5 +136,4 @@ public class AddToPlaylistFragment extends Fragment {
         dialog.show();
     }
 
-
 }

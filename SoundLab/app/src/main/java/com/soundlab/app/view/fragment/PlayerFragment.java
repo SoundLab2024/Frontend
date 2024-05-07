@@ -1,9 +1,12 @@
 package com.soundlab.app.view.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,17 +24,16 @@ import androidx.fragment.app.Fragment;
 import com.example.soundlab.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.soundlab.app.model.Song;
+import com.soundlab.app.service.PlayerService;
+import com.soundlab.app.singleton.PlayerSingleton;
 import com.soundlab.app.utils.Utilities;
 import com.soundlab.app.view.CustomButton;
 import com.soundlab.app.view.activity.MainActivity;
 
-import java.util.ArrayList;
-import java.util.Locale;
+import java.util.Objects;
 
 public class PlayerFragment extends Fragment {
-
-    // Componenti UI
-    private MediaPlayer mediaPlayer;
+    private final PlayerSingleton playerSingleton = PlayerSingleton.getInstance();
     private CustomButton playButton;
     private SeekBar seekBar;
     private TextView timePassed;
@@ -40,34 +42,80 @@ public class PlayerFragment extends Fragment {
     private CustomButton previousButton;
     private TextView title;
     private TextView artist;
+    private BroadcastReceiver receiver;
+    private final Handler handler = new Handler();
+    private Runnable runnable;
     private ImageView cover;
-    private boolean isPlaying = true;
-    private int songPosition;
-    private ArrayList<Song> songArrayList;
-    private Song song;
 
-    // Gestione dell'aggiornamento periodico della barra di avanzamento
-    private final Handler handler = new Handler(Looper.getMainLooper());
-    private Runnable updateSeekBarAndTimeRunnable;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (Objects.equals(intent.getAction(), "MEDIAPLAYER_INIT")) {
+                    updateSongLabel();
+                    updatePlayButton();
+                    initSeekBar();
+                    startSeekBarUpdate();
+                }
+                else if (Objects.equals(intent.getAction(), "PLAYBACK_STATE_CHANGED")) {
+                    // Aggiorna l'interfaccia grafica del fragment
+                    updatePlayButton();
+                } else if (Objects.equals(intent.getAction(), "SONG_CHANGED")){
+                    initSeekBar();
+                    animateSongChange();
+                } else if (Objects.equals(intent.getAction(), "PLAYBACK_RESTART")){
+                    initSeekBar();
+                }
+                else if (Objects.equals(intent.getAction(), "PLAYBACK_FINISH")) {
+                    showToast("Non ci sono altri brani da riprodurre.");
+                } else if (Objects.equals(intent.getAction(), "PLAYBACK_ERROR")) {
+                    showToast("Impossibile riprodurre il brano.");
+                }
+            }
+        };
+
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("MEDIAPLAYER_INIT");
+        filter.addAction("PLAYBACK_STATE_CHANGED");
+        filter.addAction("SONG_CHANGED");
+        filter.addAction("PLAYBACK_FINISH");
+        filter.addAction("PLAYBACK_ERROR");
+        filter.addAction("PLAYBACK_RESTART");
+        requireContext().registerReceiver(receiver, filter);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_player, container, false);
         Log.d("PlayerFragment", "onCreateView called");
+        hideBottomNavigationView();
 
         Bundle bundle = getArguments();
 
         if (bundle != null) {
-            initializeSongData(bundle);
-            initializeMediaPlayerComponents(view);
-            startPlayback();
+            boolean avoidServiceRestart = bundle.getBoolean("avoidServiceRestart", false);
+            if (!avoidServiceRestart) {
+                invokeMusicService();
+            }
+
         }
 
-        hideBottomNavigationView();
-
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Utilities.changeStatusBarColorFragment(this, R.color.dark_purple);
+
+        initializeMediaPlayerComponents(view);
+        initPlayback();
+        initSeekBar();
     }
 
     public void hideBottomNavigationView() {
@@ -76,60 +124,113 @@ public class PlayerFragment extends Fragment {
         }
     }
 
-    /**
-     * Metodo per inizializzare i dati del brano in base al bundle fornito.
-     *
-     * @param bundle Il bundle contenente i dati del brano
-     */
-    private void initializeSongData(Bundle bundle) {
-        if (mediaPlayer == null) {
-            songPosition = bundle.getInt("songPosition");
-            Object[] objectArray = (Object[]) bundle.getSerializable("songArrayList");
-
-            if (objectArray != null) {
-                songArrayList = new ArrayList<>(objectArray.length);
-                for (Object obj : objectArray) {
-                    if (obj instanceof Song) {
-                        songArrayList.add((Song) obj);
-                    }
-                }
-            }
-
-            song = songArrayList.get(songPosition);
-        }
-    }
-
-    /**
-     * Metodo per inizializzare i componenti del MediaPlayer.
-     *
-     * @param view La vista radice del fragment
-     */
     private void initializeMediaPlayerComponents(View view) {
-
-        if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(getActivity(), song.getTrack());
-        }
-
         playButton = view.findViewById(R.id.play);
         seekBar = view.findViewById(R.id.seekBar);
         timePassed = view.findViewById(R.id.timePassed);
         timeRemaining = view.findViewById(R.id.timeRemaining);
         nextButton = view.findViewById(R.id.next);
         previousButton = view.findViewById(R.id.previous);
+        title = view.findViewById(R.id.title);
+        artist = view.findViewById(R.id.artist);
+        cover = view.findViewById(R.id.cover);
 
         CustomButton addToPlaylistButton = view.findViewById(R.id.addToPlaylists);
-        addToPlaylistButton.setOnClickListener(view1 -> loadAddToPlaylistFragment(song));
-
-
-        initMediaPlayer();
-        initSeekBar();
+        addToPlaylistButton.setOnClickListener(view1 -> loadAddToPlaylistFragment(playerSingleton.getSong()));
     }
 
-    /**
-     * Metodo per caricare il fragment AddToPlaylist con il brano selezionato.
-     *
-     * @param song Il brano selezionato
-     */
+    private void updateSongLabel() {
+        Song song = playerSingleton.getSong();
+
+        if (song != null) {
+            title.setText(song.getName());
+            artist.setText(song.getArtists().get(0).getName());
+        }
+    }
+
+    private void initPlayback() {
+        playButton.setOnClickListener(v -> togglePlayback());
+        nextButton.setOnClickListener(v -> playerSingleton.next(requireContext()));
+        previousButton.setOnClickListener(v -> playerSingleton.previous(requireContext()));
+    }
+
+    private void togglePlayback() {
+        playerSingleton.playAndPause(requireContext());
+        updatePlayButton();
+    }
+
+    private void updatePlayButton() {
+        if (playerSingleton.isPlaying()) {
+            playButton.setBackgroundResource(R.drawable.pause);
+        } else {
+            playButton.setBackgroundResource(R.drawable.play);
+        }
+    }
+
+    private void initSeekBar() {
+        MediaPlayer mediaPlayer = playerSingleton.getMediaPlayer();
+
+        if (mediaPlayer != null) {
+
+            seekBar.setMax(mediaPlayer.getDuration());
+            seekBar.setProgress(mediaPlayer.getCurrentPosition());
+            updateTimeLabels();
+            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (fromUser) {
+                        mediaPlayer.seekTo(progress);
+                        updateTimeLabels();
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) { }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) { }
+            });
+        }
+    }
+
+    private void updateTimeLabels() {
+
+        int totalTime = playerSingleton.getMediaPlayer().getDuration();
+        int currentTime = playerSingleton.getMediaPlayer().getCurrentPosition();
+        int remaningTime = totalTime - currentTime;
+
+        String remaningTimeString = Utilities.milliSecondsToTimer(remaningTime);
+        String currentTimeString = Utilities.milliSecondsToTimer(currentTime);
+
+        timePassed.setText(currentTimeString);
+        timeRemaining.setText("-" + remaningTimeString);
+
+    }
+
+    private void startSeekBarUpdate() {
+        if (playerSingleton.getMediaPlayer() != null) {
+            if (runnable == null) {
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (playerSingleton.isPlaying()) {
+                            int currentPosition = playerSingleton.getMediaPlayer().getCurrentPosition();
+                            seekBar.setProgress(currentPosition);
+                            updateTimeLabels();
+                        }
+                        handler.postDelayed(this, 1000); // Aggiorna ogni secondo
+                    }
+                };
+                handler.postDelayed(runnable, 1000); // Avvia l'aggiornamento ogni secondo
+            }
+        }
+    }
+
+    private void invokeMusicService() {
+        Intent intent = new Intent(requireContext(), PlayerService.class);
+        requireContext().startService(intent);
+    }
+
     public void loadAddToPlaylistFragment(Song song) {
         Bundle bundle = new Bundle();
         bundle.putSerializable("song", song);
@@ -143,192 +244,39 @@ public class PlayerFragment extends Fragment {
         }
     }
 
-    /**
-     * Metodo per avviare la riproduzione del brano corrente.
-     */
-    private void startPlayback() {
-        if (mediaPlayer != null && isPlaying) {
-            mediaPlayer.start();
-            playButton.setBackgroundResource(R.drawable.pause);
-        }
+    private void showToast(String message) {
+        Snackbar snackbar = Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT);
+        View snackbarView = snackbar.getView();
+
+        // Center the text
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+        snackbar.show();
     }
 
-    /**
-     * Metodo per inizializzare il MediaPlayer e i suoi listener.
-     */
-    private void initMediaPlayer() {
-        playButton.setOnClickListener(v -> togglePlayPause());
-        mediaPlayer.setOnCompletionListener(mp -> onPlaybackCompleted());
-        mediaPlayer.setOnPreparedListener(mp -> {
-            seekBar.setMax(mediaPlayer.getDuration());
-            updateSeekBarAndTime();
-        });
-        mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-            showToast("Errore nella riproduzione del brano.");
-            return false;
-        });
+    @Override
+    public void onResume() {
+        super.onResume();
+        updatePlayButton();
+        updateSongLabel();
+        startSeekBarUpdate();
     }
 
-    /**
-     * Metodo per inizializzare la SeekBar e il suo listener.
-     */
-    private void initSeekBar() {
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser && mediaPlayer != null) {
-                    mediaPlayer.seekTo(progress);
-                    updateTimeLabels(progress);
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-    }
-
-    /**
-     * Metodo per gestire la riproduzione e la pausa del brano.
-     */
-    private void togglePlayPause() {
-        if (isPlaying) {
-            mediaPlayer.pause();
-            playButton.setBackgroundResource(R.drawable.play);
-        } else {
-            if (mediaPlayer.getCurrentPosition() == mediaPlayer.getDuration()) {
-                restartPlayback();
-            }
-            mediaPlayer.start();
-            playButton.setBackgroundResource(R.drawable.pause);
-        }
-        isPlaying = !isPlaying;
-        updateSeekBarAndTime();
-    }
-
-    /**
-     * Metodo per riavviare la riproduzione del brano corrente.
-     */
-    private void restartPlayback() {
-        mediaPlayer.seekTo(0);
-        seekBar.setProgress(0);
-        updateTimeLabels(0);
-    }
-
-    /**
-     * Metodo chiamato alla fine della riproduzione del brano.
-     */
-    private void onPlaybackCompleted() {
-        playButton.setBackgroundResource(R.drawable.play);
-        isPlaying = false;
-        playNextSong();
-    }
-
-    /**
-     * Metodo per aggiornare la barra di avanzamento e i timer del brano.
-     */
-    private void updateSeekBarAndTime() {
-        if (mediaPlayer != null && isPlaying) {
-            int currentPosition = mediaPlayer.getCurrentPosition();
-            seekBar.setProgress(currentPosition);
-            updateTimeLabels(currentPosition);
-            handler.postDelayed(this::updateSeekBarAndTime, 1000);
-        }
-    }
-
-
-    /**
-     * Metodo per aggiornare i timer del brano.
-     *
-     * @param currentPosition La posizione corrente del brano in millisecondi
-     */
-    private void updateTimeLabels(int currentPosition) {
-        timePassed.setText(millisecondsToTime(currentPosition));
-        timeRemaining.setText(String.format(Locale.getDefault(), "-%s", millisecondsToTime(mediaPlayer.getDuration() - currentPosition)));
-    }
-
-    /**
-     * Metodo per convertire millisecondi in formato di tempo (MM:SS).
-     *
-     * @param milliseconds Il tempo in millisecondi da convertire
-     * @return Il tempo convertito in formato MM:SS
-     */
-    private String millisecondsToTime(int milliseconds) {
-        int seconds = (milliseconds / 1000) % 60;
-        int minutes = (milliseconds / (1000 * 60)) % 60;
-        return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.setArguments(null);
     }
 
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        Utilities.changeStatusBarColorFragment(this, R.color.dark_purple);
-
-        initializeSongDetails(view);
-
-        nextButton.setOnClickListener(v -> playNextSong());
-        previousButton.setOnClickListener(v -> playPreviousSong());
-
-        // Aggiorna la SeekBar e i timer del brano
-        if (mediaPlayer != null) {
-            seekBar.setMax(mediaPlayer.getDuration());
-            seekBar.setProgress(mediaPlayer.getCurrentPosition());
-            updateTimeLabels(mediaPlayer.getCurrentPosition());
-            updateSeekBarAndTime();
-        }
+    public void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(runnable);
+        requireContext().unregisterReceiver(receiver);
     }
 
-    /**
-     * Metodo per inizializzare i dettagli del brano come il titolo, l'artista e la copertina.
-     *
-     * @param view La vista radice del fragment
-     */
-    private void initializeSongDetails(View view) {
-        title = view.findViewById(R.id.title);
-        artist = view.findViewById(R.id.artist);
-        cover = view.findViewById(R.id.cover);
-
-        title.setText(song.getName());
-        artist.setText(song.getArtists().get(0).getName());
-        cover.setImageResource(song.getImage());
-    }
-
-    /**
-     * Metodo per riprodurre il brano successivo nella lista.
-     */
-    private void playNextSong() {
-        if (songPosition < songArrayList.size() - 1) {
-            songPosition++;
-            song = songArrayList.get(songPosition);
-            animateSongChange();
-        } else {
-            showToast("Non ci sono altri brani da riprodurre.");
-        }
-    }
-
-    /**
-     * Metodo per riprodurre il brano precedente nella lista.
-     */
-    private void playPreviousSong() {
-        if (mediaPlayer.getCurrentPosition() >= 3500) {
-            restartMediaPlayer();
-        } else if (songPosition > 0) {
-            songPosition--;
-            song = songArrayList.get(songPosition);
-            animateSongChange();
-        } else {
-            showToast("Non ci sono altri brani da riprodurre.");
-        }
-    }
-
-    /**
-     * Metodo per animare il cambiamento del brano.
-     */
     private void animateSongChange() {
         Animation fadeOutAnimation = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out);
         fadeOutAnimation.setDuration(1000);
@@ -345,10 +293,12 @@ public class PlayerFragment extends Fragment {
                 fadeInAnimation.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
+                        updateSongLabel();
                     }
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
+                        // Ritarda l'esecuzione di updateSongLabel() di 2 secondi
                     }
 
                     @Override
@@ -358,7 +308,6 @@ public class PlayerFragment extends Fragment {
                 title.startAnimation(fadeInAnimation);
                 artist.startAnimation(fadeInAnimation);
                 cover.startAnimation(fadeInAnimation);
-                updateSongDetails();
             }
 
             @Override
@@ -368,69 +317,7 @@ public class PlayerFragment extends Fragment {
         title.startAnimation(fadeOutAnimation);
         artist.startAnimation(fadeOutAnimation);
         cover.startAnimation(fadeOutAnimation);
-        new Handler(Looper.getMainLooper()).postDelayed(this::restartMediaPlayer, 1100);
     }
 
-    /**
-     * Metodo per aggiornare i dettagli del brano corrente.
-     */
-    private void updateSongDetails() {
-        title.setText(song.getName());
-        artist.setText(song.getArtists().get(0).getName());
-        cover.setImageResource(song.getImage());
-    }
 
-    /**
-     * Metodo per riavviare il MediaPlayer con il brano corrente.
-     */
-    private void restartMediaPlayer() {
-        mediaPlayer.release();
-        mediaPlayer = MediaPlayer.create(getActivity(), song.getTrack());
-        mediaPlayer.start();
-        playButton.setBackgroundResource(R.drawable.pause);
-        isPlaying = true;
-        initMediaPlayer();
-        initSeekBar();
-    }
-
-    /**
-     * Metodo per mostrare un toast personalizzato.
-     */
-    private void showToast(String message) {
-        Snackbar snackbar = Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT);
-        View snackbarView = snackbar.getView();
-
-        // Centra il testo
-        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
-        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-
-        snackbar.show();
-    }
-
-    @Override
-    public void onResume() {
-        Log.d("songPosition", String.valueOf(songPosition));
-        super.onResume();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        releaseMediaPlayerResources();
-    }
-
-    /**
-     * Metodo per rilasciare le risorse del MediaPlayer.
-     */
-    private void releaseMediaPlayerResources() {
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-
-        if (updateSeekBarAndTimeRunnable != null) {
-            handler.removeCallbacks(updateSeekBarAndTimeRunnable);
-            updateSeekBarAndTimeRunnable = null;
-        }
-    }
 }

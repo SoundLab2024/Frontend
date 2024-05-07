@@ -5,10 +5,12 @@ import static com.soundlab.app.utils.Constants.USER_NAME;
 import static com.soundlab.app.utils.Constants.USER_ROLE;
 import static com.soundlab.app.utils.Constants.USER_TOKEN;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,11 +21,14 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.soundlab.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.soundlab.app.model.User;
+import com.soundlab.app.service.PlayerService;
 import com.soundlab.app.utils.Utilities;
 import com.soundlab.app.view.fragment.HomeFragment;
+import com.soundlab.app.view.fragment.PlayerFragment;
 import com.soundlab.app.view.fragment.ProfileFragment;
 import com.soundlab.app.view.fragment.SearchFragment;
 
+import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("MainActivity", "onCreate called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -54,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         replaceFragment(new HomeFragment(), Utilities.homeFragmentTag);
         bottomNavigationView.setOnItemSelectedListener(item -> {
-
             String currentfragmentTag = getTopFragmentTag();
 
             if (item.getItemId() == R.id.home && !Objects.equals(currentfragmentTag, Utilities.homeFragmentTag)) {
@@ -68,6 +73,40 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
+        if (getIntent() != null && getIntent().hasExtra("openPlayerFragment")) {
+            loadPlayerFragment();
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (intent.hasExtra("openPlayerFragment")) {
+            String currentfragmentTag = getTopFragmentTag();
+            String previousFragmentTag = getPreviousFragmentTag();
+            if (!Objects.equals(currentfragmentTag, Utilities.playerFragmentTag)) {
+
+                if (Objects.equals(currentfragmentTag, Utilities.addToPlaylistFragmentTag) && Objects.equals(previousFragmentTag, Utilities.playerFragmentTag)) {
+                    getSupportFragmentManager().popBackStackImmediate();
+                    getSupportFragmentManager().popBackStackImmediate();
+                } else if (Objects.equals(currentfragmentTag, Utilities.addToPlaylistFragmentTag)) {
+                    getSupportFragmentManager().popBackStackImmediate();
+                }
+
+                loadPlayerFragment();
+            }
+        }
+    }
+
+    private void loadPlayerFragment() {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("avoidServiceRestart", true);
+
+        PlayerFragment playerFragment = new PlayerFragment();
+        playerFragment.setArguments(bundle);
+
+        replaceFragmentWithoutPopStack(playerFragment, Utilities.playerFragmentTag);
     }
 
     @Override
@@ -83,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (Objects.equals(currentfragmentTag, Utilities.playlistFragmentTag)) {
             showBottomNavigationView();
-            replaceFragment(new ProfileFragment(), Utilities.profileFragmentTag);
+            selectRightItemBottomNavView(Utilities.profileFragmentTag);
 
         } else if (Objects.equals(currentfragmentTag, Utilities.playerFragmentTag)) {
             // Controlla il fragment immediatamente sotto il playerFragment
@@ -92,8 +131,15 @@ public class MainActivity extends AppCompatActivity {
             if (Objects.equals(previousFragmentTag, Utilities.searchFragmentTag)) {
                 showBottomNavigationView();
                 getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                replaceFragment(new SearchFragment(), Utilities.searchFragmentTag); // Sostituisci con il tuo fragment desiderato e il suo tag
-
+                selectRightItemBottomNavView(Utilities.searchFragmentTag);
+            } else if (Objects.equals(previousFragmentTag, Utilities.homeFragmentTag)) {
+                showBottomNavigationView();
+                getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                selectRightItemBottomNavView(Utilities.homeFragmentTag);
+            } else if (Objects.equals(previousFragmentTag, Utilities.profileFragmentTag)) {
+                showBottomNavigationView();
+                getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                selectRightItemBottomNavView(Utilities.profileFragmentTag);
             } else {
                 super.onBackPressed();
             }
@@ -157,15 +203,12 @@ public class MainActivity extends AppCompatActivity {
     public void selectRightItemBottomNavView(String fragmentTag) {
         if (Objects.equals(fragmentTag, Utilities.homeFragmentTag)) {
             bottomNavigationView.setSelectedItemId(R.id.home);
-        }
-        else if (Objects.equals(fragmentTag, Utilities.searchFragmentTag)){
+        } else if (Objects.equals(fragmentTag, Utilities.searchFragmentTag)) {
             bottomNavigationView.setSelectedItemId(R.id.search);
-        }
-        else if (Objects.equals(fragmentTag, Utilities.profileFragmentTag)) {
+        } else if (Objects.equals(fragmentTag, Utilities.profileFragmentTag)) {
             bottomNavigationView.setSelectedItemId(R.id.profile);
         }
     }
-
 
     /**
      * Rimpiazza il fragment attuale con quello passato per parametro
@@ -196,4 +239,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent intent = new Intent(this, PlayerService.class);
+        stopService(intent);
+    }
 }

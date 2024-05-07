@@ -1,6 +1,7 @@
 package com.soundlab.app.utils;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Window;
 
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 
 import com.soundlab.app.model.Artist;
 import com.soundlab.app.model.Song;
+import com.soundlab.app.singleton.PlayerSingleton;
 import com.soundlab.app.view.activity.MainActivity;
 import com.soundlab.app.view.fragment.PlayerFragment;
 
@@ -70,19 +72,50 @@ public class Utilities {
     }
 
     public static void loadPlayer(Activity activity, int songPosition, ArrayList<Song> songArrayList){
+        PlayerSingleton.getInstance().setSongArrayList(songArrayList);
+        PlayerSingleton.getInstance().setSongPosition(songPosition);
+
         Bundle bundle = new Bundle();
-        bundle.putInt("songPosition", songPosition);
-
-        Object[] objectArray = songArrayList.toArray();
-        bundle.putSerializable("songArrayList", objectArray);
-
-        Fragment playerFragment = new PlayerFragment();
-        playerFragment.setArguments(bundle);
+        bundle.putBoolean("avoidServiceRestart", false);
 
         if (activity instanceof MainActivity) {
+            PlayerFragment playerFragment = new PlayerFragment();
             ((MainActivity) activity).replaceFragmentWithoutPopStack(playerFragment, Utilities.playerFragmentTag);
+            playerFragment.setArguments(bundle);
         }
+
     }
+
+    public static String milliSecondsToTimer(long milliseconds) {
+        String finalTimerString = "";
+        String secondsString = "";
+
+        // Converti il tempo totale in secondi
+        int hours = (int) (milliseconds / (1000 * 60 * 60));
+        int minutes = (int) (milliseconds % (1000 * 60 * 60)) / (1000 * 60);
+        int seconds = (int) ((milliseconds % (1000 * 60 * 60)) % (1000 * 60) / 1000);
+
+        // Aggiungi ore se ci sono
+        if (hours > 0) {
+            finalTimerString = hours + ":";
+        }
+
+        // Aggiungi uno 0 iniziale se i minuti sono inferiori a 10
+        finalTimerString += minutes + ":";
+
+        // Aggiungi uno 0 iniziale se i secondi sono inferiori a 10
+        if (seconds < 10) {
+            secondsString = "0" + seconds;
+        } else {
+            secondsString = "" + seconds;
+        }
+
+        finalTimerString += secondsString;
+
+        // Ritorna il tempo formattato come stringa
+        return finalTimerString;
+    }
+
 
 }
 

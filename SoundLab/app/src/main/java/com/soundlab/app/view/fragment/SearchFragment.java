@@ -102,17 +102,6 @@ public class SearchFragment extends Fragment {
     }
 
     public void loadPlayer(int songPosition, ArrayList<Song> songArrayList){
-        Bundle bundle = new Bundle();
-        bundle.putInt("songPosition", songPosition);
-
-        Object[] objectArray = songArrayList.toArray();
-        bundle.putSerializable("songArrayList", objectArray);
-
-        Fragment playerFragment = new PlayerFragment();
-        playerFragment.setArguments(bundle);
-
-        if (getActivity() instanceof MainActivity) {
-            ((MainActivity) getActivity()).replaceFragmentWithoutPopStack(playerFragment, Utilities.playerFragmentTag);
-        }
+        Utilities.loadPlayer(getActivity(), songPosition, songArrayList);
     }
 }
