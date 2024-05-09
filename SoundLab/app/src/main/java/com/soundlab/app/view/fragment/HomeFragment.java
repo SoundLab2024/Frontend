@@ -1,5 +1,6 @@
 package com.soundlab.app.view.fragment;
 
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.content.Context;
 import androidx.annotation.NonNull;
@@ -16,6 +17,9 @@ import com.soundlab.app.presenter.api.endpoint.ApiService;
 import com.soundlab.app.presenter.api.response.LibraryFromIdResponse;
 import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
 import com.soundlab.app.utils.Utilities;
+import com.soundlab.app.view.CustomCardView;
+import com.soundlab.app.view.activity.MainActivity;
+
 import android.content.SharedPreferences;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,7 +27,6 @@ import android.widget.Toast;
 import static com.soundlab.app.utils.Constants.BASE_URL;
 import static com.soundlab.app.utils.Constants.USER_LIB;
 import static com.soundlab.app.utils.Constants.USER_NAME;
-import static com.soundlab.app.utils.Constants.USER_ROLE;
 import static com.soundlab.app.utils.Constants.USER_TOKEN;
 
 import java.util.ArrayList;
@@ -42,7 +45,7 @@ public class HomeFragment extends Fragment {
     private String token;
     private int playlistsNumber;
     private TextView welcomeView;
-    private List<Playlist> playlists;
+    private List<Playlist> playlists = new ArrayList<>();
     private Library lib;
     private String TAG = "HOME_FRAGMENT";
 
@@ -51,7 +54,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         //inflater per trovare gli elementi
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        Log.d(TAG, "onCreateView called");
+        Log.d("HomeFragment", "onCreateView called");
 
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         userName = sharedPreferences.getString(USER_NAME, null);
@@ -65,6 +68,7 @@ public class HomeFragment extends Fragment {
 
         return view;
     }
+
 
     private void returnLib() { // Richiesta per il retrieve della libreria contenente le playlist
 
@@ -93,6 +97,8 @@ public class HomeFragment extends Fragment {
                     Log.d(TAG, "Numero playlists: " + playlistsNumber);
                     Log.d(TAG, "Nome: " + lib.getPlaylists().get(0).getName());
 
+                    updateFavouritePlaylistUI(findFavoritePlaylists(playlists));
+
                 } else {
                     // Gestisci la risposta di errore, es. credenziali non valide
                     Toast.makeText(getActivity(), "Libreria non recuperata.", Toast.LENGTH_SHORT).show();
@@ -108,13 +114,65 @@ public class HomeFragment extends Fragment {
 
     }
 
+    private void updateFavouritePlaylistUI(List<Playlist> playlists) {
+        TextView[] playlistTextViews = new TextView[3];
+        playlistTextViews[0] = requireView().findViewById(R.id.playlist_text1);
+        playlistTextViews[1] = requireView().findViewById(R.id.playlist_text2);
+        playlistTextViews[2] = requireView().findViewById(R.id.playlist_text3);
+
+        CustomCardView[] playlistCardViews = new CustomCardView[3];
+        playlistCardViews[0] = requireView().findViewById(R.id.playlist_cardView1);
+        playlistCardViews[1] = requireView().findViewById(R.id.playlist_cardView2);
+        playlistCardViews[2] = requireView().findViewById(R.id.playlist_cardView3);
+
+
+
+        for (int i = 0; i<playlists.size(); i++) {
+            playlistTextViews[i].setText(playlists.get(i).getName());
+            int index = i;
+            playlistCardViews[i].setOnClickListener(v -> loadPlaylistFragment(playlists.get(index)));
+        }
+
+        for (int i = playlists.size(); i<3; i++) {
+            playlistCardViews[i].setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private List<Playlist> findFavoritePlaylists(List<Playlist> playlists) {
+        List<Playlist> favoritePlaylists = new ArrayList<>();
+
+        for (Playlist playlist : playlists) {
+            if (playlist.isFavourite()) {
+                favoritePlaylists.add(playlist);
+
+                if (favoritePlaylists.size() >= 3) {
+                    break;
+                }
+            }
+        }
+
+        return favoritePlaylists;
+    }
+
+    public void loadPlaylistFragment(Playlist playlist) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("playlist", playlist);
+
+        Fragment playlistFragment = new PlaylistFragment();
+        playlistFragment.setArguments(bundle);
+
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).hideBottomNavigationView();
+            ((MainActivity) getActivity()).replaceFragmentWithoutPopStack(playlistFragment, Utilities.playlistFragmentTag);
+        }
+    }
+
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Imposta il colore della barra di stato quando la vista è creata
         Utilities.changeStatusBarColorFragment(this, R.color.dark_purple);
-
-
 
     }
 }

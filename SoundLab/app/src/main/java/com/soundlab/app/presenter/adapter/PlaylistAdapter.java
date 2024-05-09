@@ -65,7 +65,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
 
                 // TODO: Rimuovi l'associaizone Playlist<->Traccia dal backend, aggiorna il numero di canzoni della playlist
 
-                playlist.setNumberOfSongs(playlist.getNumberOfSongs() - 1);
+                playlist.setSongsNumber(playlist.getSongsNumber() - 1);
 
                 playlistFragment.aggiornaTextViewNumeroBraniPlaylist(playlist);
 

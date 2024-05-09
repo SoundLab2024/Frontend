@@ -183,7 +183,7 @@ public class PlayerService extends Service {
         Intent intent = new Intent(this, PlayerService.class);
         intent.setAction(action);
         intent.putExtra("action", action);
-        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
     @Override

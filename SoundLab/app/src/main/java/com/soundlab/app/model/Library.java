@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Library implements Serializable {
-    private List<Playlist> playlists = new ArrayList<>();
+    private List<Playlist> playlists;
     private int playlistNumber;
 
     public Library(List<Playlist> playlists, int playlistNumber){

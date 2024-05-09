@@ -228,7 +228,7 @@ public class PlayerFragment extends Fragment {
 
     private void invokeMusicService() {
         Intent intent = new Intent(requireContext(), PlayerService.class);
-        requireContext().startService(intent);
+        requireContext().startForegroundService(intent);
     }
 
     public void loadAddToPlaylistFragment(Song song) {

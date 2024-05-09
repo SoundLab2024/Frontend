@@ -66,13 +66,13 @@ public class PlaylistFragment extends Fragment {
         }
 
         ToggleButton favouriteButton = view.findViewById(R.id.favourite_button);
-        favouriteButton.setChecked(playlist.isFavorite());
+        favouriteButton.setChecked(playlist.isFavourite());
 
         favouriteButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
             // TODO: Aggiorna la preferenza della playlist nel backend
 
-            playlist.setFavorite(isChecked);
+            playlist.setFavourite(isChecked);
         });
 
         // Ottiene la RecyclerView dal layout
@@ -94,7 +94,7 @@ public class PlaylistFragment extends Fragment {
         song2.addArtist(new Artist(31, "Ren", new Date(3 / 1998), "Italia"));
         songArrayList.add(song2);
 
-        playlist.setNumberOfSongs(2);
+        playlist.setSongsNumber(2);
 
 
         // Inizializza l'adapter e passa la lista di tracce
@@ -119,7 +119,7 @@ public class PlaylistFragment extends Fragment {
             nomePlaylist = view.findViewById(R.id.nomePlaylist);
             genere = view.findViewById(R.id.genere);
             nomePlaylist.setText(playlist.getName());
-            genere.setText(playlist.getGenere());
+            genere.setText(playlist.getGenre());
             numeroBrani = view.findViewById(R.id.numeroBrani);
             aggiornaTextViewNumeroBraniPlaylist(playlist);
         }
@@ -129,7 +129,7 @@ public class PlaylistFragment extends Fragment {
     }
 
     public void aggiornaTextViewNumeroBraniPlaylist(Playlist playlist){
-        String numBrani = playlist.getNumberOfSongs() + " brani";
+        String numBrani = playlist.getSongsNumber() + " brani";
         numeroBrani.setText(numBrani);
     }
 
@@ -267,7 +267,7 @@ public class PlaylistFragment extends Fragment {
                 // TODO: cambia il genere della playlist nel backend
 
                 // Aggiorna il genere
-                playlist.setGenere(nuovo_genere);
+                playlist.setGenre(nuovo_genere);
                 genere.setText(nuovo_genere);
                 dialog.dismiss();
             } else {

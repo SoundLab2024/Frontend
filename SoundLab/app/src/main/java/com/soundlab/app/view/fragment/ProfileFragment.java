@@ -53,6 +53,7 @@ public class ProfileFragment extends Fragment {
     private String email;
     private String username;
     private String role;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -118,8 +119,10 @@ public class ProfileFragment extends Fragment {
         settingsButton.setOnClickListener(v -> openSettingsActivity());
 
         CustomButton analiticheButton = view.findViewById(R.id.analiticheButton);
-        if(!role.equals("ADMIN")){
-            analiticheButton.setVisibility(View.GONE);
+        if (role != null) {
+            if (!role.equals("ADMIN")) {
+                analiticheButton.setVisibility(View.GONE);
+            }
         }
 
         analiticheButton.setOnClickListener(v -> {
@@ -204,7 +207,7 @@ public class ProfileFragment extends Fragment {
         // Crea la TextView
         zeroPlaylistTextView = new TextView(requireContext());
         zeroPlaylistTextView.setId(R.id.zeroPlaylistTextView);
-        zeroPlaylistTextView.setText( "Non hai aggiunto ancora nessuna playlist");
+        zeroPlaylistTextView.setText("Non hai aggiunto ancora nessuna playlist");
         zeroPlaylistTextView.setTextSize(14);
         zeroPlaylistTextView.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         zeroPlaylistTextView.setGravity(Gravity.CENTER);
@@ -251,7 +254,7 @@ public class ProfileFragment extends Fragment {
 
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).hideBottomNavigationView();
-            ((MainActivity) getActivity()).replaceFragment(playlistFragment, Utilities.playlistFragmentTag);
+            ((MainActivity) getActivity()).replaceFragmentWithoutPopStack(playlistFragment, Utilities.playlistFragmentTag);
         }
     }
 

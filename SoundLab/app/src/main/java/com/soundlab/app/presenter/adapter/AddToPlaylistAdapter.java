@@ -40,12 +40,12 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
     public void updatePlaylistOrder() {
         playlistArrayList.sort((playlist1, playlist2) -> {
             // Ordina per preferenza (favorite prima), poi per nome
-            if (playlist1.isFavorite() == playlist2.isFavorite()) {
+            if (playlist1.isFavourite() == playlist2.isFavourite()) {
                 // Se hanno lo stesso stato di preferenza, ordina per nome
                 return playlist1.getName().compareToIgnoreCase(playlist2.getName());
             } else {
                 // Altrimenti, ordina per preferenza
-                return Boolean.compare(playlist2.isFavorite(), playlist1.isFavorite());
+                return Boolean.compare(playlist2.isFavourite(), playlist1.isFavourite());
             }
         });
     }
@@ -68,8 +68,8 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
             // Popola il ViewHolder con i dati della playlist
             holder.playlistImage.setImageResource(selectedPlaylist.getImage());
             holder.playlistName.setText(selectedPlaylist.getName());
-            holder.playlistGenere.setText(selectedPlaylist.getGenere());
-            holder.checkButton.setChecked(selectedPlaylist.isFavorite());
+            holder.playlistGenere.setText(selectedPlaylist.getGenre());
+            holder.checkButton.setChecked(selectedPlaylist.isFavourite());
 
 
             holder.itemView.setOnClickListener(v -> {
@@ -104,7 +104,7 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
 
         // Trova l'indice in cui inserire la playlist non favorita
         for (Playlist p : playlistArrayList) {
-            if (!p.isFavorite() && playlist.getName().compareToIgnoreCase(p.getName()) < 0) {
+            if (!p.isFavourite() && playlist.getName().compareToIgnoreCase(p.getName()) < 0) {
                 // Se la playlist corrente non è favorita e l'ordine alfabetico della playlist da inserire è maggiore o uguale,
                 // interrompi il loop
                 break;

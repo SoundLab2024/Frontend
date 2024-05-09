@@ -112,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         String currentfragmentTag = getTopFragmentTag();
+        String previousFragmentTag = getPreviousFragmentTag();
+        Log.d(TAG, "Numero di fragment nello stack: " + getSupportFragmentManager().getBackStackEntryCount());
 
         if (Objects.equals(currentfragmentTag, Utilities.searchFragmentTag) || Objects.equals(currentfragmentTag, Utilities.profileFragmentTag)) {
             // Seleziono l'item home nella bottomNavigationView viene invocato quindi il listener(setOnItemSelectedListener) che chiama replaceFragment
@@ -122,11 +124,10 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (Objects.equals(currentfragmentTag, Utilities.playlistFragmentTag)) {
             showBottomNavigationView();
-            selectRightItemBottomNavView(Utilities.profileFragmentTag);
+            super.onBackPressed();
+            //selectRightItemBottomNavView(Utilities.profileFragmentTag);
 
         } else if (Objects.equals(currentfragmentTag, Utilities.playerFragmentTag)) {
-            // Controlla il fragment immediatamente sotto il playerFragment
-            String previousFragmentTag = getPreviousFragmentTag();
 
             if (Objects.equals(previousFragmentTag, Utilities.searchFragmentTag)) {
                 showBottomNavigationView();
@@ -242,7 +243,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment playerFragment = fragmentManager.findFragmentByTag(Utilities.playerFragmentTag);
+        if (playerFragment != null && playerFragment.isAdded()) {
+            fragmentManager.beginTransaction().remove(playerFragment).commitAllowingStateLoss();
+        }
         Intent intent = new Intent(this, PlayerService.class);
         stopService(intent);
     }
+
 }

@@ -41,19 +41,19 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
     public void updatePlaylistOrder() {
         playlistArrayList.sort((playlist1, playlist2) -> {
             // Ordina per preferenza (favorite prima), poi per nome
-            if (playlist1.isFavorite() == playlist2.isFavorite()) {
+            if (playlist1.isFavourite() == playlist2.isFavourite()) {
                 // Se hanno lo stesso stato di preferenza, ordina per nome
                 return playlist1.getName().compareToIgnoreCase(playlist2.getName());
             } else {
                 // Altrimenti, ordina per preferenza
-                return Boolean.compare(playlist2.isFavorite(), playlist1.isFavorite());
+                return Boolean.compare(playlist2.isFavourite(), playlist1.isFavourite());
             }
         });
     }
 
     public void addPlaylist(Playlist newPlaylist) {
         // Aggiungi la nuova playlist alla lista e notifica alla UI
-        int index = addPlaylistInOrder(newPlaylist, newPlaylist.isFavorite());
+        int index = addPlaylistInOrder(newPlaylist, newPlaylist.isFavourite());
         new Handler().post(() -> notifyItemInserted(index));
     }
 
@@ -75,8 +75,8 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         // Popola il ViewHolder con i dati della playlist
         holder.playlistImage.setImageResource(playlist.getImage());
         holder.playlistName.setText(playlist.getName());
-        holder.playlistGenere.setText(playlist.getGenere());
-        holder.favouriteButton.setChecked(playlist.isFavorite());
+        holder.playlistGenere.setText(playlist.getGenre());
+        holder.favouriteButton.setChecked(playlist.isFavourite());
 
         holder.itemView.setOnClickListener(v -> {
             // Apri il fragment PlaylistFragment quando viene cliccata una playlist
@@ -99,7 +99,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
                 // TODO: Aggiorna lo stato di preferenza nel backend
 
                 // Aggiorna lo stato di preferenza nel modello dei dati
-                selectedPlaylist.setFavorite(isChecked);
+                selectedPlaylist.setFavourite(isChecked);
 
                 // Rimuovi l'elemento dalla posizione corrente
                 playlistArrayList.remove(adapterPosition);
@@ -173,7 +173,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         TextView playlist_name = bottomSheetView.findViewById(R.id.playlist_name);
         playlist_name.setText(selectedPlaylist.getName());
         TextView playlist_genere = bottomSheetView.findViewById(R.id.genere);
-        playlist_genere.setText(selectedPlaylist.getGenere());
+        playlist_genere.setText(selectedPlaylist.getGenre());
     }
 
 
@@ -183,19 +183,19 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
         // Scorre tutte le playlist esistenti per trovare la posizione corretta
         for (Playlist p : playlistArrayList) {
-            if (isFavorite && p.isFavorite()) {
+            if (isFavorite && p.isFavourite()) {
                 // Se stiamo aggiungendo tra i preferiti e troviamo una playlist preferita,
                 // controlla l'ordine alfabetico e inserisci prima se necessario
                 if (playlist.getName().compareToIgnoreCase(p.getName()) < 0) {
                     break;
                 }
-            } else if (!isFavorite && !p.isFavorite()) {
+            } else if (!isFavorite && !p.isFavourite()) {
                 // Se stiamo aggiungendo tra i non preferiti e troviamo una playlist non preferita,
                 // controlla l'ordine alfabetico e inserisci prima se necessario
                 if (playlist.getName().compareToIgnoreCase(p.getName()) < 0) {
                     break;
                 }
-            } else if (isFavorite && !p.isFavorite()) {
+            } else if (isFavorite && !p.isFavourite()) {
                 // Se stiamo aggiungendo tra i preferiti e troviamo una playlist non preferita,
                 // interrompi perché le preferite devono essere inserite prima delle non preferite
                 break;
@@ -220,7 +220,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         playlistName.setText(selectedPlaylist.getName());
 
         TextView playlistGenere = dialog.findViewById(R.id.artist);
-        playlistGenere.setText(selectedPlaylist.getGenere());
+        playlistGenere.setText(selectedPlaylist.getGenre());
     }
 
     private void showDialog_confermaElimina(Context context, Playlist selectedPlaylist, int adapterPosition) {
@@ -287,7 +287,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
                 selectedPlaylist.setName(nuovo_nome_playlist);
                 new Handler().post(() -> notifyItemChanged(adapterPosition));
                 playlistArrayList.remove(adapterPosition);
-                int index = addPlaylistInOrder(selectedPlaylist, selectedPlaylist.isFavorite());
+                int index = addPlaylistInOrder(selectedPlaylist, selectedPlaylist.isFavourite());
                 new Handler().post(() -> notifyItemMoved(adapterPosition, index));
                 dialog.dismiss();
             } else {
@@ -331,7 +331,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
                 // TODO: Cambia il genere della playlist nel backend
 
                 // Aggiorna il genere e la UI
-                selectedPlaylist.setGenere(nuovo_genere);
+                selectedPlaylist.setGenre(nuovo_genere);
                 new Handler().post(() -> notifyItemChanged(adapterPosition));
                 dialog.dismiss();
             } else {

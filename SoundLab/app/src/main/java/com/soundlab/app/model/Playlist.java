@@ -9,20 +9,20 @@ public class Playlist implements Serializable {
     //private static final long serialVersionUID = 1L; // Numero di versione per la serializzazione
     private final long id;
     private String name;
-    private String genere;
+    private String genre;
     private int image;
-    private boolean favorite;
+    private boolean favourite;
     private final List<Song> songs;
-    private int numberOfSongs;
+    private int songsNumber;
 
-    public Playlist(int id, String name, String genere, int image, boolean favorite, List<Song> songs) {
+    public Playlist(int id, String name, String genre, int image, boolean favourite, List<Song> songs) {
         this.id = id;
         this.name = name;
-        this.genere = genere;
+        this.genre = genre;
         this.image = image;
-        this.favorite = favorite;
+        this.favourite = favourite;
         this.songs = new ArrayList<>();
-        this.numberOfSongs = 0;
+        this.songsNumber = 0;
     }
 
     // Getter and Setter for 'id'
@@ -40,12 +40,12 @@ public class Playlist implements Serializable {
     }
 
     // Getter and Setter for 'genere'
-    public String getGenere() {
-        return genere;
+    public String getGenre() {
+        return genre;
     }
 
-    public void setGenere(String genere) {
-        this.genere = genere;
+    public void setGenre(String genre) {
+        this.genre = genre;
     }
 
     // Getter and Setter for 'image'
@@ -58,20 +58,20 @@ public class Playlist implements Serializable {
     }
 
     // Getter and Setter for 'numberOfSongs'
-    public int getNumberOfSongs() {
-        return numberOfSongs;
+    public int getSongsNumber() {
+        return songsNumber;
     }
 
-    public void setNumberOfSongs(int numberOfSongs) {
-        this.numberOfSongs = numberOfSongs;
+    public void setSongsNumber(int songsNumber) {
+        this.songsNumber = songsNumber;
     }
 
     // Getter and Setter for 'favorite'
-    public boolean isFavorite() {
-        return favorite;
+    public boolean isFavourite() {
+        return favourite;
     }
 
-    public void setFavorite(boolean favorite) {
-        this.favorite = favorite;
+    public void setFavourite(boolean favourite) {
+        this.favourite = favourite;
     }
 }
