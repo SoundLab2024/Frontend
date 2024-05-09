@@ -102,15 +102,32 @@ public class HomeFragment extends Fragment {
                 } else {
                     // Gestisci la risposta di errore, es. credenziali non valide
                     Toast.makeText(getActivity(), "Libreria non recuperata.", Toast.LENGTH_SHORT).show();
+                    removePlaylistUI();
                 }
             }
 
             @Override
             public void onFailure(Call<LibraryFromIdResponse> call, Throwable t) {
+                removePlaylistUI();
                 // Gestisci l'errore di rete o la conversione della risposta qui
                 Log.d(TAG, "Richiesta fallita.");
             }
         });
+
+    }
+
+    private void removePlaylistUI(){
+        if (getView()!=null) {
+            CustomCardView[] playlistCardViews = new CustomCardView[3];
+            playlistCardViews[0] = requireView().findViewById(R.id.playlist_cardView1);
+            playlistCardViews[1] = requireView().findViewById(R.id.playlist_cardView2);
+            playlistCardViews[2] = requireView().findViewById(R.id.playlist_cardView3);
+
+
+            for (int i = 0; i < 3; i++) {
+                playlistCardViews[i].setVisibility(View.INVISIBLE);
+            }
+        }
 
     }
 
@@ -128,13 +145,10 @@ public class HomeFragment extends Fragment {
 
 
         for (int i = 0; i<playlists.size(); i++) {
+            playlistCardViews[i].setVisibility(View.VISIBLE);
             playlistTextViews[i].setText(playlists.get(i).getName());
             int index = i;
             playlistCardViews[i].setOnClickListener(v -> loadPlaylistFragment(playlists.get(index)));
-        }
-
-        for (int i = playlists.size(); i<3; i++) {
-            playlistCardViews[i].setVisibility(View.INVISIBLE);
         }
     }
 
@@ -173,6 +187,8 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         // Imposta il colore della barra di stato quando la vista è creata
         Utilities.changeStatusBarColorFragment(this, R.color.dark_purple);
+
+        removePlaylistUI();
 
     }
 }
