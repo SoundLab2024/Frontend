@@ -105,11 +105,15 @@ public class PlayerService extends Service {
         return new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(playerPendingIntent)
-                .setCustomContentView(remoteViews)
+                .setCustomBigContentView(remoteViews)
+//                .setCustomContentView(remoteViews)
                 .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                 .setColor(ContextCompat.getColor(this, R.color.dark_purple))
                 .setColorized(true)
+                .setOngoing(true)
                 .setSilent(true)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setDefaults(NotificationCompat.FLAG_INSISTENT)
                 .build();
     }
 
@@ -120,7 +124,7 @@ public class PlayerService extends Service {
 
     // Metodo per la creazione del canale di notifica
     private void createNotificationChannel() {
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Music Player", NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Music Player", NotificationManager.IMPORTANCE_HIGH);
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(channel);
     }
@@ -157,7 +161,7 @@ public class PlayerService extends Service {
 
         remoteViews.setTextViewText(R.id.tv_song_name, song.getName());
         remoteViews.setTextViewText(R.id.tv_artist, song.getArtists().get(0).getName());
-        remoteViews.setImageViewBitmap(R.id.iv_song_image, coverBitmap);
+        remoteViews.setImageViewBitmap(R.id.tv_song_image, coverBitmap);
 
         if (playerSingleton.isPlaying()) {
             // Imposta l'icona di pausa se la riproduzione è in corso

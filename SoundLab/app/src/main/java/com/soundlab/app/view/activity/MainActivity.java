@@ -5,14 +5,17 @@ import static com.soundlab.app.utils.Constants.USER_NAME;
 import static com.soundlab.app.utils.Constants.USER_ROLE;
 import static com.soundlab.app.utils.Constants.USER_TOKEN;
 
-import android.app.ActivityManager;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -28,7 +31,6 @@ import com.soundlab.app.view.fragment.PlayerFragment;
 import com.soundlab.app.view.fragment.ProfileFragment;
 import com.soundlab.app.view.fragment.SearchFragment;
 
-import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -46,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        askNotificationPermission();
+
         // Per recuperare l'utente
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         token = sharedPreferences.getString(USER_TOKEN, null);
@@ -54,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
         role = sharedPreferences.getString(USER_ROLE, null);
 
         User u = new User(email, username, role);
-
-        //TODO Implementare chiamata di retrieve della Libreria
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         replaceFragment(new HomeFragment(), Utilities.homeFragmentTag);
@@ -238,6 +240,17 @@ public class MainActivity extends AppCompatActivity {
     public void openSettingsActivity(View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            });
+
+
+    private void askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        }
     }
 
     @Override

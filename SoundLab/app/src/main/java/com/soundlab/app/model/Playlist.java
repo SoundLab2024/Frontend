@@ -1,5 +1,7 @@
 package com.soundlab.app.model;
 
+import com.example.soundlab.R;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +17,11 @@ public class Playlist implements Serializable {
     private final List<Song> songs;
     private int songsNumber;
 
-    public Playlist(int id, String name, String genre, int image, boolean favourite, List<Song> songs) {
+    public Playlist(int id, String name, String genre, boolean favourite, List<Song> songs) {
         this.id = id;
         this.name = name;
         this.genre = genre;
-        this.image = image;
+        this.image = R.drawable.playlist_default;
         this.favourite = favourite;
         this.songs = new ArrayList<>();
         this.songsNumber = 0;

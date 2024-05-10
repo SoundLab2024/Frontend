@@ -1,6 +1,5 @@
 package com.soundlab.app.view.fragment;
 
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.content.Context;
 import androidx.annotation.NonNull;
@@ -61,12 +60,28 @@ public class HomeFragment extends Fragment {
         libId = sharedPreferences.getLong(USER_LIB, -1);
         token = sharedPreferences.getString(USER_TOKEN, null);
 
-        returnLib();
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // Imposta il colore della barra di stato quando la vista è creata
+        Utilities.changeStatusBarColorFragment(this, R.color.dark_purple);
+
+        removePlaylistUI();
+
+        if (!Library.getInstance().isInitialized()) {
+            returnLib();
+        }
+        else {
+            List<Playlist> favouritePlaylists = findFavoritePlaylists(Library.getInstance().getPlaylists());
+            updateFavouritePlaylistUI(favouritePlaylists);
+        }
 
         welcomeView = view.findViewById(R.id.welcome);
         welcomeView.setText("Ehy " + userName + ", cosa vuoi ascoltare oggi?");
 
-        return view;
     }
 
 
@@ -90,65 +105,73 @@ public class HomeFragment extends Fragment {
                     playlists = payload.getPlaylists();
 
                     // ritorno la libreria
-                    lib = new Library(playlists, playlistsNumber);
+                    lib = Library.getInstance();
+                    lib.setId(libId);
+                    lib.setPlaylistNumber(playlistsNumber);
+                    lib.setPlaylists(playlists);
+                    Library.getInstance().setInitialized(true);
 
                     // prova
                     Log.d(TAG, "Id libreria: " + libId);
                     Log.d(TAG, "Numero playlists: " + playlistsNumber);
                     Log.d(TAG, "Nome: " + lib.getPlaylists().get(0).getName());
 
-                    updateFavouritePlaylistUI(findFavoritePlaylists(playlists));
+                    List<Playlist> favouritePlaylists = findFavoritePlaylists(playlists);
+                    updateFavouritePlaylistUI(findFavoritePlaylists(favouritePlaylists));
 
                 } else {
                     // Gestisci la risposta di errore, es. credenziali non valide
                     Toast.makeText(getActivity(), "Libreria non recuperata.", Toast.LENGTH_SHORT).show();
-                    removePlaylistUI();
                 }
             }
 
             @Override
             public void onFailure(Call<LibraryFromIdResponse> call, Throwable t) {
-                removePlaylistUI();
                 // Gestisci l'errore di rete o la conversione della risposta qui
                 Log.d(TAG, "Richiesta fallita.");
             }
         });
 
     }
+    private void removePlaylistUI() {
+        View view = getView();
+        if (view != null) {
+            List<CustomCardView> playlistCardViews = new ArrayList<>();
+            playlistCardViews.add(view.findViewById(R.id.playlist_cardView1));
+            playlistCardViews.add(view.findViewById(R.id.playlist_cardView2));
+            playlistCardViews.add(view.findViewById(R.id.playlist_cardView3));
 
-    private void removePlaylistUI(){
-        if (getView()!=null) {
-            CustomCardView[] playlistCardViews = new CustomCardView[3];
-            playlistCardViews[0] = requireView().findViewById(R.id.playlist_cardView1);
-            playlistCardViews[1] = requireView().findViewById(R.id.playlist_cardView2);
-            playlistCardViews[2] = requireView().findViewById(R.id.playlist_cardView3);
-
-
-            for (int i = 0; i < 3; i++) {
-                playlistCardViews[i].setVisibility(View.INVISIBLE);
+            for (CustomCardView cardView : playlistCardViews) {
+                cardView.setVisibility(View.INVISIBLE);
             }
         }
-
     }
 
     private void updateFavouritePlaylistUI(List<Playlist> playlists) {
-        TextView[] playlistTextViews = new TextView[3];
-        playlistTextViews[0] = requireView().findViewById(R.id.playlist_text1);
-        playlistTextViews[1] = requireView().findViewById(R.id.playlist_text2);
-        playlistTextViews[2] = requireView().findViewById(R.id.playlist_text3);
+        View view = getView();
+        if (view != null) {
+            List<TextView> playlistTextViews = new ArrayList<>();
+            playlistTextViews.add(view.findViewById(R.id.playlist_text1));
+            playlistTextViews.add(view.findViewById(R.id.playlist_text2));
+            playlistTextViews.add(view.findViewById(R.id.playlist_text3));
 
-        CustomCardView[] playlistCardViews = new CustomCardView[3];
-        playlistCardViews[0] = requireView().findViewById(R.id.playlist_cardView1);
-        playlistCardViews[1] = requireView().findViewById(R.id.playlist_cardView2);
-        playlistCardViews[2] = requireView().findViewById(R.id.playlist_cardView3);
+            List<CustomCardView> playlistCardViews = new ArrayList<>();
+            playlistCardViews.add(view.findViewById(R.id.playlist_cardView1));
+            playlistCardViews.add(view.findViewById(R.id.playlist_cardView2));
+            playlistCardViews.add(view.findViewById(R.id.playlist_cardView3));
 
 
+            for (int i = 0; i < playlists.size(); i++) {
+                CustomCardView cardView = playlistCardViews.get(i);
+                TextView textView = playlistTextViews.get(i);
+                Playlist playlist = playlists.get(i);
 
-        for (int i = 0; i<playlists.size(); i++) {
-            playlistCardViews[i].setVisibility(View.VISIBLE);
-            playlistTextViews[i].setText(playlists.get(i).getName());
-            int index = i;
-            playlistCardViews[i].setOnClickListener(v -> loadPlaylistFragment(playlists.get(index)));
+                cardView.setVisibility(View.VISIBLE);
+                textView.setText(playlist.getName());
+
+                int index = i;
+                cardView.setOnClickListener(v -> loadPlaylistFragment(playlists.get(index)));
+            }
         }
     }
 
@@ -181,14 +204,4 @@ public class HomeFragment extends Fragment {
         }
     }
 
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        // Imposta il colore della barra di stato quando la vista è creata
-        Utilities.changeStatusBarColorFragment(this, R.color.dark_purple);
-
-        removePlaylistUI();
-
-    }
 }

@@ -64,10 +64,6 @@ public class LoginActivity extends AppCompatActivity {
             email = email_input.getText().toString();
             password = password_input.getText().toString();
 
-            //da commentare
-            //email = "email@mail.com";
-            //password = "password";
-
             if(controlloCampi(email, password)){
 
                 Retrofit retrofit = RetrofitClient.getClient(BASE_URL);

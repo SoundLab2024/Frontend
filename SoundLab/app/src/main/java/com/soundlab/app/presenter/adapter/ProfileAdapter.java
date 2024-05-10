@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.soundlab.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.soundlab.app.model.Playlist;
 import com.soundlab.app.view.CustomButton;
@@ -27,19 +27,19 @@ import com.soundlab.app.view.fragment.ProfileFragment;
 
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHolder> {
 
-    private final ArrayList<Playlist> playlistArrayList;
+    private final List<Playlist> playlists;
     private final ProfileFragment profileFragment;
 
     // Costruttore per inizializzare l'adapter con la lista di playlist
-    public ProfileAdapter(ProfileFragment profileFragment, ArrayList<Playlist> playlistArrayList) {
-        this.playlistArrayList = playlistArrayList;
+    public ProfileAdapter(ProfileFragment profileFragment, List<Playlist> playlists) {
+        this.playlists = playlists;
         this.profileFragment = profileFragment;
         updatePlaylistOrder();
     }
 
     // Metodo per aggiornare l'ordine delle playlist in base alle preferenze
     public void updatePlaylistOrder() {
-        playlistArrayList.sort((playlist1, playlist2) -> {
+        playlists.sort((playlist1, playlist2) -> {
             // Ordina per preferenza (favorite prima), poi per nome
             if (playlist1.isFavourite() == playlist2.isFavourite()) {
                 // Se hanno lo stesso stato di preferenza, ordina per nome
@@ -70,7 +70,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ProfileAdapter.ViewHolder holder, int position) {
         // Ottieni la playlist dalla posizione corrente
-        Playlist playlist = playlistArrayList.get(position);
+        Playlist playlist = playlists.get(position);
+
+        //DA ELIMINARE
+        playlist.setImage(R.drawable.playlist_default);
 
         // Popola il ViewHolder con i dati della playlist
         holder.playlistImage.setImageResource(playlist.getImage());
@@ -94,7 +97,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
             if (adapterPosition != RecyclerView.NO_POSITION) {
 
                 // Ottieni la playlist selezionata
-                Playlist selectedPlaylist = playlistArrayList.get(adapterPosition);
+                Playlist selectedPlaylist = playlists.get(adapterPosition);
 
                 // TODO: Aggiorna lo stato di preferenza nel backend
 
@@ -102,7 +105,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
                 selectedPlaylist.setFavourite(isChecked);
 
                 // Rimuovi l'elemento dalla posizione corrente
-                playlistArrayList.remove(adapterPosition);
+                playlists.remove(adapterPosition);
 
                 // Aggiungi la playlist nella posizione corretta (rispettando l'ordinamento)
                 int index = addPlaylistInOrder(selectedPlaylist, isChecked);
@@ -117,7 +120,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
             // Ottiene la playlist specifica associata all'elemento
             int adapterPosition = holder.getAdapterPosition();
             if (adapterPosition != RecyclerView.NO_POSITION) {
-                Playlist selectedPlaylist = playlistArrayList.get(adapterPosition);
+                Playlist selectedPlaylist = playlists.get(adapterPosition);
 
                 // Crea il BottomSheetDialog
                 BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(holder.itemView.getContext());
@@ -182,7 +185,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         int index = 0;
 
         // Scorre tutte le playlist esistenti per trovare la posizione corretta
-        for (Playlist p : playlistArrayList) {
+        for (Playlist p : playlists) {
             if (isFavorite && p.isFavourite()) {
                 // Se stiamo aggiungendo tra i preferiti e troviamo una playlist preferita,
                 // controlla l'ordine alfabetico e inserisci prima se necessario
@@ -206,7 +209,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         }
 
         // Aggiungi la playlist nella posizione corretta
-        playlistArrayList.add(index, playlist);
+        playlists.add(index, playlist);
 
         // Restituisci l'indice della nuova playlist inserita
         return index;
@@ -241,12 +244,12 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
             // TODO: Elimina la playlist dal backend
 
             // Rimuove la playlist dalla lista e aggiorna la UI
-            playlistArrayList.remove(selectedPlaylist);
+            playlists.remove(selectedPlaylist);
             notifyItemRemoved(adapterPosition);
             // Chiude il Dialog
             dialog.dismiss();
             // Se non ci sono playlist crea la TextView zeroPlaylist
-            if (playlistArrayList.isEmpty()) {
+            if (playlists.isEmpty()) {
                 profileFragment.createZeroPlaylistTextView();
             }
         });
@@ -286,7 +289,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
                 // Aggiorna il nome della playlist, la UI e la posizione nella lista
                 selectedPlaylist.setName(nuovo_nome_playlist);
                 new Handler().post(() -> notifyItemChanged(adapterPosition));
-                playlistArrayList.remove(adapterPosition);
+                playlists.remove(adapterPosition);
                 int index = addPlaylistInOrder(selectedPlaylist, selectedPlaylist.isFavourite());
                 new Handler().post(() -> notifyItemMoved(adapterPosition, index));
                 dialog.dismiss();
@@ -355,7 +358,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
     // Restituisci il numero totale di elementi nella RecyclerView
     @Override
     public int getItemCount() {
-        return playlistArrayList.size();
+        return playlists.size();
     }
 
     // ViewHolder che contiene i riferimenti agli elementi della playlist

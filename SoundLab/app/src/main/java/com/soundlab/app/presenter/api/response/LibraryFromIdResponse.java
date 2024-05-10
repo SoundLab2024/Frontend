@@ -9,7 +9,7 @@ public class LibraryFromIdResponse {
 
     private Long id;
     private int playlistsNumber;
-    List<Playlist> playlists = new ArrayList<>();
+    List<Playlist> playlists;
 
     public LibraryFromIdResponse(Long id, int playlistsNumber, List<Playlist> playlists) {
         this.id = id;

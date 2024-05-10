@@ -1,8 +1,10 @@
 package com.soundlab.app.presenter.api.endpoint;
 
+import com.soundlab.app.presenter.api.request.InsertPlaylistRequest;
 import com.soundlab.app.presenter.api.request.LoginRequest;
 import com.soundlab.app.presenter.api.request.RegisterRequest;
 import com.soundlab.app.presenter.api.response.LibraryFromIdResponse;
+import com.soundlab.app.presenter.api.response.Payload;
 import com.soundlab.app.presenter.api.response.UserPayload;
 
 import retrofit2.Call;
@@ -26,4 +28,7 @@ public interface ApiService {
     @GET("data/libs/{id}")
     Call<LibraryFromIdResponse> userLib(@Header("Authorization") String authToken, @Path("id") Long id);
 
+    @Headers("Content-Type: application/json")
+    @POST("data/playlist/createPl")
+    Call<Payload> createPlaylist(@Header("Authorization") String authToken, @Body InsertPlaylistRequest insertPlaylistRequest);
 }

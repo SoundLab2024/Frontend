@@ -54,7 +54,7 @@ public class AddToPlaylistFragment extends Fragment {
                 // TODO: Carica le playlist dal backend
 
                 // Aggiungi le playlist
-                playlistArrayList.add(new Playlist(1, "Playlist1", "Rock", R.drawable.playlist_default, false, null));
+                playlistArrayList.add(new Playlist(1, "Playlist1", "Rock",false, null));
 
                 // Inizializza l'adapter e passa la lista di playlist
                 AddToPlaylistAdapter addToPlaylistAdapter = new AddToPlaylistAdapter(this, playlistArrayList, song);
@@ -109,7 +109,7 @@ public class AddToPlaylistFragment extends Fragment {
                 // TODO: Inserire la playlist nel backend ed ottenere l'id.
 
                 int idPlaylist = 1; // Da cambiare con l'id ottenuto nel backend
-                Playlist newPlaylist = new Playlist(idPlaylist, nome_playlist, genere_playlist, R.drawable.playlist_default, false, null);
+                Playlist newPlaylist = new Playlist(idPlaylist, nome_playlist, genere_playlist, false, null);
 
                 AddToPlaylistAdapter addToPlaylistAdapter = (AddToPlaylistAdapter) recyclerView.getAdapter();
                 // Aggiungi la nuova playlist all'adapter
