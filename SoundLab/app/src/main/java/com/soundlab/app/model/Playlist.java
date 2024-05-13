@@ -9,7 +9,7 @@ import java.util.List;
 public class Playlist implements Serializable {
 
     //private static final long serialVersionUID = 1L; // Numero di versione per la serializzazione
-    private final long id;
+    private final Long id;
     private String name;
     private String genre;
     private int image;
@@ -17,12 +17,22 @@ public class Playlist implements Serializable {
     private final List<Song> songs;
     private int songsNumber;
 
-    public Playlist(int id, String name, String genre, boolean favourite, List<Song> songs) {
+    public Playlist(Long id, String name, String genre, boolean favourite, List<Song> songs) {
         this.id = id;
         this.name = name;
         this.genre = genre;
         this.image = R.drawable.playlist_default;
         this.favourite = favourite;
+        this.songs = new ArrayList<>();
+        this.songsNumber = 0;
+    }
+
+    public Playlist(Long id, String name, String genre) {
+        this.id = id;
+        this.name = name;
+        this.genre = genre;
+        this.image = R.drawable.playlist_default;
+        this.favourite = false;
         this.songs = new ArrayList<>();
         this.songsNumber = 0;
     }

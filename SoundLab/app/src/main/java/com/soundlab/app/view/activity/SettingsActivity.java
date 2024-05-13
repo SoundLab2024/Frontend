@@ -1,10 +1,14 @@
 package com.soundlab.app.view.activity;
 
+import static com.soundlab.app.utils.Constants.ALREADY_AUTH_KEY;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -48,6 +52,10 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Avvia l'activity LoginActivity per il logout
                 Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
+                SharedPreferences sharedPrefs = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                editor.putBoolean(ALREADY_AUTH_KEY, false);
+                editor.apply();
                 // Imposta il flag per eliminare tutte le activity precedenti dallo stack
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);

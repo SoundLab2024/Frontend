@@ -1,8 +1,11 @@
 package com.soundlab.app.presenter.adapter;
 
+import static com.soundlab.app.utils.Constants.BASE_URL;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,23 +20,32 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.soundlab.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-
-import java.util.List;
-
 import com.soundlab.app.model.Playlist;
+import com.soundlab.app.presenter.api.endpoint.ApiService;
+import com.soundlab.app.presenter.api.response.Payload;
+import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
 import com.soundlab.app.view.CustomButton;
 import com.soundlab.app.view.CustomCardView;
 import com.soundlab.app.view.fragment.ProfileFragment;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHolder> {
 
     private final List<Playlist> playlists;
     private final ProfileFragment profileFragment;
+    private final String token;
 
     // Costruttore per inizializzare l'adapter con la lista di playlist
-    public ProfileAdapter(ProfileFragment profileFragment, List<Playlist> playlists) {
+    public ProfileAdapter(ProfileFragment profileFragment, List<Playlist> playlists, String token) {
         this.playlists = playlists;
         this.profileFragment = profileFragment;
+        this.token = token;
         updatePlaylistOrder();
     }
 
@@ -240,12 +252,8 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
         // Listener per il pulsante di conferma eliminazione
         conferma_elimina.setOnClickListener(view -> {
+            callDeletePlaylist(selectedPlaylist, adapterPosition);
 
-            // TODO: Elimina la playlist dal backend
-
-            // Rimuove la playlist dalla lista e aggiorna la UI
-            playlists.remove(selectedPlaylist);
-            notifyItemRemoved(adapterPosition);
             // Chiude il Dialog
             dialog.dismiss();
             // Se non ci sono playlist crea la TextView zeroPlaylist
@@ -263,6 +271,43 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
         // Mostra il Dialog
         dialog.show();
+    }
+
+    private void callDeletePlaylist(Playlist playlist, int adapterPosition) {
+        Long playlistID = playlist.getId();
+
+        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        String authToken = "Bearer " + token;
+
+        Call<Payload> call = apiService.deletePlaylist(authToken, playlistID);
+        call.enqueue(new Callback<Payload>() {
+            @Override
+            public void onResponse(@NonNull Call<Payload> call, @NonNull Response<Payload> response) {
+                if (response.isSuccessful()) {
+                    Payload payload = response.body();
+
+                    Log.d("PROFILE_ADAPTER", "deletePlaylist - status code: " + payload.getStatusCode());
+                    Log.d("PROFILE_ADAPTER", "deletePlaylist - msg: " + payload.getMsg());
+
+                    // Rimuove la playlist dalla lista e aggiorna la UI
+                    playlists.remove(playlist);
+                    notifyItemRemoved(adapterPosition);
+                } else {
+                    showErrorToast("Impossibile rimuovere la playlist.");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Payload> call, @NonNull Throwable t) {
+                showErrorToast("Impossibile rimuovere la playlist. Errore: " + t.getMessage());
+            }
+        });
+    }
+
+    private void showErrorToast(String message) {
+        Toast.makeText(profileFragment.getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     private void showDialog_rinomina(Context context, Playlist selectedPlaylist, int adapterPosition) {

@@ -1,7 +1,5 @@
 package com.soundlab.app.model;
 
-import com.soundlab.app.model.Playlist;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

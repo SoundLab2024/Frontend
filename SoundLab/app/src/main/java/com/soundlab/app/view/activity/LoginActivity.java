@@ -1,5 +1,6 @@
 package com.soundlab.app.view.activity;
 
+import static com.soundlab.app.utils.Constants.ALREADY_AUTH_KEY;
 import static com.soundlab.app.utils.Constants.BASE_URL;
 import static com.soundlab.app.utils.Constants.USER_EMAIL;
 import static com.soundlab.app.utils.Constants.USER_LIB;
@@ -86,6 +87,7 @@ public class LoginActivity extends AppCompatActivity {
                             editor.putString(USER_EMAIL, payload.getEmail());
                             editor.putString(USER_ROLE, payload.getRole());
                             editor.putLong(USER_LIB, payload.getLibraryId());
+                            editor.putBoolean(ALREADY_AUTH_KEY, true);
                             editor.apply();
 
                             // Vado avanti...

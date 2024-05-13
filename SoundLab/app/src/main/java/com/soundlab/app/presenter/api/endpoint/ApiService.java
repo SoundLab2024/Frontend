@@ -9,6 +9,7 @@ import com.soundlab.app.presenter.api.response.UserPayload;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
@@ -31,4 +32,8 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     @POST("data/playlist/createPl")
     Call<Payload> createPlaylist(@Header("Authorization") String authToken, @Body InsertPlaylistRequest insertPlaylistRequest);
+
+    @Headers("Content-Type: application/json")
+    @DELETE("data/playlist/{id}")
+    Call<Payload> deletePlaylist(@Header("Authorization") String authToken, @Path("id") Long id);
 }

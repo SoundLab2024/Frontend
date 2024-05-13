@@ -12,17 +12,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -33,10 +22,16 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.soundlab.R;
-
-import java.util.List;
-
 import com.soundlab.app.model.Library;
 import com.soundlab.app.model.Playlist;
 import com.soundlab.app.presenter.adapter.ProfileAdapter;
@@ -44,10 +39,12 @@ import com.soundlab.app.presenter.api.endpoint.ApiService;
 import com.soundlab.app.presenter.api.request.InsertPlaylistRequest;
 import com.soundlab.app.presenter.api.response.Payload;
 import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
-import com.soundlab.app.view.CustomButton;
 import com.soundlab.app.utils.Utilities;
+import com.soundlab.app.view.CustomButton;
 import com.soundlab.app.view.activity.MainActivity;
 import com.soundlab.app.view.activity.SettingsActivity;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -91,11 +88,8 @@ public class ProfileFragment extends Fragment {
         // Crea una nuova lista di playlist
         playlists = library.getPlaylists();
 
-        // Aggiungi le playlist
-//        playlistArrayList.add(new Playlist(1, "Playlist1", "Rock", R.drawable.playlist_default, false, null));
-
         // Inizializza l'adapter e passa la lista di playlist
-        ProfileAdapter profileAdapter = new ProfileAdapter(this, playlists);
+        ProfileAdapter profileAdapter = new ProfileAdapter(this, playlists, token);
 
         // Imposta un layout manager per la RecyclerView (lista verticale)
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
@@ -161,87 +155,76 @@ public class ProfileFragment extends Fragment {
     }
 
     private void addNewPlaylist() {
-
-        // Creazione e personalizzazione del Dialog
         Dialog dialog = new Dialog(this.requireContext(), R.style.CustomDialogStyle);
         dialog.setContentView(R.layout.popup_add_playlist);
 
-        // Inizializzazione degli elementi di input e bottoni del Dialog
         EditText nome_input = dialog.findViewById(R.id.nome);
         EditText genere_input = dialog.findViewById(R.id.genere);
         CustomButton aggiungi = dialog.findViewById(R.id.elimina);
         CustomButton annulla = dialog.findViewById(R.id.annulla);
 
-        // Listener per il pulsante di aggiunta
         aggiungi.setOnClickListener(view -> {
-            // Ottiene nome e genere dalle caselle di input
             String nome_playlist = nome_input.getText().toString();
             String genere_playlist = genere_input.getText().toString();
 
             if (!nome_playlist.isEmpty() && !genere_playlist.isEmpty()) {
-                // Crea una nuova playlist con i dati inseriti dall'utente
-
-                callCreatePlaylist(nome_playlist, genere_playlist, Library.getInstance().getId());
-
-                int idPlaylist = 20; // Da cambiare con l'id ottenuto nel backend
-                Playlist newPlaylist = new Playlist(idPlaylist, nome_playlist, genere_playlist, false, null);
-                // Ottiene l'adapter dalla RecyclerView
                 ProfileAdapter profileAdapter = (ProfileAdapter) recyclerView.getAdapter();
-                // Aggiungi la nuova playlist all'adapter
+
                 if (profileAdapter != null) {
-                    profileAdapter.addPlaylist(newPlaylist);
+                    callCreatePlaylist(nome_playlist, genere_playlist, Library.getInstance().getId(), profileAdapter);
+                    dialog.dismiss();
+                    destroyZeroPlaylistTextView();
+                } else {
+                    showErrorToast("Impossibile aggiungere la playlist. Adapter non valido.");
                 }
-                //Chiude il Dialog
-                dialog.dismiss();
-                //Rimuove la TextView zeroPlaylist
-                destroyZeroPlaylistTextView();
             } else {
-                // Visualizza un messaggio Toast se il nome o il genere sono vuoti
-                Toast toast = Toast.makeText(this.requireContext(), "Inserisci un nome e un genere validi", Toast.LENGTH_SHORT);
-                toast.show();
+                showErrorToast("Inserisci un nome e un genere validi.");
             }
         });
 
-        // Listener per il pulsante di annulla
         annulla.setOnClickListener(view -> {
-            // Chiude il Dialog senza effettuare alcuna azione
             dialog.dismiss();
         });
-        //Mostra il dialog
+
         dialog.show();
     }
 
-    // La risposta a createPlaylist DEVE RITORNARE L'ID della playlist aggiunta e salvata.
-    public void callCreatePlaylist(String name, String genre, Long libraryId) {
-        // Creazione dell'oggetto InsertPlaylistRequest
+    private void callCreatePlaylist(String name, String genre, Long libraryId, ProfileAdapter profileAdapter) {
         InsertPlaylistRequest request = new InsertPlaylistRequest(name, genre, libraryId);
 
         Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
         ApiService apiService = retrofit.create(ApiService.class);
 
-
         String authToken = "Bearer " + token;
-        // Effettuare la chiamata API utilizzando Retrofit
+
         Call<Payload> call = apiService.createPlaylist(authToken, request);
         call.enqueue(new Callback<Payload>() {
             @Override
             public void onResponse(@NonNull Call<Payload> call, @NonNull Response<Payload> response) {
                 if (response.isSuccessful()) {
                     Payload payload = response.body();
+                    Long playlistId = Long.parseLong(payload.getMsg());
 
-                    Log.d(TAG, "insertPlaylist - status code: " + payload.getStatusCode());
-                    Log.d(TAG, "insertPlaylist - msg: " + payload.getMsg());
+                    Log.d(TAG, "createPlaylist - status code: " + payload.getStatusCode());
+
+                    Playlist newPlaylist = new Playlist(playlistId, name, genre);
+                    profileAdapter.addPlaylist(newPlaylist);
                 } else {
-                    Toast.makeText(getContext(), "Impossibile aggiungere la playlist", Toast.LENGTH_SHORT).show();
+                    showErrorToast("Impossibile aggiungere la playlist.");
                 }
             }
 
             @Override
-            public void onFailure(Call<Payload> call, Throwable t) {
-                Toast.makeText(getContext(), "Impossibile aggiungere la playlist", Toast.LENGTH_SHORT).show();
+            public void onFailure(@NonNull Call<Payload> call, @NonNull Throwable t) {
+                showErrorToast("Impossibile aggiungere la playlist. Errore: " + t.getMessage());
             }
         });
     }
+
+    private void showErrorToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
 
     public void createZeroPlaylistTextView() {
         ConstraintLayout constraintLayout = requireView().findViewById(R.id.constraintLayout1);
