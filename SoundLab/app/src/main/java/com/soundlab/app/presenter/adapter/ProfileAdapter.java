@@ -20,8 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.soundlab.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.soundlab.app.utils.Debouncer;
 import com.soundlab.app.model.Playlist;
 import com.soundlab.app.presenter.api.endpoint.ApiService;
+import com.soundlab.app.presenter.api.request.InsertPlaylistRequest;
 import com.soundlab.app.presenter.api.response.Payload;
 import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
 import com.soundlab.app.view.CustomButton;
@@ -40,6 +42,9 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
     private final List<Playlist> playlists;
     private final ProfileFragment profileFragment;
     private final String token;
+    private int adapterPosition;
+    private Playlist selectedPlaylist;
+    private final Debouncer debouncer = new Debouncer();
 
     // Costruttore per inizializzare l'adapter con la lista di playlist
     public ProfileAdapter(ProfileFragment profileFragment, List<Playlist> playlists, String token) {
@@ -98,48 +103,40 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
             profileFragment.loadPlaylistFragment(playlist);
         });
 
-
         // Gestisci il cambiamento di preferenza quando il pulsante Preferito viene selezionato/deselezionato
         holder.favouriteButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-            // Ottieni la posizione corrente nell'adattatore
-            int adapterPosition = holder.getAdapterPosition();
+            holder.favouriteButton.setEnabled(false);
 
-            // Verifica se la posizione è valida
-            if (adapterPosition != RecyclerView.NO_POSITION) {
+            debouncer.debounce(() -> {
+                // Ottieni la posizione corrente nell'adattatore
+                adapterPosition = holder.getAdapterPosition();
 
-                // Ottieni la playlist selezionata
-                Playlist selectedPlaylist = playlists.get(adapterPosition);
+                // Verifica se la posizione è valida
+                if (adapterPosition != RecyclerView.NO_POSITION) {
 
-                // TODO: Aggiorna lo stato di preferenza nel backend
+                    // Ottieni la playlist selezionata
+                    selectedPlaylist = playlists.get(adapterPosition);
 
-                // Aggiorna lo stato di preferenza nel modello dei dati
-                selectedPlaylist.setFavourite(isChecked);
+                    callFavPlaylist(isChecked, holder.favouriteButton);
+                }
+            }, 500); // 300 ms di ritardo
 
-                // Rimuovi l'elemento dalla posizione corrente
-                playlists.remove(adapterPosition);
-
-                // Aggiungi la playlist nella posizione corretta (rispettando l'ordinamento)
-                int index = addPlaylistInOrder(selectedPlaylist, isChecked);
-
-                // Notifica che l'elemento è stato spostato
-                new Handler().post(() -> notifyItemMoved(adapterPosition, index));
-            }
         });
 
         // Gestisce il long click su un elemento della RecyclerView
         holder.itemView.setOnLongClickListener(v -> {
             // Ottiene la playlist specifica associata all'elemento
-            int adapterPosition = holder.getAdapterPosition();
+            adapterPosition = holder.getAdapterPosition();
             if (adapterPosition != RecyclerView.NO_POSITION) {
-                Playlist selectedPlaylist = playlists.get(adapterPosition);
+                selectedPlaylist = playlists.get(adapterPosition);
 
                 // Crea il BottomSheetDialog
                 BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(holder.itemView.getContext());
                 View bottomSheetView = LayoutInflater.from(holder.itemView.getContext()).inflate(R.layout.bottom_popup_playlist, (ViewGroup) holder.itemView, false);
 
                 // Inizializza gli elementi del layout del pannello inferiore
-                initBottomSheetDialogElements(bottomSheetView, selectedPlaylist);
+                initBottomSheetDialogElements(bottomSheetView);
                 CustomCardView elimina = bottomSheetView.findViewById(R.id.elimina);
                 CustomCardView rinomina = bottomSheetView.findViewById(R.id.rinomina);
                 CustomCardView cambia_genere = bottomSheetView.findViewById(R.id.cambia_genere);
@@ -150,7 +147,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
                     bottomSheetDialog.dismiss();
 
                     // Esegue le azioni necessarie per l'eliminazione utilizzando la playlist specifica
-                    showDialog_confermaElimina(holder.itemView.getContext(), selectedPlaylist, adapterPosition);
+                    showDialog_confermaElimina(holder.itemView.getContext());
                 });
 
                 // Imposta il listener del bottone Rinomina
@@ -159,7 +156,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
                     bottomSheetDialog.dismiss();
 
                     // Esegue le azioni necessarie per la rinomina utilizzando la playlist specifica
-                    showDialog_rinomina(holder.itemView.getContext(), selectedPlaylist, adapterPosition);
+                    showDialog_rinomina(holder.itemView.getContext());
                 });
 
                 // Imposta il listener del bottone Cambia Genere
@@ -168,7 +165,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
                     bottomSheetDialog.dismiss();
 
                     // Esegue le azioni necessarie per il cambio genere utilizzando la playlist specifica
-                    showDialog_cambiaGenere(holder.itemView.getContext(), selectedPlaylist, adapterPosition);
+                    showDialog_cambiaGenere(holder.itemView.getContext());
 
                 });
 
@@ -182,7 +179,54 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
     }
 
-    private void initBottomSheetDialogElements(View bottomSheetView, Playlist selectedPlaylist) {
+    private void callFavPlaylist(boolean isChecked, ToggleButton favouritebutton) {
+        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        String authToken = "Bearer " + token;
+
+        Call<Payload> call = apiService.favPlaylist(authToken, selectedPlaylist.getId());
+        call.enqueue(new Callback<Payload>() {
+            @Override
+            public void onResponse(@NonNull Call<Payload> call, @NonNull Response<Payload> response) {
+                if (response.isSuccessful()) {
+                    Payload payload = response.body();
+                    Boolean fav = Boolean.valueOf(payload.getMsg());
+
+                    Log.d("PROFILE_ADAPTER", "favPlaylist - status code: " + payload.getStatusCode());
+                    Log.d("PROFILE_ADAPTER", "favPlaylist - msg: " + payload.getMsg());
+
+                    updateFavouritePlaylistUI(isChecked);
+                    favouritebutton.setEnabled(true);
+                } else {
+                    favouritebutton.setEnabled(true);
+                    showErrorToast("Impossibile aggiornare lo stato di preferenza della playlist.");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Payload> call, @NonNull Throwable t) {
+                favouritebutton.setEnabled(true);
+                showErrorToast("Impossibile aggiornare lo stato di preferenza della playlist. Errore: " + t.getMessage());
+            }
+        });
+    }
+
+    private void updateFavouritePlaylistUI(boolean isChecked) {
+        // Aggiorna lo stato di preferenza nel modello dei dati
+        selectedPlaylist.setFavourite(isChecked);
+
+        // Rimuovi l'elemento dalla posizione corrente
+        playlists.remove(adapterPosition);
+
+        // Aggiungi la playlist nella posizione corretta (rispettando l'ordinamento)
+        int index = addPlaylistInOrder(selectedPlaylist, isChecked);
+
+        // Notifica che l'elemento è stato spostato
+        new Handler().post(() -> notifyItemMoved(adapterPosition, index));
+    }
+
+    private void initBottomSheetDialogElements(View bottomSheetView) {
         ImageView playlist_image = bottomSheetView.findViewById(R.id.playlist_image);
         playlist_image.setImageResource(selectedPlaylist.getImage());
         TextView playlist_name = bottomSheetView.findViewById(R.id.playlist_name);
@@ -227,7 +271,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         return index;
     }
 
-    private void initializeDialogViews(Dialog dialog, Playlist selectedPlaylist) {
+    private void initializeDialogViews(Dialog dialog) {
         ImageView playlistImage = dialog.findViewById(R.id.playlist_image);
         playlistImage.setImageResource(selectedPlaylist.getImage());
 
@@ -238,13 +282,13 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         playlistGenere.setText(selectedPlaylist.getGenre());
     }
 
-    private void showDialog_confermaElimina(Context context, Playlist selectedPlaylist, int adapterPosition) {
+    private void showDialog_confermaElimina(Context context) {
         // Creazione e personalizzazione del Dialog
         Dialog dialog = new Dialog(context, R.style.CustomDialogStyle);
         dialog.setContentView(R.layout.popup_elimina_playlist);
 
         // Inizializzazione degli elementi del layout del Dialog
-        initializeDialogViews(dialog, selectedPlaylist);
+        initializeDialogViews(dialog);
 
         // Inizializzazione dei bottoni del Dialog
         CustomButton conferma_elimina = dialog.findViewById(R.id.elimina);
@@ -252,7 +296,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
         // Listener per il pulsante di conferma eliminazione
         conferma_elimina.setOnClickListener(view -> {
-            callDeletePlaylist(selectedPlaylist, adapterPosition);
+            callDeletePlaylist();
 
             // Chiude il Dialog
             dialog.dismiss();
@@ -273,8 +317,8 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         dialog.show();
     }
 
-    private void callDeletePlaylist(Playlist playlist, int adapterPosition) {
-        Long playlistID = playlist.getId();
+    private void callDeletePlaylist() {
+        Long playlistID = selectedPlaylist.getId();
 
         Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
         ApiService apiService = retrofit.create(ApiService.class);
@@ -292,7 +336,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
                     Log.d("PROFILE_ADAPTER", "deletePlaylist - msg: " + payload.getMsg());
 
                     // Rimuove la playlist dalla lista e aggiorna la UI
-                    playlists.remove(playlist);
+                    playlists.remove(selectedPlaylist);
                     notifyItemRemoved(adapterPosition);
                 } else {
                     showErrorToast("Impossibile rimuovere la playlist.");
@@ -306,17 +350,13 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         });
     }
 
-    private void showErrorToast(String message) {
-        Toast.makeText(profileFragment.getContext(), message, Toast.LENGTH_SHORT).show();
-    }
-
-    private void showDialog_rinomina(Context context, Playlist selectedPlaylist, int adapterPosition) {
+    private void showDialog_rinomina(Context context) {
         // Creazione e personalizzazione del Dialog
         Dialog dialog = new Dialog(context, R.style.CustomDialogStyle);
         dialog.setContentView(R.layout.popup_rinomina_playlist);
 
         // Inizializzazione degli elementi del layout del Dialog
-        initializeDialogViews(dialog, selectedPlaylist);
+        initializeDialogViews(dialog);
 
         // Inizializzazione degli elementi di input e bottoni del Dialog
         EditText playlist_input = dialog.findViewById(R.id.email_input);
@@ -326,17 +366,9 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         // Listener per il pulsante di rinomina
         rinomina.setOnClickListener(view -> {
             // Ottiene il nuovo nome dalla casella di input
-            String nuovo_nome_playlist = playlist_input.getText().toString();
-            if (!nuovo_nome_playlist.isEmpty()) {
-
-                // TODO: Cambia il nome della playlist nel backend
-
-                // Aggiorna il nome della playlist, la UI e la posizione nella lista
-                selectedPlaylist.setName(nuovo_nome_playlist);
-                new Handler().post(() -> notifyItemChanged(adapterPosition));
-                playlists.remove(adapterPosition);
-                int index = addPlaylistInOrder(selectedPlaylist, selectedPlaylist.isFavourite());
-                new Handler().post(() -> notifyItemMoved(adapterPosition, index));
+            String newName = playlist_input.getText().toString();
+            if (!newName.isEmpty()) {
+                modifyPlaylist(newName, selectedPlaylist.getGenre(), true);
                 dialog.dismiss();
             } else {
                 // Visualizza un messaggio Toast se il nome è vuoto
@@ -355,13 +387,13 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         dialog.show();
     }
 
-    private void showDialog_cambiaGenere(Context context, Playlist selectedPlaylist, int adapterPosition) {
+    private void showDialog_cambiaGenere(Context context) {
         // Creazione e personalizzazione del Dialog
         Dialog dialog = new Dialog(context, R.style.CustomDialogStyle);
         dialog.setContentView(R.layout.popup_rinomina_playlist);
 
         // Inizializzazione degli elementi del layout del Dialog
-        initializeDialogViews(dialog, selectedPlaylist);
+        initializeDialogViews(dialog);
 
         // Inizializzazione e modifica degli elementi di input e bottoni del Dialog
         EditText playlist_input = dialog.findViewById(R.id.email_input);
@@ -373,14 +405,9 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         // Listener per il pulsante rinomina
         rinomina.setOnClickListener(view -> {
             // Ottiene il nuovo genere dalla casella di input
-            String nuovo_genere = playlist_input.getText().toString();
-            if (!nuovo_genere.isEmpty()) {
-
-                // TODO: Cambia il genere della playlist nel backend
-
-                // Aggiorna il genere e la UI
-                selectedPlaylist.setGenre(nuovo_genere);
-                new Handler().post(() -> notifyItemChanged(adapterPosition));
+            String newGenre = playlist_input.getText().toString();
+            if (!newGenre.isEmpty()) {
+                modifyPlaylist(selectedPlaylist.getName(), newGenre, false);
                 dialog.dismiss();
             } else {
                 // Visualizza un messaggio Toast se il genere è vuoto
@@ -399,6 +426,59 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         dialog.show();
     }
 
+    private void modifyPlaylist(String newName, String newGenre, boolean rename) {
+        InsertPlaylistRequest renamePlaylistRequest = new InsertPlaylistRequest(newName, newGenre, selectedPlaylist.getId());
+
+        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        String authToken = "Bearer " + token;
+
+        Call<Payload> call = apiService.modifyPlaylist(authToken, renamePlaylistRequest);
+        call.enqueue(new Callback<Payload>() {
+            @Override
+            public void onResponse(@NonNull Call<Payload> call, @NonNull Response<Payload> response) {
+                if (response.isSuccessful()) {
+                    Payload payload = response.body();
+
+                    Log.d("PROFILE_ADAPTER", "modifyPlaylist - status code: " + payload.getStatusCode());
+                    Log.d("PROFILE_ADAPTER", "modifyPlaylist - msg: " + payload.getMsg());
+
+                    if(rename) {
+                        updatePlaylistNameUI(newName);
+                    } else {
+                        updateGenreUI(newGenre);
+                    }
+                } else {
+                    showErrorToast("Impossibile rinominare la playlist.");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Payload> call, @NonNull Throwable t) {
+                showErrorToast("Impossibile rinominare la playlist. Errore: " + t.getMessage());
+            }
+        });
+    }
+
+    private void updatePlaylistNameUI(String newName){
+        // Aggiorna il nome della playlist, la UI e la posizione nella lista
+        selectedPlaylist.setName(newName);
+        new Handler().post(() -> notifyItemChanged(adapterPosition));
+        playlists.remove(adapterPosition);
+        int index = addPlaylistInOrder(selectedPlaylist, selectedPlaylist.isFavourite());
+        new Handler().post(() -> notifyItemMoved(adapterPosition, index));
+    }
+
+    // Aggiorna il genere e la UI
+    private void updateGenreUI(String newGenre) {
+        selectedPlaylist.setGenre(newGenre);
+        new Handler().post(() -> notifyItemChanged(adapterPosition));
+    }
+
+    private void showErrorToast(String message) {
+        Toast.makeText(profileFragment.getContext(), message, Toast.LENGTH_SHORT).show();
+    }
 
     // Restituisci il numero totale di elementi nella RecyclerView
     @Override

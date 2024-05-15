@@ -114,7 +114,6 @@ public class HomeFragment extends Fragment {
                     // prova
                     Log.d(TAG, "Id libreria: " + libId);
                     Log.d(TAG, "Numero playlists: " + playlistsNumber);
-                    Log.d(TAG, "Nome: " + lib.getPlaylists().get(0).getName());
 
                     List<Playlist> favouritePlaylists = findFavoritePlaylists(playlists);
                     updateFavouritePlaylistUI(findFavoritePlaylists(favouritePlaylists));

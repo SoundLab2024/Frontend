@@ -1,6 +1,11 @@
 package com.soundlab.app.view.fragment;
 
+import static com.soundlab.app.utils.Constants.BASE_URL;
+import static com.soundlab.app.utils.Constants.USER_TOKEN;
+
 import android.app.Dialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -28,15 +33,27 @@ import com.example.soundlab.R;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.soundlab.app.model.Album;
 import com.soundlab.app.model.Artist;
+import com.soundlab.app.model.Library;
 import com.soundlab.app.model.Playlist;
 import com.soundlab.app.model.Song;
 import com.soundlab.app.presenter.adapter.PlaylistAdapter;
+import com.soundlab.app.presenter.api.endpoint.ApiService;
+import com.soundlab.app.presenter.api.request.InsertPlaylistRequest;
+import com.soundlab.app.presenter.api.response.Payload;
+import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
+import com.soundlab.app.utils.Debouncer;
 import com.soundlab.app.view.CustomButton;
 import com.soundlab.app.utils.Utilities;
 import com.soundlab.app.view.activity.MainActivity;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class PlaylistFragment extends Fragment {
 
@@ -44,6 +61,8 @@ public class PlaylistFragment extends Fragment {
     private TextView nomePlaylist;
     private TextView genere;
     private TextView numeroBrani;
+    private String token;
+    private final Debouncer debouncer = new Debouncer();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,6 +71,9 @@ public class PlaylistFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_playlist, container, false);
 
         Log.d("PlaylistFragment", "onCreateView called");
+
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        token = sharedPreferences.getString(USER_TOKEN, null);
 
         // Necessario per il funzionamento del menuItem
         Toolbar toolbar = view.findViewById(R.id.toolbar);
@@ -68,12 +90,7 @@ public class PlaylistFragment extends Fragment {
         ToggleButton favouriteButton = view.findViewById(R.id.favourite_button);
         favouriteButton.setChecked(playlist.isFavourite());
 
-        favouriteButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-
-            // TODO: Aggiorna la preferenza della playlist nel backend
-
-            playlist.setFavourite(isChecked);
-        });
+        favouriteButton.setOnCheckedChangeListener((buttonView, isChecked) -> updatePlaylistPreferences(playlist, isChecked, favouriteButton));
 
         // Ottiene la RecyclerView dal layout
         RecyclerView recyclerView = view.findViewById(R.id.songs_recyclerView);
@@ -95,8 +112,7 @@ public class PlaylistFragment extends Fragment {
         songArrayList.add(song2);
 
         playlist.setSongsNumber(2);
-
-
+        
         // Inizializza l'adapter e passa la lista di tracce
         PlaylistAdapter playlistAdapter = new PlaylistAdapter(this, songArrayList, playlist);
         // Imposta un layout manager per la RecyclerView (lista verticale)
@@ -107,6 +123,11 @@ public class PlaylistFragment extends Fragment {
         recyclerView.setAdapter(playlistAdapter);
 
         return view;
+    }
+    
+    private void updatePlaylistPreferences(Playlist playlist, boolean isChecked, ToggleButton favouriteButton) {
+        favouriteButton.setEnabled(false);
+        debouncer.debounce(() -> callFavPlaylist(playlist, isChecked, favouriteButton), 500);
     }
 
     @Override
@@ -126,6 +147,38 @@ public class PlaylistFragment extends Fragment {
 
         CardView add_songCardView = view.findViewById(R.id.add_songcardview);
         add_songCardView.setOnClickListener(v -> loadFragment(Utilities.searchFragmentTag));
+    }
+
+    private void callFavPlaylist(Playlist playlist, boolean isChecked, ToggleButton favouriteButton) {
+        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        String authToken = "Bearer " + token;
+
+        Call<Payload> call = apiService.favPlaylist(authToken, playlist.getId());
+        call.enqueue(new Callback<Payload>() {
+            @Override
+            public void onResponse(@NonNull Call<Payload> call, @NonNull Response<Payload> response) {
+                if (response.isSuccessful()) {
+                    Payload payload = response.body();
+
+                    Log.d("PLAYLIST_FRAGMENT", "favPlaylist - status code: " + payload.getStatusCode());
+                    Log.d("PLAYLIST_FRAGMENT", "favPlaylist - msg: " + payload.getMsg());
+
+                    favouriteButton.setEnabled(true);
+                    playlist.setFavourite(isChecked);
+                } else {
+                    favouriteButton.setEnabled(true);
+                    showErrorToast("Impossibile aggiornare lo stato di preferenza della playlist.");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Payload> call, @NonNull Throwable t) {
+                favouriteButton.setEnabled(true);
+                showErrorToast("Impossibile aggiornare lo stato di preferenza della playlist. Errore: " + t.getMessage());
+            }
+        });
     }
 
     public void aggiornaTextViewNumeroBraniPlaylist(Playlist playlist){
@@ -176,9 +229,7 @@ public class PlaylistFragment extends Fragment {
         // Listener per il pulsante di conferma eliminazione
         conferma_elimina.setOnClickListener(view -> {
 
-            // TODO: eliminare la playlist dal backend
-
-            loadFragment(Utilities.profileFragmentTag);
+            callDeletePlaylist(playlist);
 
             // Chiude il Dialog
             dialog.dismiss();
@@ -192,6 +243,39 @@ public class PlaylistFragment extends Fragment {
 
         // Mostra il Dialog
         dialog.show();
+    }
+
+    private void callDeletePlaylist(Playlist playlist) {
+        Long playlistID = playlist.getId();
+
+        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        String authToken = "Bearer " + token;
+
+        Call<Payload> call = apiService.deletePlaylist(authToken, playlistID);
+        call.enqueue(new Callback<Payload>() {
+            @Override
+            public void onResponse(@NonNull Call<Payload> call, @NonNull Response<Payload> response) {
+                if (response.isSuccessful()) {
+                    Payload payload = response.body();
+
+                    Log.d("PLAYLIST_FRAGMENT", "deletePlaylist - status code: " + payload.getStatusCode());
+                    Log.d("PLAYLIST_FRAGMENT", "deletePlaylist - msg: " + payload.getMsg());
+
+                    List<Playlist> playlists = Library.getInstance().getPlaylists();
+                    playlists.remove(playlist);
+                    loadFragment(Utilities.profileFragmentTag);
+                } else {
+                    showErrorToast("Impossibile rimuovere la playlist.");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Payload> call, @NonNull Throwable t) {
+                showErrorToast("Impossibile rimuovere la playlist. Errore: " + t.getMessage());
+            }
+        });
     }
 
     private void showDialog_rinomina() {
@@ -213,15 +297,9 @@ public class PlaylistFragment extends Fragment {
         // Listener per il pulsante di rinomina
         rinomina.setOnClickListener(view -> {
             // Ottiene il nuovo nome dalla casella di input
-            String nuovo_nome_playlist = playlist_input.getText().toString();
-            if (!nuovo_nome_playlist.isEmpty()) {
-
-                // TODO: cambia il nome della playlist nel backend
-
-                // Aggiorna il nome della playlist
-                playlist.setName(nuovo_nome_playlist);
-                nomePlaylist.setText(nuovo_nome_playlist);
-
+            String newName = playlist_input.getText().toString();
+            if (!newName.isEmpty()) {
+                modifyPlaylist(newName, playlist.getGenre(), playlist, true);
                 dialog.dismiss();
             } else {
                 // Visualizza un messaggio Toast se il nome è vuoto
@@ -261,14 +339,9 @@ public class PlaylistFragment extends Fragment {
         // Listener per il pulsante rinomina
         rinomina.setOnClickListener(view -> {
             // Ottiene il nuovo genere dalla casella di input
-            String nuovo_genere = playlist_input.getText().toString();
-            if (!nuovo_genere.isEmpty()) {
-
-                // TODO: cambia il genere della playlist nel backend
-
-                // Aggiorna il genere
-                playlist.setGenre(nuovo_genere);
-                genere.setText(nuovo_genere);
+            String newGenre = playlist_input.getText().toString();
+            if (!newGenre.isEmpty()) {
+                modifyPlaylist(playlist.getName(), newGenre, playlist, false);
                 dialog.dismiss();
             } else {
                 // Visualizza un messaggio Toast se il genere è vuoto
@@ -285,6 +358,49 @@ public class PlaylistFragment extends Fragment {
 
         // Mostra il Dialog
         dialog.show();
+    }
+
+    private void modifyPlaylist(String newName, String newGenre, Playlist playlist, boolean rename) {
+        InsertPlaylistRequest renamePlaylistRequest = new InsertPlaylistRequest(newName, newGenre, playlist.getId());
+
+        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        String authToken = "Bearer " + token;
+
+        Call<Payload> call = apiService.modifyPlaylist(authToken, renamePlaylistRequest);
+        call.enqueue(new Callback<Payload>() {
+            @Override
+            public void onResponse(@NonNull Call<Payload> call, @NonNull Response<Payload> response) {
+                if (response.isSuccessful()) {
+                    Payload payload = response.body();
+
+                    Log.d("PLAYLIST_FRAGMENT", "modifyPlaylist - status code: " + payload.getStatusCode());
+                    Log.d("PLAYLIST_FRAGMENT", "modifyPlaylist - msg: " + payload.getMsg());
+
+                    if (rename) {
+                        // Aggiorna il nome della playlist
+                        playlist.setName(newName);
+                        nomePlaylist.setText(newName);
+                    } else {
+                        // Aggiorna il genere
+                        playlist.setGenre(newGenre);
+                        genere.setText(newGenre);
+                    }
+                } else {
+                    showErrorToast("Impossibile rinominare la playlist.");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Payload> call, @NonNull Throwable t) {
+                showErrorToast("Impossibile rinominare la playlist. Errore: " + t.getMessage());
+            }
+        });
+    }
+
+    private void showErrorToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     // Mostra la bottomNavigationView e rimpiazza il fragmet attuale con ProfileFragment
