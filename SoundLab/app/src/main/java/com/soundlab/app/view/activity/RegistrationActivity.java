@@ -4,6 +4,7 @@ import static com.soundlab.app.utils.Constants.BASE_URL;
 import static com.soundlab.app.utils.Constants.USER_EMAIL;
 import static com.soundlab.app.utils.Constants.USER_LIB;
 import static com.soundlab.app.utils.Constants.USER_NAME;
+import static com.soundlab.app.utils.Constants.USER_PAS;
 import static com.soundlab.app.utils.Constants.USER_ROLE;
 import static com.soundlab.app.utils.Constants.USER_TOKEN;
 
@@ -32,7 +33,6 @@ import android.widget.Toast;
 import com.example.soundlab.R;
 import com.soundlab.app.presenter.api.endpoint.ApiService;
 import com.soundlab.app.presenter.api.request.RegisterRequest;
-import com.soundlab.app.presenter.api.response.Payload;
 import com.soundlab.app.presenter.api.response.UserPayload;
 import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
 
@@ -60,7 +60,7 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registration2);
+        setContentView(R.layout.activity_registration);
 
         dataDiNascitaButton = findViewById(R.id.datadinascita);
         dataNascitaText = findViewById(R.id.showText);
@@ -115,6 +115,7 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
                                 editor.putString(USER_EMAIL, payload.getEmail());
                                 editor.putString(USER_ROLE, payload.getRole());
                                 editor.putLong(USER_LIB, payload.getLibraryId());
+                                editor.putString(USER_PAS, password);
                                 editor.apply();
 
                                 // Vado col popup

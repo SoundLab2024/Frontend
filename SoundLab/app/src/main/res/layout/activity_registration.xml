@@ -11,10 +11,10 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="0dp"
         android:layout_marginVertical="0dp"
+        android:scrollbars="none"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:scrollbars="none">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -46,14 +46,13 @@
 
             <LinearLayout
                 android:id="@+id/linearLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="515dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="104dp"
+                android:layout_marginTop="80dp"
                 android:layout_marginEnd="24dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/logoregistrazione">
 
@@ -62,15 +61,11 @@
                     android:id="@+id/username"
                     android:layout_width="92dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
                     android:text="Username:" />
 
                 <EditText
                     android:id="@+id/username_input"
-                    android:layout_width="351dp"
+                    android:layout_width="match_parent"
                     android:layout_height="32dp"
                     android:autofillHints="username"
                     android:background="@drawable/custom_text_input"
@@ -92,15 +87,11 @@
                     android:id="@+id/email"
                     android:layout_width="308dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
                     android:text="@string/email" />
 
                 <EditText
                     android:id="@+id/email_input"
-                    android:layout_width="348dp"
+                    android:layout_width="match_parent"
                     android:layout_height="32dp"
                     android:autofillHints="emailAddress"
                     android:background="@drawable/custom_text_input"
@@ -122,15 +113,11 @@
                     android:id="@+id/password"
                     android:layout_width="308dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
                     android:text="@string/password" />
 
                 <EditText
                     android:id="@+id/password_input"
-                    android:layout_width="344dp"
+                    android:layout_width="match_parent"
                     android:layout_height="32dp"
                     android:autofillHints="password"
                     android:background="@drawable/custom_text_input"
@@ -152,20 +139,12 @@
                     android:id="@+id/spinner_input"
                     android:layout_width="308dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
                     android:text="Seleziona sesso" />
 
                 <Spinner
                     android:id="@+id/spinner"
                     android:layout_width="match_parent"
-                    android:layout_height="37dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="47dp"
                     android:minHeight="48dp" />
@@ -207,4 +186,4 @@
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-     </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

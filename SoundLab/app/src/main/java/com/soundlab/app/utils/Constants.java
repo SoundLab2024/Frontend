@@ -9,6 +9,7 @@ public class Constants {
     public static final String USER_ROLE = "ROLE";
     public static final String USER_TOKEN = "TOKEN";
     public static final String USER_LIB = "LIBR";
+    public static final String USER_PAS = "PASS";
     public static final String FIRST_RUN_KEY = "FIRST_RUN";
     public static final String ALREADY_AUTH_KEY = "ALREADY_AUTH";
 }
