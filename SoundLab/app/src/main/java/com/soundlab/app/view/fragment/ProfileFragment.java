@@ -121,7 +121,7 @@ public class ProfileFragment extends Fragment {
         CustomButton settingsButton = view.findViewById(R.id.settings);
 
         // Set an OnClickListener for the settings button
-        settingsButton.setOnClickListener(v -> openSettingsActivity());
+        //settingsButton.setOnClickListener(v -> openSettingsActivity());
 
         CustomButton analiticheButton = view.findViewById(R.id.analiticheButton);
         if (role != null) {
@@ -146,13 +146,13 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    private void openSettingsActivity() {
+    /*private void openSettingsActivity() {
         // Create an Intent to start the SettingsActivity
         Intent intent = new Intent(requireContext(), SettingsActivity.class);
 
         // Start the SettingsActivity
         startActivity(intent);
-    }
+    }*/
 
     private void addNewPlaylist() {
         Dialog dialog = new Dialog(this.requireContext(), R.style.CustomDialogStyle);

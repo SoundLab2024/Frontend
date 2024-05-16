@@ -44,4 +44,9 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     @POST("/api/data/playlist/toggleFav/{id}")
     Call<Payload> favPlaylist(@Header("Authorization") String authToken, @Path("id") Long id);
+
+    @Headers("Content-Type: application/json")
+    @DELETE("data/users/{id}")
+    Call<Payload> deleteUser(@Header("Authorization") String authToken, @Path("id") String id);
+
 }

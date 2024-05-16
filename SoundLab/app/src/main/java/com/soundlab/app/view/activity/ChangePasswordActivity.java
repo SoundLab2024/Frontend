@@ -27,4 +27,10 @@ public class ChangePasswordActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }
