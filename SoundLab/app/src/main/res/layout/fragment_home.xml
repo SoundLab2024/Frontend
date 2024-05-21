@@ -62,6 +62,7 @@
             android:textSize="24sp" />
 
         <HorizontalScrollView
+            android:id="@+id/scrollView_recentListen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -77,8 +78,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/trasparent"
-                    app:cardElevation="0dp"
-                    android:clickable="true">
+                    android:clickable="true"
+                    app:cardElevation="0dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -117,8 +118,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="20dp"
                     android:backgroundTint="@color/trasparent"
-                    app:cardElevation="0dp"
-                    android:clickable="true">
+                    android:clickable="true"
+                    app:cardElevation="0dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -156,8 +157,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/trasparent"
-                    app:cardElevation="0dp"
-                    android:clickable="true">
+                    android:clickable="true"
+                    app:cardElevation="0dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -273,6 +274,7 @@
             android:textSize="24sp" />
 
         <HorizontalScrollView
+            android:id="@+id/scrollView_favPlaylist"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -288,8 +290,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/trasparent"
-                    app:cardElevation="0dp"
-                    android:clickable="true">
+                    android:clickable="true"
+                    app:cardElevation="0dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="wrap_content"
@@ -331,8 +333,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="20dp"
                     android:backgroundTint="@color/trasparent"
-                    app:cardElevation="0dp"
-                    android:clickable="true">
+                    android:clickable="true"
+                    app:cardElevation="0dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="wrap_content"
@@ -372,8 +374,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/trasparent"
-                    app:cardElevation="0dp"
-                    android:clickable="true">
+                    android:clickable="true"
+                    app:cardElevation="0dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="wrap_content"

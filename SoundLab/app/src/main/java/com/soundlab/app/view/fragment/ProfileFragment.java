@@ -8,7 +8,6 @@ import static com.soundlab.app.utils.Constants.USER_TOKEN;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -42,7 +41,6 @@ import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
 import com.soundlab.app.utils.Utilities;
 import com.soundlab.app.view.CustomButton;
 import com.soundlab.app.view.activity.MainActivity;
-import com.soundlab.app.view.activity.SettingsActivity;
 
 import java.util.List;
 
@@ -61,7 +59,7 @@ public class ProfileFragment extends Fragment {
     private String username;
     private String token;
     private String role;
-    private String TAG = "PROFILE_FRAGMENT";
+    private final String TAG = "PROFILE_FRAGMENT";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,19 +82,9 @@ public class ProfileFragment extends Fragment {
         recyclerView.setNestedScrollingEnabled(false);
 
         library = Library.getInstance();
-
-        // Crea una nuova lista di playlist
         playlists = library.getPlaylists();
 
-        // Inizializza l'adapter e passa la lista di playlist
-        ProfileAdapter profileAdapter = new ProfileAdapter(this, playlists, token);
-
-        // Imposta un layout manager per la RecyclerView (lista verticale)
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
-
-        // Imposta il layout manager e l'adapter per la RecyclerView
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(profileAdapter);
+        initAdapter();
 
         return view;
     }
@@ -113,15 +101,9 @@ public class ProfileFragment extends Fragment {
         addButton.setOnClickListener(v -> addNewPlaylist());
 
         //Se non ci sono playlist crea la TextView zeroPlaylist
-        if (playlists.isEmpty()) {
+        if (library.isInitialized() && playlists.isEmpty()) {
             createZeroPlaylistTextView();
         }
-
-        // Get the reference to the settings button
-        CustomButton settingsButton = view.findViewById(R.id.settings);
-
-        // Set an OnClickListener for the settings button
-        //settingsButton.setOnClickListener(v -> openSettingsActivity());
 
         CustomButton analiticheButton = view.findViewById(R.id.analiticheButton);
         if (role != null) {
@@ -146,13 +128,18 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    /*private void openSettingsActivity() {
-        // Create an Intent to start the SettingsActivity
-        Intent intent = new Intent(requireContext(), SettingsActivity.class);
+    private void initAdapter() {
+        // Inizializza l'adapter e passa la lista di playlist
+        ProfileAdapter profileAdapter = new ProfileAdapter(this, playlists, token);
 
-        // Start the SettingsActivity
-        startActivity(intent);
-    }*/
+        // Imposta un layout manager per la RecyclerView (lista verticale)
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
+
+        // Imposta il layout manager e l'adapter per la RecyclerView
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(profileAdapter);
+    }
+
 
     private void addNewPlaylist() {
         Dialog dialog = new Dialog(this.requireContext(), R.style.CustomDialogStyle);
@@ -283,6 +270,5 @@ public class ProfileFragment extends Fragment {
             ((MainActivity) getActivity()).replaceFragmentWithoutPopStack(playlistFragment, Utilities.playlistFragmentTag);
         }
     }
-
 
 }

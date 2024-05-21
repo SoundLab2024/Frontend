@@ -143,7 +143,7 @@ public class PlayerFragment extends Fragment {
         Song song = playerSingleton.getSong();
 
         if (song != null) {
-            title.setText(song.getName());
+            title.setText(song.getTitle());
             artist.setText(song.getArtists().get(0).getName());
         }
     }

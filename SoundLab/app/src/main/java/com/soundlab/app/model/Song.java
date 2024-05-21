@@ -9,26 +9,26 @@ import java.util.List;
 public class Song implements Serializable {
 
     //private static final long serialVersionUID = 1L; // Numero di versione per la serializzazione
-    private final long id;
-    private final String name;
+    private final Long id;
+    private final String title;
     private final String genre;
     private  int image;
     private final List<Artist> artists;  // Lista di Artist associati alla canzone
     private final int track;
 
     // Costruttore
-    public Song(long id, String name, String genre, Integer image, int track) {
+    public Song(long id, String title, String genre, Integer image, int track) {
         this.id = id;
-        this.name = name;
+        this.title = title;
         this.genre = genre;
         this.image = image;
         this.artists = new ArrayList<>();
         this.track = track;
     }
 
-    public Song(long id, String name, String genre, int track) {
+    public Song(long id, String title, String genre, int track) {
         this.id = id;
-        this.name = name;
+        this.title = title;
         this.genre = genre;
         this.image = R.drawable.cover_default;
         this.artists = new ArrayList<>();
@@ -41,8 +41,8 @@ public class Song implements Serializable {
     }
 
     // Getter per name
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     // Getter per genre

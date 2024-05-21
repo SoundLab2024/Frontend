@@ -300,10 +300,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
             // Chiude il Dialog
             dialog.dismiss();
-            // Se non ci sono playlist crea la TextView zeroPlaylist
-            if (playlists.isEmpty()) {
-                profileFragment.createZeroPlaylistTextView();
-            }
         });
 
         // Listener per il pulsante di annullamento
@@ -335,9 +331,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
                     Log.d("PROFILE_ADAPTER", "deletePlaylist - status code: " + payload.getStatusCode());
                     Log.d("PROFILE_ADAPTER", "deletePlaylist - msg: " + payload.getMsg());
 
-                    // Rimuove la playlist dalla lista e aggiorna la UI
-                    playlists.remove(selectedPlaylist);
-                    notifyItemRemoved(adapterPosition);
+                    deletePlaylist();
                 } else {
                     showErrorToast("Impossibile rimuovere la playlist.");
                 }
@@ -348,6 +342,16 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
                 showErrorToast("Impossibile rimuovere la playlist. Errore: " + t.getMessage());
             }
         });
+    }
+
+    private void deletePlaylist(){
+        // Rimuove la playlist dalla lista e aggiorna la UI
+        playlists.remove(selectedPlaylist);
+        notifyItemRemoved(adapterPosition);
+        // Se non ci sono playlist crea la TextView zeroPlaylist
+        if (playlists.isEmpty()) {
+            profileFragment.createZeroPlaylistTextView();
+        }
     }
 
     private void showDialog_rinomina(Context context) {

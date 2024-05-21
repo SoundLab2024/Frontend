@@ -24,7 +24,6 @@ import com.soundlab.app.model.Artist;
 import com.soundlab.app.model.Song;
 import com.soundlab.app.presenter.adapter.CercaAdapter;
 import com.soundlab.app.utils.Utilities;
-import com.soundlab.app.view.activity.MainActivity;
 
 
 public class SearchFragment extends Fragment {
@@ -85,7 +84,7 @@ public class SearchFragment extends Fragment {
         if (!TextUtils.isEmpty(query)) {
             for (Song song : allSongs) {
                 // Controlla se il nome della canzone contiene la query
-                if (song.getName().toLowerCase().contains(query.toLowerCase())) {
+                if (song.getTitle().toLowerCase().contains(query.toLowerCase())) {
                     displayedSongs.add(song);
                 } else {
                     // Controlla ogni artista associato alla canzone

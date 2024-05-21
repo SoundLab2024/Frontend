@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.soundlab.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.soundlab.app.model.Song;
 import com.soundlab.app.utils.Utilities;
@@ -49,7 +48,7 @@ public class CercaAdapter extends RecyclerView.Adapter<CercaAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Song song = songList.get(position);
-        holder.titleTextView.setText(song.getName());
+        holder.titleTextView.setText(song.getTitle());
         holder.artistTextView.setText(Utilities.ottieniArtistiDellaTracciaInStringa(song));
 
         holder.itemView.setOnClickListener(view -> searchFragment.loadPlayer(songList.indexOf(song), songList));

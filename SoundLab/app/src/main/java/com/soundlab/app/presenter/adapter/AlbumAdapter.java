@@ -46,7 +46,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
             //Popola il ViewHolder con i dati delle tracce
             holder.songImage.setImageResource(selectedSong.getImage());
-            holder.songName.setText(selectedSong.getName());
+            holder.songName.setText(selectedSong.getTitle());
             holder.songArtist.setText(artistNames);
 
             holder.itemView.setOnClickListener(view -> albumFragment.loadPlayer(songArrayList.indexOf(selectedSong), songArrayList));

@@ -159,7 +159,7 @@ public class PlayerService extends Service {
         VectorDrawableCompat playDrawable = VectorDrawableCompat.create(getResources(), R.drawable.baseline_play_circle_24, null);
         VectorDrawableCompat pauseDrawable = VectorDrawableCompat.create(getResources(), R.drawable.baseline_pause_circle_filled_24, null);
 
-        remoteViews.setTextViewText(R.id.tv_song_name, song.getName());
+        remoteViews.setTextViewText(R.id.tv_song_name, song.getTitle());
         remoteViews.setTextViewText(R.id.tv_artist, song.getArtists().get(0).getName());
         remoteViews.setImageViewBitmap(R.id.tv_song_image, coverBitmap);
 

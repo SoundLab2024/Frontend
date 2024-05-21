@@ -1,11 +1,15 @@
 package com.soundlab.app.presenter.api.endpoint;
 
+import com.soundlab.app.model.Song;
 import com.soundlab.app.presenter.api.request.InsertPlaylistRequest;
 import com.soundlab.app.presenter.api.request.LoginRequest;
 import com.soundlab.app.presenter.api.request.RegisterRequest;
 import com.soundlab.app.presenter.api.response.LibraryFromIdResponse;
 import com.soundlab.app.presenter.api.response.Payload;
+import com.soundlab.app.presenter.api.response.RecentlyListenedResponse;
 import com.soundlab.app.presenter.api.response.UserPayload;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -48,5 +52,9 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     @DELETE("data/users/{id}")
     Call<Payload> deleteUser(@Header("Authorization") String authToken, @Path("id") String id);
+
+    @Headers("Content-Type: application/json")
+    @GET("data/listenings/recently/{id}")
+    Call<List<RecentlyListenedResponse>> recentlyListened(@Header("Authorization") String authToken, @Path("id") String id);
 
 }

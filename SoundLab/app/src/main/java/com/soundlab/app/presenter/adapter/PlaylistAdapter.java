@@ -56,7 +56,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
 
             //Popola il ViewHolder con i dati delle tracce
             holder.songImage.setImageResource(selectedSong.getImage());
-            holder.songName.setText(selectedSong.getName());
+            holder.songName.setText(selectedSong.getTitle());
             holder.songArtist.setText(artistNames);
 
             holder.itemView.setOnClickListener(view -> playlistFragment.loadPlayer(songArrayList.indexOf(selectedSong), songArrayList));
@@ -72,7 +72,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
                 songArrayList.remove(selectedSong);
                 notifyItemRemoved(adapterPosition);
 
-                String toastText = "Hai rimosso " + selectedSong.getName() + " da questa playlist";
+                String toastText = "Hai rimosso " + selectedSong.getTitle() + " da questa playlist";
                 Toast toast = Toast.makeText(view.getContext(), toastText, Toast.LENGTH_SHORT);
                 toast.show();
 
@@ -129,7 +129,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
         ImageView song_image = bottomSheetView.findViewById(R.id.song_image);
         song_image.setImageResource(selectedSong.getImage());
         TextView song_name = bottomSheetView.findViewById(R.id.title);
-        song_name.setText(selectedSong.getName());
+        song_name.setText(selectedSong.getTitle());
         TextView song_artist = bottomSheetView.findViewById(R.id.artist);
         String artists = Utilities.ottieniArtistiDellaTracciaInStringa(selectedSong);
         song_artist.setText(artists);
