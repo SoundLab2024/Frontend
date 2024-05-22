@@ -1,6 +1,7 @@
 package com.soundlab.app.presenter.api.endpoint;
 
 import com.soundlab.app.model.Song;
+import com.soundlab.app.presenter.api.request.ChangePasswordRequest;
 import com.soundlab.app.presenter.api.request.InsertPlaylistRequest;
 import com.soundlab.app.presenter.api.request.LoginRequest;
 import com.soundlab.app.presenter.api.request.RegisterRequest;
@@ -61,5 +62,9 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     @GET("data/song/search/{prefix}")
     Call<ArrayList<Song>> searchSong(@Header("Authorization") String authToken, @Path("prefix") String prefix);
+
+    @Headers("Content-Type: application/json")
+    @POST("/api/authentication/changepw")
+    Call<Payload> changePw(@Header("Authorization") String authToken, @Body ChangePasswordRequest changePasswordRequest);
 
 }
