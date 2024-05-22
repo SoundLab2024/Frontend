@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import com.soundlab.app.model.Song;
 import com.soundlab.app.utils.Utilities;
+import com.soundlab.app.view.CustomButton;
 import com.soundlab.app.view.fragment.SearchFragment;
 
 public class CercaAdapter extends RecyclerView.Adapter<CercaAdapter.ViewHolder> {
@@ -29,11 +30,15 @@ public class CercaAdapter extends RecyclerView.Adapter<CercaAdapter.ViewHolder> 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView titleTextView;
         public TextView artistTextView;
+        public CustomButton removeFromPlaylist;
 
         public ViewHolder(View view) {
             super(view);
             titleTextView = view.findViewById(R.id.song_title);
             artistTextView = view.findViewById(R.id.song_artist);
+
+            removeFromPlaylist = view.findViewById(R.id.remove_button);
+            removeFromPlaylist.setVisibility(View.GONE);
         }
     }
 

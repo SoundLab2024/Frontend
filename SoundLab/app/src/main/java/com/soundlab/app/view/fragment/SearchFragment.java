@@ -1,36 +1,45 @@
 package com.soundlab.app.view.fragment;
 
+import static com.soundlab.app.utils.Constants.BASE_URL;
+import static com.soundlab.app.utils.Constants.USER_TOKEN;
+
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import androidx.appcompat.widget.SearchView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.soundlab.R;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import com.soundlab.app.model.Artist;
 import com.soundlab.app.model.Song;
 import com.soundlab.app.presenter.adapter.CercaAdapter;
+import com.soundlab.app.presenter.api.endpoint.ApiService;
+import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
+import com.soundlab.app.utils.Debouncer;
 import com.soundlab.app.utils.Utilities;
+
+import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 
 public class SearchFragment extends Fragment {
-    //aggiunta
-    private List<Song> allSongs;
-    private ArrayList<Song> displayedSongs;
+    private final ArrayList<Song> displayedSongs = new ArrayList<>();
     private CercaAdapter cercaAdapter;
+    private String token;
+    private final Debouncer debouncer = new Debouncer();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -39,24 +48,12 @@ public class SearchFragment extends Fragment {
         Log.d("SearchFragment", "onCreateView called");
         Utilities.changeStatusBarColorFragment(this, R.color.dark_purple);
 
-        // Inizializza la lista delle canzoni
-        allSongs = new ArrayList<>();
-
-        // Aggiunge le tracce alla lista ed aggiunge alla traccia i relativi artisti
-        Song song1 = new Song(1, "Canzone1","Rock",  R.raw.canzone1);
-        song1.addArtist(new Artist(7, "Gio", new Date(5 / 1985), "Inghilterra"));
-        allSongs.add(song1);
-
-        Song song2 = new Song(2, "Canzone2", "Rock", R.raw.canzone2);
-        song2.addArtist(new Artist(36, "Ale", new Date(7 / 1995), "Italia"));
-        song2.addArtist(new Artist(31, "Ren", new Date(3 / 1998), "Italia"));
-        allSongs.add(song2);
-
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        token = sharedPreferences.getString(USER_TOKEN, null);
 
         // Inizializza la RecyclerView e l'Adapter
         RecyclerView recyclerView = view.findViewById(R.id.songs_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        displayedSongs = new ArrayList<>();
         cercaAdapter = new CercaAdapter(displayedSongs, this);
         recyclerView.setAdapter(cercaAdapter);
 
@@ -72,35 +69,52 @@ public class SearchFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String newText) {
                 // Chiamato ogni volta che l'utente modifica il testo nella SearchView
-                filterResults(newText);
+                debouncer.debounce(() -> checkText(newText), 800);
                 return true;
             }
         });
         return view;
     }
 
-    private void filterResults(String query) {
-        displayedSongs.clear();
-        if (!TextUtils.isEmpty(query)) {
-            for (Song song : allSongs) {
-                // Controlla se il nome della canzone contiene la query
-                if (song.getTitle().toLowerCase().contains(query.toLowerCase())) {
-                    displayedSongs.add(song);
-                } else {
-                    // Controlla ogni artista associato alla canzone
-                    for (Artist artist : song.getArtists()) {
-                        if (artist.getName().toLowerCase().contains(query.toLowerCase())) {
-                            displayedSongs.add(song);
-                            break; // Trovato un artista corrispondente, non è necessario cercare altri artisti per questa canzone
-                        }
-                    }
-                }
-            }
+    private void checkText(String newText) {
+        if (newText.isEmpty()) {
+            displayedSongs.clear();
+            cercaAdapter.notifyDataSetChanged();
+        } else {
+            callSearchSong(newText);
         }
-        cercaAdapter.notifyDataSetChanged();
     }
 
-    public void loadPlayer(int songPosition, ArrayList<Song> songArrayList){
+    private void callSearchSong(String prefix) {
+        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
+        ApiService apiService = retrofit.create(ApiService.class);
+        String authToken = "Bearer " + token;
+
+        Call<ArrayList<Song>> call = apiService.searchSong(authToken, prefix);
+
+        call.enqueue(new Callback<ArrayList<Song>>() {
+            @Override
+            public void onResponse(@NonNull Call<ArrayList<Song>> call, @NonNull Response<ArrayList<Song>> response) {
+                if (response.isSuccessful()) {
+                    // Riuscito, prendiamo il body dalla risposta
+                    displayedSongs.clear();
+                    displayedSongs.addAll(response.body());
+                    cercaAdapter.notifyDataSetChanged();
+                } else {
+                    // Gestisci la risposta di errore, es. credenziali non valide
+                    Toast.makeText(getActivity(), "Canzoni non recuperate.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ArrayList<Song>> call, @NonNull Throwable t) {
+                // Gestisci l'errore di rete o la conversione della risposta qui
+                Log.d("SEARCH_FRAGMENT", "Richiesta fallita.");
+            }
+        });
+    }
+
+    public void loadPlayer(int songPosition, ArrayList<Song> songArrayList) {
         Utilities.loadPlayer(getActivity(), songPosition, songArrayList);
     }
 }

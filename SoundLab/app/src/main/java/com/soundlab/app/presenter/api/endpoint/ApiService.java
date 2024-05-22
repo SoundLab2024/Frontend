@@ -9,6 +9,7 @@ import com.soundlab.app.presenter.api.response.Payload;
 import com.soundlab.app.presenter.api.response.RecentlyListenedResponse;
 import com.soundlab.app.presenter.api.response.UserPayload;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -56,5 +57,9 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     @GET("data/listenings/recently/{id}")
     Call<List<RecentlyListenedResponse>> recentlyListened(@Header("Authorization") String authToken, @Path("id") String id);
+
+    @Headers("Content-Type: application/json")
+    @GET("data/song/search/{prefix}")
+    Call<ArrayList<Song>> searchSong(@Header("Authorization") String authToken, @Path("prefix") String prefix);
 
 }
