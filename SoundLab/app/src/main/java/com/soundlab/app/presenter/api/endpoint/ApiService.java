@@ -2,21 +2,25 @@ package com.soundlab.app.presenter.api.endpoint;
 
 import com.soundlab.app.model.Song;
 import com.soundlab.app.presenter.api.request.ChangePasswordRequest;
+import com.soundlab.app.presenter.api.request.DeleteSongRequest;
 import com.soundlab.app.presenter.api.request.InsertPlaylistRequest;
 import com.soundlab.app.presenter.api.request.LoginRequest;
 import com.soundlab.app.presenter.api.request.RegisterRequest;
 import com.soundlab.app.presenter.api.response.LibraryFromIdResponse;
 import com.soundlab.app.presenter.api.response.Payload;
 import com.soundlab.app.presenter.api.response.RecentlyListenedResponse;
+import com.soundlab.app.presenter.api.response.RetriveSongResponse;
 import com.soundlab.app.presenter.api.response.UserPayload;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -48,7 +52,7 @@ public interface ApiService {
     Call<Payload> modifyPlaylist(@Header("Authorization") String authToken, @Body InsertPlaylistRequest insertPlaylistRequest);
 
     @Headers("Content-Type: application/json")
-    @POST("/api/data/playlist/toggleFav/{id}")
+    @POST("data/playlist/toggleFav/{id}")
     Call<Payload> favPlaylist(@Header("Authorization") String authToken, @Path("id") Long id);
 
     @Headers("Content-Type: application/json")
@@ -64,7 +68,20 @@ public interface ApiService {
     Call<ArrayList<Song>> searchSong(@Header("Authorization") String authToken, @Path("prefix") String prefix);
 
     @Headers("Content-Type: application/json")
-    @POST("/api/authentication/changepw")
+    @POST("authentication/changepw")
     Call<Payload> changePw(@Header("Authorization") String authToken, @Body ChangePasswordRequest changePasswordRequest);
+
+    @Headers("Content-Type: application/json")
+    @POST("data/playlist/addToPl")
+    Call<Payload> insertSong(@Header("Authorization") String authToken, @Body Map<String, Long> body);
+
+    @Headers("Content-Type: application/json")
+    @HTTP(method = "DELETE", path = "data/playlist/delFrPl", hasBody = true)
+    Call<Payload> deleteSong(@Header("Authorization") String authToken, @Body DeleteSongRequest deleteSongRequest);
+
+    @Headers("Content-Type: application/json")
+    @GET("data/playlist/{id}")
+    Call<RetriveSongResponse> retriveSong(@Header("Authorization") String authToken, @Path("id") Long id);
+
 
 }

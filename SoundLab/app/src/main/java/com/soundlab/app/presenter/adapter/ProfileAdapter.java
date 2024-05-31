@@ -1,11 +1,10 @@
 package com.soundlab.app.presenter.adapter;
 
-import static com.soundlab.app.utils.Constants.BASE_URL;
+import static com.soundlab.app.utils.Utilities.showErrorMessage;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,22 +19,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.soundlab.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.soundlab.app.utils.Debouncer;
+import com.soundlab.app.controller.ControllerCallback;
+import com.soundlab.app.controller.PlaylistController;
 import com.soundlab.app.model.Playlist;
-import com.soundlab.app.presenter.api.endpoint.ApiService;
-import com.soundlab.app.presenter.api.request.InsertPlaylistRequest;
 import com.soundlab.app.presenter.api.response.Payload;
-import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
+import com.soundlab.app.utils.Debouncer;
 import com.soundlab.app.view.CustomButton;
 import com.soundlab.app.view.CustomCardView;
 import com.soundlab.app.view.fragment.ProfileFragment;
 
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHolder> {
 
@@ -45,12 +38,14 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
     private int adapterPosition;
     private Playlist selectedPlaylist;
     private final Debouncer debouncer = new Debouncer();
+    private PlaylistController playlistController;
 
     // Costruttore per inizializzare l'adapter con la lista di playlist
     public ProfileAdapter(ProfileFragment profileFragment, List<Playlist> playlists, String token) {
         this.playlists = playlists;
         this.profileFragment = profileFragment;
         this.token = token;
+        playlistController = new PlaylistController();
         updatePlaylistOrder();
     }
 
@@ -179,38 +174,23 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
     }
 
-    private void callFavPlaylist(boolean isChecked, ToggleButton favouritebutton) {
-        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
-        ApiService apiService = retrofit.create(ApiService.class);
-
-        String authToken = "Bearer " + token;
-
-        Call<Payload> call = apiService.favPlaylist(authToken, selectedPlaylist.getId());
-        call.enqueue(new Callback<Payload>() {
+    private void callFavPlaylist(boolean isChecked, ToggleButton favouriteButton) {
+        PlaylistController playlistController = new PlaylistController();
+        playlistController.updateFavouritePlaylist(token, selectedPlaylist.getId(), new ControllerCallback<Payload>() {
             @Override
-            public void onResponse(@NonNull Call<Payload> call, @NonNull Response<Payload> response) {
-                if (response.isSuccessful()) {
-                    Payload payload = response.body();
-                    Boolean fav = Boolean.valueOf(payload.getMsg());
-
-                    Log.d("PROFILE_ADAPTER", "favPlaylist - status code: " + payload.getStatusCode());
-                    Log.d("PROFILE_ADAPTER", "favPlaylist - msg: " + payload.getMsg());
-
-                    updateFavouritePlaylistUI(isChecked);
-                    favouritebutton.setEnabled(true);
-                } else {
-                    favouritebutton.setEnabled(true);
-                    showErrorToast("Impossibile aggiornare lo stato di preferenza della playlist.");
-                }
+            public void onSuccess(Payload result) {
+                updateFavouritePlaylistUI(isChecked);
+                favouriteButton.setEnabled(true);
             }
 
             @Override
-            public void onFailure(@NonNull Call<Payload> call, @NonNull Throwable t) {
-                favouritebutton.setEnabled(true);
-                showErrorToast("Impossibile aggiornare lo stato di preferenza della playlist. Errore: " + t.getMessage());
+            public void onFailed(String errorMessage) {
+                favouriteButton.setEnabled(true);
+                showErrorMessage(profileFragment, errorMessage);
             }
         });
     }
+
 
     private void updateFavouritePlaylistUI(boolean isChecked) {
         // Aggiorna lo stato di preferenza nel modello dei dati
@@ -315,36 +295,20 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
     private void callDeletePlaylist() {
         Long playlistID = selectedPlaylist.getId();
-
-        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
-        ApiService apiService = retrofit.create(ApiService.class);
-
-        String authToken = "Bearer " + token;
-
-        Call<Payload> call = apiService.deletePlaylist(authToken, playlistID);
-        call.enqueue(new Callback<Payload>() {
+        playlistController.deletePlaylist(token, playlistID, new ControllerCallback<Payload>() {
             @Override
-            public void onResponse(@NonNull Call<Payload> call, @NonNull Response<Payload> response) {
-                if (response.isSuccessful()) {
-                    Payload payload = response.body();
-
-                    Log.d("PROFILE_ADAPTER", "deletePlaylist - status code: " + payload.getStatusCode());
-                    Log.d("PROFILE_ADAPTER", "deletePlaylist - msg: " + payload.getMsg());
-
-                    deletePlaylist();
-                } else {
-                    showErrorToast("Impossibile rimuovere la playlist.");
-                }
+            public void onSuccess(Payload result) {
+                deletePlaylistUI();
             }
 
             @Override
-            public void onFailure(@NonNull Call<Payload> call, @NonNull Throwable t) {
-                showErrorToast("Impossibile rimuovere la playlist. Errore: " + t.getMessage());
+            public void onFailed(String errorMessage) {
+                showErrorMessage(profileFragment, errorMessage);
             }
         });
     }
 
-    private void deletePlaylist(){
+    private void deletePlaylistUI(){
         // Rimuove la playlist dalla lista e aggiorna la UI
         playlists.remove(selectedPlaylist);
         notifyItemRemoved(adapterPosition);
@@ -431,36 +395,20 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
     }
 
     private void modifyPlaylist(String newName, String newGenre, boolean rename) {
-        InsertPlaylistRequest renamePlaylistRequest = new InsertPlaylistRequest(newName, newGenre, selectedPlaylist.getId());
-
-        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
-        ApiService apiService = retrofit.create(ApiService.class);
-
-        String authToken = "Bearer " + token;
-
-        Call<Payload> call = apiService.modifyPlaylist(authToken, renamePlaylistRequest);
-        call.enqueue(new Callback<Payload>() {
+        Long playlistID = selectedPlaylist.getId();
+        playlistController.modifyPlaylist(token, newName, newGenre, playlistID, new ControllerCallback<Payload>() {
             @Override
-            public void onResponse(@NonNull Call<Payload> call, @NonNull Response<Payload> response) {
-                if (response.isSuccessful()) {
-                    Payload payload = response.body();
-
-                    Log.d("PROFILE_ADAPTER", "modifyPlaylist - status code: " + payload.getStatusCode());
-                    Log.d("PROFILE_ADAPTER", "modifyPlaylist - msg: " + payload.getMsg());
-
-                    if(rename) {
-                        updatePlaylistNameUI(newName);
-                    } else {
-                        updateGenreUI(newGenre);
-                    }
+            public void onSuccess(Payload result) {
+                if (rename) {
+                    updatePlaylistNameUI(newName); // Metodo per aggiornare il nome della playlist nell'UI
                 } else {
-                    showErrorToast("Impossibile rinominare la playlist.");
+                    updateGenreUI(newGenre); // Metodo per aggiornare il genere della playlist nell'UI
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<Payload> call, @NonNull Throwable t) {
-                showErrorToast("Impossibile rinominare la playlist. Errore: " + t.getMessage());
+            public void onFailed(String errorMessage) {
+                showErrorMessage(profileFragment, errorMessage);
             }
         });
     }
@@ -478,10 +426,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
     private void updateGenreUI(String newGenre) {
         selectedPlaylist.setGenre(newGenre);
         new Handler().post(() -> notifyItemChanged(adapterPosition));
-    }
-
-    private void showErrorToast(String message) {
-        Toast.makeText(profileFragment.getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     // Restituisci il numero totale di elementi nella RecyclerView

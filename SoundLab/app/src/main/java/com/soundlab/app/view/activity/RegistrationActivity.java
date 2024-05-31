@@ -8,6 +8,7 @@ import static com.soundlab.app.utils.Constants.USER_PAS;
 import static com.soundlab.app.utils.Constants.USER_ROLE;
 import static com.soundlab.app.utils.Constants.USER_TOKEN;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
@@ -35,6 +36,7 @@ import com.soundlab.app.presenter.api.endpoint.ApiService;
 import com.soundlab.app.presenter.api.request.RegisterRequest;
 import com.soundlab.app.presenter.api.response.UserPayload;
 import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
+import com.soundlab.app.utils.Debouncer;
 
 import java.sql.Date;
 
@@ -56,6 +58,7 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
 
     // Variabile di controllo
     private boolean userSelected = false;
+    private final Debouncer debouncer = new Debouncer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,58 +87,57 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
         password_input = findViewById(R.id.password_input);
         username_input = findViewById(R.id.username_input);
 
-        continuaButton.setOnClickListener(new View.OnClickListener() {
+        continuaButton.setOnClickListener(view -> {
+
+            email = email_input.getText().toString();
+            password = password_input.getText().toString();
+            username = username_input.getText().toString();
+
+            if (controlloCampi(email, password, username, scelta, dataStringa)) {
+                debouncer.debounce(this::callRegisterRequest, 800);
+            }
+
+        });
+    }
+
+    private void callRegisterRequest() {
+        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
+        ApiService apiService = retrofit.create(ApiService.class);
+        RegisterRequest registerRequest = new RegisterRequest(email, password, username, scelta, dataConverted);
+        Log.d(TAG, registerRequest.getBirth().toString());
+
+        Call<UserPayload> call = apiService.registerUser(registerRequest);
+        call.enqueue(new Callback<UserPayload>() {
             @Override
-            public void onClick(View view) {
+            public void onResponse(@NonNull Call<UserPayload> call, @NonNull Response<UserPayload> response) {
+                if (response.isSuccessful()) {
+                    // Registrazione riuscita, prendiamo il body dalla risposta
+                    UserPayload payload = response.body();
 
-                email = email_input.getText().toString();
-                password = password_input.getText().toString();
-                username = username_input.getText().toString();
+                    // Per salvare l'utente
+                    SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(USER_TOKEN, payload.getToken());
+                    editor.putString(USER_NAME, payload.getUsername());
+                    editor.putString(USER_EMAIL, payload.getEmail());
+                    editor.putString(USER_ROLE, payload.getRole());
+                    editor.putLong(USER_LIB, payload.getLibraryId());
+                    editor.putString(USER_PAS, password);
+                    editor.apply();
 
-                if(controlloCampi(email, password, username, scelta, dataStringa)){
+                    // Vado col popup
+                    showPopup();
 
-                    Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
-                    ApiService apiService = retrofit.create(ApiService.class);
-                    RegisterRequest registerRequest = new RegisterRequest(email, password, username, scelta, dataConverted);
-                    Log.d(TAG, registerRequest.getBirth().toString());
-
-                    Call<UserPayload> call = apiService.registerUser(registerRequest);
-                    call.enqueue(new Callback<UserPayload>() {
-                        @Override
-                        public void onResponse(Call<UserPayload> call, Response<UserPayload> response) {
-                            if (response.isSuccessful()) {
-                                // Registrazione riuscita, prendiamo il body dalla risposta
-                                UserPayload payload = response.body();
-
-                                // Per salvare l'utente
-                                SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.putString(USER_TOKEN, payload.getToken());
-                                editor.putString(USER_NAME, payload.getUsername());
-                                editor.putString(USER_EMAIL, payload.getEmail());
-                                editor.putString(USER_ROLE, payload.getRole());
-                                editor.putLong(USER_LIB, payload.getLibraryId());
-                                editor.putString(USER_PAS, password);
-                                editor.apply();
-
-                                // Vado col popup
-                                showPopup();
-
-                            } else {
-                                // Gestisci la risposta di errore, es. credenziali non valide
-                                Toast.makeText(RegistrationActivity.this, "Login fallito, riprova.", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<UserPayload> call, Throwable t) {
-                            // Gestisci l'errore di rete o la conversione della risposta qui
-                            Log.d(TAG, "Richiesta fallita.");
-                        }
-                    });
-
+                } else {
+                    // Gestisci la risposta di errore, es. credenziali non valide
+                    Toast.makeText(RegistrationActivity.this, "Login fallito, riprova.", Toast.LENGTH_SHORT).show();
                 }
+            }
 
+            @Override
+            public void onFailure(@NonNull Call<UserPayload> call, @NonNull Throwable t) {
+                // Gestisci l'errore di rete o la conversione della risposta qui
+                Log.d(TAG, "Richiesta fallita.");
             }
         });
     }
@@ -205,8 +207,8 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
     }
 
     // Validazione dei campi
-    private boolean controlloCampi(String email, String password, String username, String scelta, String dataStringa){
-        if((email.isEmpty()) || (password.isEmpty()) || (username.isEmpty()) || (scelta.isEmpty()) || (dataStringa.isEmpty())) {
+    private boolean controlloCampi(String email, String password, String username, String scelta, String dataStringa) {
+        if ((email.isEmpty()) || (password.isEmpty()) || (username.isEmpty()) || (scelta.isEmpty()) || (dataStringa.isEmpty())) {
             Toast.makeText(this, "Tutti i campi sono obbligatori, riempili!", Toast.LENGTH_SHORT).show();
             return false;
         }

@@ -1,5 +1,7 @@
 package com.soundlab.app.presenter.adapter;
 
+import static com.soundlab.app.utils.Utilities.showErrorMessage;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -12,33 +14,42 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.soundlab.R;
-
-import java.util.ArrayList;
-
+import com.soundlab.app.controller.ControllerCallback;
+import com.soundlab.app.controller.PlaylistController;
 import com.soundlab.app.model.Playlist;
 import com.soundlab.app.model.Song;
+import com.soundlab.app.presenter.api.response.Payload;
+import com.soundlab.app.utils.Debouncer;
 import com.soundlab.app.view.fragment.AddToPlaylistFragment;
+
+import java.util.List;
 
 public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdapter.ViewHolder> {
 
-    private final ArrayList<Playlist> playlistArrayList;
+    private final List<Playlist> playlists;
     private final Song song;
-    private final Context context;
+    private final PlaylistController playlistController;
+    private final String token;
+    private final Debouncer debouncer = new Debouncer();
+    private final Fragment addToPlaylistFragment;
 
     // Costruttore per inizializzare l'adapter con la lista di playlist
-    public AddToPlaylistAdapter(AddToPlaylistFragment addToPlaylistFragment, ArrayList<Playlist> playlistArrayList, Song song) {
-        this.playlistArrayList = playlistArrayList;
+    public AddToPlaylistAdapter(AddToPlaylistFragment addToPlaylistFragment, List<Playlist> playlists, Song song, String token) {
+        this.playlists = playlists;
         this.song = song;
-        context = addToPlaylistFragment.getContext();
+        this.token = token;
+        this.addToPlaylistFragment = addToPlaylistFragment;
+        playlistController = new PlaylistController();
         updatePlaylistOrder();
     }
 
     // Metodo per aggiornare l'ordine delle playlist in base alle preferenze
     public void updatePlaylistOrder() {
-        playlistArrayList.sort((playlist1, playlist2) -> {
+        playlists.sort((playlist1, playlist2) -> {
             // Ordina per preferenza (favorite prima), poi per nome
             if (playlist1.isFavourite() == playlist2.isFavourite()) {
                 // Se hanno lo stesso stato di preferenza, ordina per nome
@@ -56,41 +67,94 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
     public AddToPlaylistAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Infla il layout per ciascun elemento della RecyclerView
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.playlist_cardview, parent, false);
-        return new ViewHolder(view, context);
+        return new ViewHolder(view, addToPlaylistFragment.getContext());
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         int adapterPosition = holder.getAdapterPosition();
         if (adapterPosition != RecyclerView.NO_POSITION) {
-            Playlist selectedPlaylist = playlistArrayList.get(adapterPosition);
+            Playlist selectedPlaylist = playlists.get(adapterPosition);
 
             // Popola il ViewHolder con i dati della playlist
             holder.playlistImage.setImageResource(selectedPlaylist.getImage());
             holder.playlistName.setText(selectedPlaylist.getName());
             holder.playlistGenere.setText(selectedPlaylist.getGenre());
-            holder.checkButton.setChecked(selectedPlaylist.isFavourite());
+
+            //holder.checkButton.setChecked(playlists.contains());
 
 
             holder.itemView.setOnClickListener(v -> {
-                // Gestisci il clic dell'elemento se necessario
+                holder.itemView.setEnabled(false);
+                holder.checkButton.setEnabled(false);
+
                 boolean isChecked = holder.checkButton.isChecked();
                 holder.checkButton.setChecked(!isChecked);
 
-                // TODO: Aggiungi/Elimina l'associazione Playlist<->Traccia dal backend, aggiorna il numero di canzoni della playlist
+                debouncer.debounce(()-> {
+                    // Gestisci il clic dell'elemento se necessario
+
+                    addOrRemoveSongFromPlaylist(!isChecked, selectedPlaylist, holder);
+                }, 1500);
+
             });
 
 
             // Gestisci il cambiamento di preferenza quando il pulsante Preferito viene selezionato/deselezionato
             holder.checkButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                holder.itemView.setEnabled(false);
+                holder.checkButton.setEnabled(false);
 
-                // TODO: Aggiungi/Elimina l'associazione Playlist<->Traccia dal backend, aggiorna il numero di canzoni della playlist
+                debouncer.debounce(()-> {
+                    addOrRemoveSongFromPlaylist(isChecked, selectedPlaylist, holder);
+                }, 1500);
 
             });
-
         }
 
     }
+
+    private void addOrRemoveSongFromPlaylist(boolean isChecked, Playlist playlist, ViewHolder holder) {
+        if (isChecked) {
+            callInsertSong(playlist.getId(), song.getId(), holder);
+        } else {
+            callDeleteSong(playlist.getId(), song.getId(), holder);
+        }
+    }
+
+    private void callDeleteSong(Long playlistId, Long songId, ViewHolder holder) {
+        playlistController.deleteSong(token, songId, playlistId, new ControllerCallback<Payload>() {
+            @Override
+            public void onSuccess(Payload result) {
+                holder.itemView.setEnabled(true);
+                holder.checkButton.setEnabled(true);
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+                holder.itemView.setEnabled(true);
+                holder.checkButton.setEnabled(true);
+            }
+        });
+    }
+
+    private void callInsertSong(Long playlistId, long songId, ViewHolder holder) {
+        playlistController.insertSong(token, songId, playlistId, new ControllerCallback<Payload>() {
+            @Override
+            public void onSuccess(Payload result) {
+                holder.itemView.setEnabled(true);
+                holder.checkButton.setEnabled(true);
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+                showErrorMessage(addToPlaylistFragment, errorMessage);
+                holder.itemView.setEnabled(true);
+                holder.checkButton.setEnabled(true);
+            }
+        });
+    }
+
 
     public void addPlaylist(Playlist newPlaylist) {
         // Aggiungi la nuova playlist alla lista e notifica alla UI
@@ -103,7 +167,7 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
         int index = 0;
 
         // Trova l'indice in cui inserire la playlist non favorita
-        for (Playlist p : playlistArrayList) {
+        for (Playlist p : playlists) {
             if (!p.isFavourite() && playlist.getName().compareToIgnoreCase(p.getName()) < 0) {
                 // Se la playlist corrente non è favorita e l'ordine alfabetico della playlist da inserire è maggiore o uguale,
                 // interrompi il loop
@@ -114,7 +178,7 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
         }
 
         // Aggiungi la playlist non favorita nella posizione trovata
-        playlistArrayList.add(index, playlist);
+        playlists.add(index, playlist);
 
         // Restituisci l'indice della nuova playlist inserita
         return index;
@@ -124,7 +188,7 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
     // Restituisci il numero totale di elementi nella RecyclerView
     @Override
     public int getItemCount() {
-        return playlistArrayList.size();
+        return playlists.size();
     }
 
     // ViewHolder che contiene i riferimenti agli elementi della playlist

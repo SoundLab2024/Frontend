@@ -1,20 +1,20 @@
 package com.soundlab.app.utils;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Window;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-
-import java.util.ArrayList;
 
 import com.soundlab.app.model.Artist;
 import com.soundlab.app.model.Song;
 import com.soundlab.app.singleton.PlayerSingleton;
 import com.soundlab.app.view.activity.MainActivity;
 import com.soundlab.app.view.fragment.PlayerFragment;
+
+import java.util.ArrayList;
 
 public class Utilities {
 
@@ -72,8 +72,7 @@ public class Utilities {
     }
 
     public static void loadPlayer(Activity activity, int songPosition, ArrayList<Song> songArrayList){
-        PlayerSingleton.getInstance().setSongArrayList(songArrayList);
-        PlayerSingleton.getInstance().setSongPosition(songPosition);
+        PlayerSingleton.getInstance().setSong(songArrayList, songPosition);
 
         Bundle bundle = new Bundle();
         bundle.putBoolean("avoidServiceRestart", false);
@@ -114,6 +113,12 @@ public class Utilities {
 
         // Ritorna il tempo formattato come stringa
         return finalTimerString;
+    }
+
+    public static void showErrorMessage(Fragment fragment, String errorMessage) {
+        if (fragment.isAdded()) {
+            Toast.makeText(fragment.requireContext(), errorMessage, Toast.LENGTH_SHORT).show();
+        }
     }
 
 

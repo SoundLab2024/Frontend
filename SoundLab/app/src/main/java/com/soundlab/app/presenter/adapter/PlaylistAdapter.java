@@ -12,9 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.soundlab.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-
-import java.util.ArrayList;
-
 import com.soundlab.app.model.Album;
 import com.soundlab.app.model.Artist;
 import com.soundlab.app.model.Playlist;
@@ -24,15 +21,18 @@ import com.soundlab.app.view.CustomButton;
 import com.soundlab.app.view.CustomCardView;
 import com.soundlab.app.view.fragment.PlaylistFragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHolder> {
 
-    private final ArrayList<Song> songArrayList;
+    private final List<Song> songArrayList;
     private final PlaylistFragment playlistFragment;
     private final Playlist playlist;
 
 
     // Costruttore per inizializzare l'adapter con la lista di tracce
-    public PlaylistAdapter(PlaylistFragment playlistFragment, ArrayList<Song> songArrayList, Playlist playlist) {
+    public PlaylistAdapter(PlaylistFragment playlistFragment, List<Song> songArrayList, Playlist playlist) {
         this.songArrayList = songArrayList;
         this.playlistFragment = playlistFragment;
         this.playlist = playlist;
@@ -59,7 +59,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
             holder.songName.setText(selectedSong.getTitle());
             holder.songArtist.setText(artistNames);
 
-            holder.itemView.setOnClickListener(view -> playlistFragment.loadPlayer(songArrayList.indexOf(selectedSong), songArrayList));
+            holder.itemView.setOnClickListener(view -> playlistFragment.loadPlayer(songArrayList.indexOf(selectedSong), (ArrayList<Song>) songArrayList));
 
             holder.removeButton.setOnClickListener(view -> {
 

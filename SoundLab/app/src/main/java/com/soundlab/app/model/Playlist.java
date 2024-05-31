@@ -14,7 +14,7 @@ public class Playlist implements Serializable {
     private String genre;
     private int image;
     private boolean favourite;
-    private final List<Song> songs;
+    private List<Song> songs;
     private int songsNumber;
 
     public Playlist(Long id, String name, String genre, boolean favourite, List<Song> songs) {
@@ -68,6 +68,12 @@ public class Playlist implements Serializable {
     public void setImage(int image) {
         this.image = image;
     }
+
+    public void setSongs(List<Song> songs) {
+        this.songs = songs;
+    }
+
+    public List<Song> getSongs() { return songs; }
 
     // Getter and Setter for 'numberOfSongs'
     public int getSongsNumber() {

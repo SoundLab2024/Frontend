@@ -106,7 +106,6 @@ public class PlayerService extends Service {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(playerPendingIntent)
                 .setCustomBigContentView(remoteViews)
-//                .setCustomContentView(remoteViews)
                 .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                 .setColor(ContextCompat.getColor(this, R.color.dark_purple))
                 .setColorized(true)

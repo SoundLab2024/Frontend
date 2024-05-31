@@ -18,7 +18,7 @@ public class PlayerSingleton {
     private boolean created = false;
     private boolean playing = false;
     private final int INTERVAL = 3500;
-    private ArrayList<Song> songArrayList = new ArrayList<>();
+    private ArrayList<Song> songs = new ArrayList<>();
     private int songPosition = 0;
 
     private PlayerSingleton() {
@@ -38,7 +38,7 @@ public class PlayerSingleton {
     public void start(@NonNull Context context) {
         if (!isCreated()) {
             try {
-                song = songArrayList.get(songPosition);
+                song = songs.get(songPosition);
                 mediaPlayer = MediaPlayer.create(context, song.getTrack());
                 created = true;
                 sendBroadcast(context, "MEDIAPLAYER_INIT");
@@ -52,7 +52,7 @@ public class PlayerSingleton {
             mediaPlayer.reset();
             releaseMediaPlayer();
             try {
-                song = songArrayList.get(songPosition);
+                song = songs.get(songPosition);
                 mediaPlayer = MediaPlayer.create(context, song.getTrack());
                 created = true;
                 sendBroadcast(context, "MEDIAPLAYER_INIT");
@@ -70,7 +70,7 @@ public class PlayerSingleton {
             mediaPlayer.reset();
             releaseMediaPlayer();
             try {
-                song = songArrayList.get(songPosition);
+                song = songs.get(songPosition);
                 mediaPlayer = MediaPlayer.create(context, song.getTrack());
                 created = true;
                 mediaPlayer.setOnCompletionListener(mp -> next(context));
@@ -101,7 +101,7 @@ public class PlayerSingleton {
         if (isCreated()) {
             if (songPosition > 0 && mediaPlayer.getCurrentPosition() < INTERVAL) {
                 songPosition--;
-                song = songArrayList.get(songPosition);
+                song = songs.get(songPosition);
                 restart(context);
                 sendBroadcast(context, "SONG_CHANGED");
             } else {
@@ -113,9 +113,9 @@ public class PlayerSingleton {
 
     public void next(@NonNull Context context) {
         if (isCreated()) {
-            if (songPosition < songArrayList.size() - 1) {
+            if (songPosition < songs.size() - 1) {
                 songPosition++;
-                song = songArrayList.get(songPosition);
+                song = songs.get(songPosition);
                 restart(context);
                 sendBroadcast(context, "SONG_CHANGED");
             } else {
@@ -143,16 +143,14 @@ public class PlayerSingleton {
         context.sendBroadcast(broadcastIntent);
     }
 
-    public void setSongArrayList(ArrayList<Song> songArrayList) {
-        this.songArrayList = songArrayList;
-    }
-
-    public void setSongPosition(int songPosition) {
-        this.songPosition = songPosition;
-    }
-
     public Song getSong() {
         return song;
+    }
+
+    public void setSong(ArrayList<Song> songs, int songPosition) {
+        this.songs = songs;
+        this.songPosition = songPosition;
+        this.song = songs.get(songPosition);
     }
 
     private boolean isCreated() {

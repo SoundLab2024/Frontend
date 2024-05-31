@@ -1,10 +1,10 @@
 package com.soundlab.app.view.fragment;
 
-import static com.soundlab.app.utils.Constants.BASE_URL;
 import static com.soundlab.app.utils.Constants.USER_EMAIL;
 import static com.soundlab.app.utils.Constants.USER_NAME;
 import static com.soundlab.app.utils.Constants.USER_ROLE;
 import static com.soundlab.app.utils.Constants.USER_TOKEN;
+import static com.soundlab.app.utils.Utilities.showErrorMessage;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -31,23 +31,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.soundlab.R;
+import com.soundlab.app.controller.ControllerCallback;
+import com.soundlab.app.controller.PlaylistController;
 import com.soundlab.app.model.Library;
 import com.soundlab.app.model.Playlist;
 import com.soundlab.app.presenter.adapter.ProfileAdapter;
-import com.soundlab.app.presenter.api.endpoint.ApiService;
-import com.soundlab.app.presenter.api.request.InsertPlaylistRequest;
-import com.soundlab.app.presenter.api.response.Payload;
-import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
 import com.soundlab.app.utils.Utilities;
 import com.soundlab.app.view.CustomButton;
 import com.soundlab.app.view.activity.MainActivity;
 
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class ProfileFragment extends Fragment {
 
@@ -59,7 +52,8 @@ public class ProfileFragment extends Fragment {
     private String username;
     private String token;
     private String role;
-    private final String TAG = "PROFILE_FRAGMENT";
+    private PlaylistController playlistController;
+    private final Fragment profileFragment = this;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,6 +62,8 @@ public class ProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         Log.d("ProfileFragment", "onCreateView called");
+
+        playlistController = new PlaylistController();
 
         // roba dell'utente
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
@@ -162,10 +158,10 @@ public class ProfileFragment extends Fragment {
                     dialog.dismiss();
                     destroyZeroPlaylistTextView();
                 } else {
-                    showErrorToast("Impossibile aggiungere la playlist. Adapter non valido.");
+                    Toast.makeText(getActivity(), "Impossibile aggiungere la playlist. Adapter non valido.", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                showErrorToast("Inserisci un nome e un genere validi.");
+                Toast.makeText(getActivity(), "Inserisci un nome e un genere validi.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -176,40 +172,19 @@ public class ProfileFragment extends Fragment {
         dialog.show();
     }
 
-    private void callCreatePlaylist(String name, String genre, Long libraryId, ProfileAdapter profileAdapter) {
-        InsertPlaylistRequest request = new InsertPlaylistRequest(name, genre, libraryId);
-
-        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
-        ApiService apiService = retrofit.create(ApiService.class);
-
-        String authToken = "Bearer " + token;
-
-        Call<Payload> call = apiService.createPlaylist(authToken, request);
-        call.enqueue(new Callback<Payload>() {
+    private void callCreatePlaylist (String name, String genre, Long libraryId, ProfileAdapter profileAdapter) {
+        playlistController.createPlaylist(token, name, genre, libraryId, new ControllerCallback<Long>() {
             @Override
-            public void onResponse(@NonNull Call<Payload> call, @NonNull Response<Payload> response) {
-                if (response.isSuccessful()) {
-                    Payload payload = response.body();
-                    Long playlistId = Long.parseLong(payload.getMsg());
-
-                    Log.d(TAG, "createPlaylist - status code: " + payload.getStatusCode());
-
-                    Playlist newPlaylist = new Playlist(playlistId, name, genre);
-                    profileAdapter.addPlaylist(newPlaylist);
-                } else {
-                    showErrorToast("Impossibile aggiungere la playlist.");
-                }
+            public void onSuccess(Long playlistId) {
+                Playlist newPlaylist = new Playlist(playlistId, name, genre);
+                profileAdapter.addPlaylist(newPlaylist);
             }
 
             @Override
-            public void onFailure(@NonNull Call<Payload> call, @NonNull Throwable t) {
-                showErrorToast("Impossibile aggiungere la playlist. Errore: " + t.getMessage());
+            public void onFailed(String errorMessage) {
+                showErrorMessage(profileFragment, errorMessage);
             }
         });
-    }
-
-    private void showErrorToast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
 

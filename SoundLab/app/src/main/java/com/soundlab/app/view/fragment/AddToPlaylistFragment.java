@@ -1,6 +1,11 @@
 package com.soundlab.app.view.fragment;
 
+import static com.soundlab.app.utils.Constants.USER_TOKEN;
+import static com.soundlab.app.utils.Utilities.showErrorMessage;
+
 import android.app.Dialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,18 +22,23 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.soundlab.R;
-
-import java.util.ArrayList;
-
+import com.soundlab.app.controller.ControllerCallback;
+import com.soundlab.app.controller.PlaylistController;
+import com.soundlab.app.model.Library;
 import com.soundlab.app.model.Playlist;
 import com.soundlab.app.model.Song;
 import com.soundlab.app.presenter.adapter.AddToPlaylistAdapter;
-import com.soundlab.app.view.CustomButton;
 import com.soundlab.app.utils.Utilities;
+import com.soundlab.app.view.CustomButton;
+
+import java.util.List;
 
 public class AddToPlaylistFragment extends Fragment {
 
-    RecyclerView recyclerView;
+    private RecyclerView recyclerView;
+    private PlaylistController playlistController;
+    private String token;
+    private final Fragment addToPlaylistFragment = this;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,10 +48,16 @@ public class AddToPlaylistFragment extends Fragment {
 
         Log.d("AddToPlaylistFragment", "onCreateView called");
 
+        playlistController = new PlaylistController();
+
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        token = sharedPreferences.getString(USER_TOKEN, null);
+
         Bundle bundle = getArguments();
 
         if (bundle != null) {
             Song song = (Song) bundle.getSerializable("song");
+            Log.d("AddToPlaylistFragfment", song.getTitle());
 
             if (song != null) {
                 // Ottiene la RecyclerView dal layout
@@ -49,15 +65,10 @@ public class AddToPlaylistFragment extends Fragment {
                 recyclerView.setNestedScrollingEnabled(false);
 
                 // Crea una nuova lista di playlist
-                ArrayList<Playlist> playlistArrayList = new ArrayList<>();
-
-                // TODO: Carica le playlist dal backend
-
-                // Aggiungi le playlist
-                playlistArrayList.add(new Playlist(1L, "Playlist1", "Rock",false, null));
+                List<Playlist> playlists = Library.getInstance().getPlaylists();
 
                 // Inizializza l'adapter e passa la lista di playlist
-                AddToPlaylistAdapter addToPlaylistAdapter = new AddToPlaylistAdapter(this, playlistArrayList, song);
+                AddToPlaylistAdapter addToPlaylistAdapter = new AddToPlaylistAdapter(this, playlists, song, token);
 
                 // Imposta un layout manager per la RecyclerView (lista verticale)
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
@@ -105,17 +116,7 @@ public class AddToPlaylistFragment extends Fragment {
 
             if (!nome_playlist.isEmpty() && !genere_playlist.isEmpty()) {
                 // Crea una nuova playlist con i dati inseriti dall'utente
-
-                // TODO: Inserire la playlist nel backend ed ottenere l'id.
-
-                Long idPlaylist = 1L; // Da cambiare con l'id ottenuto nel backend
-                Playlist newPlaylist = new Playlist(idPlaylist, nome_playlist, genere_playlist, false, null);
-
-                AddToPlaylistAdapter addToPlaylistAdapter = (AddToPlaylistAdapter) recyclerView.getAdapter();
-                // Aggiungi la nuova playlist all'adapter
-                if (addToPlaylistAdapter != null) {
-                    addToPlaylistAdapter.addPlaylist(newPlaylist);
-                }
+                callCreatePlaylist(nome_playlist, genere_playlist, Library.getInstance().getId());
 
                 //Chiude il Dialog
                 dialog.dismiss();
@@ -134,6 +135,27 @@ public class AddToPlaylistFragment extends Fragment {
         });
         //Mostra il dialog
         dialog.show();
+    }
+
+
+    private void callCreatePlaylist (String name, String genre, Long libraryId) {
+        playlistController.createPlaylist(token, name, genre, libraryId, new ControllerCallback<Long>() {
+            @Override
+            public void onSuccess(Long playlistId) {
+                Playlist newPlaylist = new Playlist(playlistId, name, genre, false, null);
+
+                AddToPlaylistAdapter addToPlaylistAdapter = (AddToPlaylistAdapter) recyclerView.getAdapter();
+                // Aggiungi la nuova playlist all'adapter
+                if (addToPlaylistAdapter != null) {
+                    addToPlaylistAdapter.addPlaylist(newPlaylist);
+                }
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+                showErrorMessage(addToPlaylistFragment, errorMessage);
+            }
+        });
     }
 
 }
