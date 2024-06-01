@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,6 +32,7 @@ import com.soundlab.app.presenter.adapter.AddToPlaylistAdapter;
 import com.soundlab.app.utils.Utilities;
 import com.soundlab.app.view.CustomButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AddToPlaylistFragment extends Fragment {
@@ -39,6 +41,8 @@ public class AddToPlaylistFragment extends Fragment {
     private PlaylistController playlistController;
     private String token;
     private final Fragment addToPlaylistFragment = this;
+    private Song song;
+    private List<Playlist> playlistsAdded = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,37 +60,27 @@ public class AddToPlaylistFragment extends Fragment {
         Bundle bundle = getArguments();
 
         if (bundle != null) {
-            Song song = (Song) bundle.getSerializable("song");
-            Log.d("AddToPlaylistFragfment", song.getTitle());
-
-            if (song != null) {
-                // Ottiene la RecyclerView dal layout
-                recyclerView = view.findViewById(R.id.playlists_recyclerView);
-                recyclerView.setNestedScrollingEnabled(false);
-
-                // Crea una nuova lista di playlist
-                List<Playlist> playlists = Library.getInstance().getPlaylists();
-
-                // Inizializza l'adapter e passa la lista di playlist
-                AddToPlaylistAdapter addToPlaylistAdapter = new AddToPlaylistAdapter(this, playlists, song, token);
-
-                // Imposta un layout manager per la RecyclerView (lista verticale)
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
-
-                // Imposta il layout manager e l'adapter per la RecyclerView
-                recyclerView.setLayoutManager(linearLayoutManager);
-                recyclerView.setAdapter(addToPlaylistAdapter);
-            }
+            song = (Song) bundle.getSerializable("song");
         }
 
-
-        CardView nuovaPlaylist_cardView = view.findViewById(R.id.nuovaPlaylistCardView);
-
-        // Imposta il listener per il click sulla CardView
-        nuovaPlaylist_cardView.setOnClickListener(v -> addNewPlaylist());
-
+        callRetrivePlaylists();
 
         return view;
+    }
+
+    private void callRetrivePlaylists() {
+        playlistController.playlistsFromAddedSong(token, song.getId(), Library.getInstance().getId(), new ControllerCallback<List<Playlist>>() {
+            @Override
+            public void onSuccess(List<Playlist> playlists) {
+                playlistsAdded = playlists;
+                initAdapter();
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+                showErrorMessage(addToPlaylistFragment, errorMessage);
+            }
+        });
     }
 
     @Override
@@ -94,6 +88,31 @@ public class AddToPlaylistFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         // Imposta il colore della barra di stato quando la vista è creata
         Utilities.changeStatusBarColorFragment(this, R.color.dark_purple);
+
+        TextView songTitle = view.findViewById(R.id.songTitle);
+        songTitle.setText("\" " + song.getTitle() + " \"");
+
+        CardView nuovaPlaylist_cardView = view.findViewById(R.id.nuovaPlaylistCardView);
+        nuovaPlaylist_cardView.setOnClickListener(v -> addNewPlaylist());
+    }
+
+    private void initAdapter() {
+        // Ottiene la RecyclerView dal layout
+        recyclerView = requireView().findViewById(R.id.playlists_recyclerView);
+        recyclerView.setNestedScrollingEnabled(false);
+
+        // Crea una nuova lista di playlist
+        List<Playlist> playlists = Library.getInstance().getPlaylists();
+
+        // Inizializza l'adapter e passa la lista di playlist
+        AddToPlaylistAdapter addToPlaylistAdapter = new AddToPlaylistAdapter(this, playlists, song, token, playlistsAdded);
+
+        // Imposta un layout manager per la RecyclerView (lista verticale)
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
+
+        // Imposta il layout manager e l'adapter per la RecyclerView
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(addToPlaylistAdapter);
     }
 
     private void addNewPlaylist() {

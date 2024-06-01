@@ -1,5 +1,6 @@
 package com.soundlab.app.presenter.api.endpoint;
 
+import com.soundlab.app.model.Playlist;
 import com.soundlab.app.model.Song;
 import com.soundlab.app.presenter.api.request.ChangePasswordRequest;
 import com.soundlab.app.presenter.api.request.DeleteSongRequest;
@@ -83,5 +84,11 @@ public interface ApiService {
     @GET("data/playlist/{id}")
     Call<RetriveSongResponse> retriveSong(@Header("Authorization") String authToken, @Path("id") Long id);
 
+    @Headers("Content-Type: application/json")
+    @GET("data/playlist/isAdded/{idLib}/{idSn}")
+    Call<List<Playlist>> playlistsFromAddedSong(@Header("Authorization") String authToken, @Path("idLib") Long idLib, @Path("idSn") Long idSn);
 
+    @Headers("Content-Type: application/json")
+    @GET("data/song/search/genre/{prefix}")
+    Call<List<Song>> getSongsFromGenre(@Header("Authorization") String authToken, @Path("prefix") String genre);
 }

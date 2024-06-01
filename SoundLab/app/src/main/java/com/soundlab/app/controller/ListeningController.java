@@ -1,6 +1,7 @@
 package com.soundlab.app.controller;
 
 import static com.soundlab.app.utils.Constants.BASE_URL;
+import static com.soundlab.app.utils.Utilities.setTrackAndImage;
 
 import androidx.annotation.NonNull;
 
@@ -38,6 +39,7 @@ public class ListeningController {
                     List<RecentlyListenedResponse> payload = response.body();
 
                     List<Song> songs = extractSongs(payload);
+                    setTrackAndImage(songs);
 
                     callback.onSuccess(songs);
                 } else {

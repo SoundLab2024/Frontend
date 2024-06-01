@@ -44,6 +44,9 @@ public class SearchFragment extends Fragment {
 
         Log.d("SearchFragment", "onCreateView called");
         Utilities.changeStatusBarColorFragment(this, R.color.dark_purple);
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).showBottomNavigationView();
+        }
 
         songController = new SongController();
 

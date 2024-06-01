@@ -14,7 +14,7 @@ public class Song implements Serializable {
     private final String genre;
     private  int image;
     private final List<Artist> artists;  // Lista di Artist associati alla canzone
-    private final int track;
+    private int track;
 
     // Costruttore
     public Song(long id, String title, String genre, Integer image, int track) {
@@ -75,5 +75,10 @@ public class Song implements Serializable {
     public int getTrack() {
         return track;
     }
+
+    public void setTrack(int track) {
+        this.track = track;
+    }
+
 
 }

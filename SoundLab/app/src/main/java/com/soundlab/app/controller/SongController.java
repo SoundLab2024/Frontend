@@ -1,6 +1,7 @@
 package com.soundlab.app.controller;
 
 import static com.soundlab.app.utils.Constants.BASE_URL;
+import static com.soundlab.app.utils.Utilities.setTrackAndImage;
 
 import androidx.annotation.NonNull;
 
@@ -34,15 +35,39 @@ public class SongController {
             public void onResponse(@NonNull Call<ArrayList<Song>> call, @NonNull Response<ArrayList<Song>> response) {
                 if (response.isSuccessful()) {
                     List<Song> songs = response.body();
+                    setTrackAndImage(songs);
                     callback.onSuccess(songs);
                 } else {
-                    callback.onFailed("Impossible mostrare le canzoni. " + response.message());
+                    callback.onFailed("Impossible recuperare le canzoni. " + response.message());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ArrayList<Song>> call, @NonNull Throwable t) {
-                callback.onFailed("Impossibile mostrare le canzoni" + t.getMessage());
+                callback.onFailed("Impossibile recuperare le canzoni" + t.getMessage());
+            }
+        });
+    }
+
+    public void getSongsFromGenre(String token, String genre, ControllerCallback<List<Song>> callback) {
+        String authToken = "Bearer " + token;
+
+        Call<List<Song>> call = apiService.getSongsFromGenre(authToken, genre);
+        call.enqueue(new Callback<List<Song>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Song>> call, @NonNull Response<List<Song>> response) {
+                if (response.isSuccessful()) {
+                    List<Song> songs = response.body();
+                    setTrackAndImage(songs);
+                    callback.onSuccess(songs);
+                } else {
+                    callback.onFailed("Impossible recuperare le canzoni. " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Song>> call, @NonNull Throwable t) {
+                callback.onFailed("Impossibile recuperare le canzoni" + t.getMessage());
             }
         });
     }

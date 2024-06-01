@@ -1,5 +1,7 @@
 package com.soundlab.app.model;
 
+import com.example.soundlab.R;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,4 +54,12 @@ public class Library implements Serializable {
     public void setInitialized(boolean initialized) {
         this.initialized = initialized;
     }
+    public void setDefImageForPlaylists() {
+        if (playlists != null) {
+            for (Playlist playlist : playlists) {
+                playlist.setImage(R.drawable.playlist_default);
+            }
+        }
+    }
+
 }

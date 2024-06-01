@@ -1,5 +1,8 @@
 package com.soundlab.app.presenter.adapter;
 
+import static com.soundlab.app.utils.Utilities.showErrorMessage;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +15,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.soundlab.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.soundlab.app.controller.ControllerCallback;
+import com.soundlab.app.controller.PlaylistController;
 import com.soundlab.app.model.Album;
 import com.soundlab.app.model.Artist;
 import com.soundlab.app.model.Playlist;
 import com.soundlab.app.model.Song;
+import com.soundlab.app.presenter.api.response.Payload;
 import com.soundlab.app.utils.Utilities;
 import com.soundlab.app.view.CustomButton;
 import com.soundlab.app.view.CustomCardView;
@@ -26,16 +32,19 @@ import java.util.List;
 
 public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHolder> {
 
-    private final List<Song> songArrayList;
+    private final List<Song> songs;
     private final PlaylistFragment playlistFragment;
     private final Playlist playlist;
-
+    private final PlaylistController playlistController;
+    private final String token;
 
     // Costruttore per inizializzare l'adapter con la lista di tracce
-    public PlaylistAdapter(PlaylistFragment playlistFragment, List<Song> songArrayList, Playlist playlist) {
-        this.songArrayList = songArrayList;
+    public PlaylistAdapter(PlaylistFragment playlistFragment, List<Song> songs, Playlist playlist, String token) {
+        this.songs = songs;
         this.playlistFragment = playlistFragment;
         this.playlist = playlist;
+        this.token = token;
+        playlistController = new PlaylistController();
     }
 
     @NonNull
@@ -50,7 +59,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
     public void onBindViewHolder(@NonNull PlaylistAdapter.ViewHolder holder, int position) {
         int adapterPosition = holder.getAdapterPosition();
         if (adapterPosition != RecyclerView.NO_POSITION) {
-            Song selectedSong = songArrayList.get(adapterPosition);
+            Song selectedSong = songs.get(adapterPosition);
 
             String artistNames = Utilities.ottieniArtistiDellaTracciaInStringa(selectedSong);
 
@@ -59,24 +68,9 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
             holder.songName.setText(selectedSong.getTitle());
             holder.songArtist.setText(artistNames);
 
-            holder.itemView.setOnClickListener(view -> playlistFragment.loadPlayer(songArrayList.indexOf(selectedSong), (ArrayList<Song>) songArrayList));
+            holder.itemView.setOnClickListener(view -> playlistFragment.loadPlayer(songs.indexOf(selectedSong), (ArrayList<Song>) songs));
 
-            holder.removeButton.setOnClickListener(view -> {
-
-                // TODO: Rimuovi l'associaizone Playlist<->Traccia dal backend, aggiorna il numero di canzoni della playlist
-
-                playlist.setSongsNumber(playlist.getSongsNumber() - 1);
-
-                playlistFragment.aggiornaTextViewNumeroBraniPlaylist(playlist);
-
-                songArrayList.remove(selectedSong);
-                notifyItemRemoved(adapterPosition);
-
-                String toastText = "Hai rimosso " + selectedSong.getTitle() + " da questa playlist";
-                Toast toast = Toast.makeText(view.getContext(), toastText, Toast.LENGTH_SHORT);
-                toast.show();
-
-            });
+            holder.removeButton.setOnClickListener(view -> callDeleteSong(playlist.getId(), adapterPosition, selectedSong));
 
             holder.itemView.setOnLongClickListener(v -> {
 
@@ -98,6 +92,8 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
                 add_to_another_playlist.setOnClickListener(v0 -> {
                     // Chiude il BottomSheetDialog
                     bottomSheetDialog.dismiss();
+
+                    Log.d("---SELECTED SONG---", selectedSong.getTitle() + " , " + selectedSong.getId());
 
                     playlistFragment.loadAddToPlaylistFragment(selectedSong);
                 });
@@ -125,6 +121,34 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
 
     }
 
+    private void callDeleteSong(Long playlistId, int adapterPosition, Song selectedSong) {
+        playlistController.deleteSong(token, selectedSong.getId(), playlistId, new ControllerCallback<Payload>() {
+            @Override
+            public void onSuccess(Payload result) {
+                removeSong(adapterPosition, selectedSong);
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+                showErrorMessage(playlistFragment, errorMessage);
+            }
+        });
+    }
+
+    private void removeSong(int adapterPosition, Song selectedSong) {
+        playlist.setSongsNumber(playlist.getSongsNumber() - 1);
+
+        playlistFragment.aggiornaTextViewNumeroBraniPlaylist(playlist);
+
+        songs.remove(selectedSong);
+        notifyItemRemoved(adapterPosition);
+
+        String toastText = "Hai rimosso " + selectedSong.getTitle() + " da questa playlist";
+        Toast toast = Toast.makeText(playlistFragment.requireContext(), toastText, Toast.LENGTH_SHORT);
+        toast.show();
+
+    }
+
     private void initBottomSheetDialogElements(View bottomSheetView, Song selectedSong) {
         ImageView song_image = bottomSheetView.findViewById(R.id.song_image);
         song_image.setImageResource(selectedSong.getImage());
@@ -137,7 +161,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return songArrayList.size();
+        return songs.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

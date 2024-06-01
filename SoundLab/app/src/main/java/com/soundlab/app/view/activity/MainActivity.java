@@ -1,13 +1,13 @@
 package com.soundlab.app.view.activity;
 
 import static com.soundlab.app.utils.Constants.ALREADY_AUTH_KEY;
-import static com.soundlab.app.utils.Constants.BASE_URL;
 import static com.soundlab.app.utils.Constants.USER_EMAIL;
 import static com.soundlab.app.utils.Constants.USER_LIB;
 import static com.soundlab.app.utils.Constants.USER_NAME;
 import static com.soundlab.app.utils.Constants.USER_PAS;
 import static com.soundlab.app.utils.Constants.USER_ROLE;
 import static com.soundlab.app.utils.Constants.USER_TOKEN;
+import static com.soundlab.app.utils.Utilities.showErrorMessage;
 
 import android.Manifest;
 import android.content.Context;
@@ -17,7 +17,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -28,11 +27,11 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.soundlab.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.soundlab.app.controller.ControllerCallback;
+import com.soundlab.app.controller.UserController;
+import com.soundlab.app.model.Library;
 import com.soundlab.app.model.User;
-import com.soundlab.app.presenter.api.endpoint.ApiService;
-import com.soundlab.app.presenter.api.request.LoginRequest;
 import com.soundlab.app.presenter.api.response.UserPayload;
-import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
 import com.soundlab.app.service.PlayerService;
 import com.soundlab.app.utils.Utilities;
 import com.soundlab.app.view.fragment.HomeFragment;
@@ -41,11 +40,6 @@ import com.soundlab.app.view.fragment.ProfileFragment;
 import com.soundlab.app.view.fragment.SearchFragment;
 
 import java.util.Objects;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
@@ -56,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private String role;
     private String token;
     private String password;
+    private UserController userController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         askNotificationPermission();
+
+        Library.getInstance().setInitialized(false);
+
+        userController = new UserController();
 
         // Per recuperare l'utente
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
@@ -101,42 +100,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     private void refreshToken() {
 
-        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
-        ApiService apiService = retrofit.create(ApiService.class);
-        LoginRequest loginRequest = new LoginRequest(email, password);
-
-        Call<UserPayload> call = apiService.loginUser(loginRequest);
-        call.enqueue(new Callback<UserPayload>() {
+        userController.login(email, password, new ControllerCallback<UserPayload>() {
             @Override
-            public void onResponse(Call<UserPayload> call, Response<UserPayload> response) {
-                if (response.isSuccessful()) {
-                    // Login riuscito, prendiamo il body dalla risposta
-                    UserPayload payload = response.body();
-
-                    // Per salvare l'utente
-                    SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(USER_TOKEN, payload.getToken());
-                    editor.putString(USER_NAME, payload.getUsername());
-                    editor.putString(USER_EMAIL, payload.getEmail());
-                    editor.putString(USER_ROLE, payload.getRole());
-                    editor.putLong(USER_LIB, payload.getLibraryId());
-                    editor.putBoolean(ALREADY_AUTH_KEY, true);
-                    editor.apply();
-
-
-                } else {
-                    // Gestisci la risposta di errore, es. credenziali non valide
-                    Toast.makeText(MainActivity.this, "Login fallito, riprova.", Toast.LENGTH_SHORT).show();
-                }
+            public void onSuccess(UserPayload payload) {
+                SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(USER_TOKEN, payload.getToken());
+                editor.putString(USER_NAME, payload.getUsername());
+                editor.putString(USER_EMAIL, payload.getEmail());
+                editor.putString(USER_ROLE, payload.getRole());
+                editor.putLong(USER_LIB, payload.getLibraryId());
+                editor.putBoolean(ALREADY_AUTH_KEY, true);
+                editor.apply();
             }
 
             @Override
-            public void onFailure(Call<UserPayload> call, Throwable t) {
-                // Gestisci l'errore di rete o la conversione della risposta qui
-                Log.d(TAG, "Richiesta fallita.");
+            public void onFailed(String errorMessage) {
+                showErrorMessage(MainActivity.this, "Token scaduto");
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             }
         });
 

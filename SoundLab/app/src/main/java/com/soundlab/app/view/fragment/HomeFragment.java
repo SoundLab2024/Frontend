@@ -4,6 +4,7 @@ import static com.soundlab.app.utils.Constants.USER_EMAIL;
 import static com.soundlab.app.utils.Constants.USER_LIB;
 import static com.soundlab.app.utils.Constants.USER_NAME;
 import static com.soundlab.app.utils.Constants.USER_TOKEN;
+import static com.soundlab.app.utils.Utilities.loadPlayer;
 import static com.soundlab.app.utils.Utilities.showErrorMessage;
 
 import android.content.Context;
@@ -126,6 +127,9 @@ public class HomeFragment extends Fragment {
                 selectedGenres.add(randomGenre);  // Aggiunge il genere selezionato al set
 
                 button.setText(randomGenre);
+
+                String finalRandomGenre = randomGenre;
+                button.setOnClickListener(view1 -> loadGenreFragment(finalRandomGenre));
             }
         }
     }
@@ -168,7 +172,8 @@ public class HomeFragment extends Fragment {
                 cardView.setVisibility(View.VISIBLE);
                 textView.setText(song.getTitle());
 
-                //TODO: Caricare il player con le canzoni
+                int index = i;
+                cardView.setOnClickListener((view1 -> loadPlayer(getActivity(), index, (ArrayList<Song>) songs)));
             }
             if (songs.size() == 3) {
                 HorizontalScrollView scrollView = view.findViewById(R.id.scrollView_recentListen);
@@ -273,6 +278,19 @@ public class HomeFragment extends Fragment {
         }
 
         return favoritePlaylists;
+    }
+
+    public void  loadGenreFragment(String genre) {
+        Bundle bundle = new Bundle();
+        bundle.putString("genre", genre);
+
+        Fragment genreFragment = new GenreFragment();
+        genreFragment.setArguments(bundle);
+
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).hideBottomNavigationView();
+            ((MainActivity) getActivity()).replaceFragmentWithoutPopStack(genreFragment, Utilities.playlistFragmentTag);
+        }
     }
 
 

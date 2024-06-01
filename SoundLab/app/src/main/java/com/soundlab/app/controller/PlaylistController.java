@@ -1,9 +1,11 @@
 package com.soundlab.app.controller;
 
 import static com.soundlab.app.utils.Constants.BASE_URL;
+import static com.soundlab.app.utils.Utilities.setTrackAndImage;
 
 import androidx.annotation.NonNull;
 
+import com.soundlab.app.model.Playlist;
 import com.soundlab.app.model.Song;
 import com.soundlab.app.presenter.api.endpoint.ApiService;
 import com.soundlab.app.presenter.api.request.DeleteSongRequest;
@@ -127,6 +129,7 @@ public class PlaylistController {
                 if (response.isSuccessful()) {
                     RetriveSongResponse retriveSongResponse = response.body();
                     List<Song> songs = retriveSongResponse.getSongs();
+                    setTrackAndImage(songs);
                     callback.onSuccess(songs);
                 } else {
                     callback.onFailed("Impossibile recuperare le canzoni: " + response.message());
@@ -184,6 +187,27 @@ public class PlaylistController {
             @Override
             public void onFailure(@NonNull Call<Payload> call, @NonNull Throwable t) {
                 callback.onFailed("Impossibile rimuovere la canzone alla playlist. Errore: " + t.getMessage());
+            }
+        });
+    }
+
+    public void playlistsFromAddedSong(String token, Long songId, Long libraryId, ControllerCallback<List<Playlist>> callback) {
+        String authToken = "Bearer " + token;
+
+        Call<List<Playlist>> call = apiService.playlistsFromAddedSong(authToken, libraryId, songId);
+        call.enqueue(new Callback<List<Playlist>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Playlist>> call, @NonNull Response<List<Playlist>> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailed("Impossibile recuperare le playlist. Errore: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Playlist>> call, @NonNull Throwable t) {
+                callback.onFailed("Impossibile recuperare le playlist. Errore: " + t.getMessage());
             }
         });
     }

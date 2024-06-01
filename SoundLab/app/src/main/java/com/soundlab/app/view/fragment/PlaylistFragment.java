@@ -104,8 +104,9 @@ public class PlaylistFragment extends Fragment {
     private void retriveSongs() {
         playlistController.retriveSongs(token, playlist.getId(), new ControllerCallback<List<Song>>() {
             @Override
-            public void onSuccess(List<Song> songs) {
-                addSongs(songs);
+            public void onSuccess(List<Song> res) {
+                songs = res;
+                initAdapter();
             }
 
             @Override
@@ -115,15 +116,9 @@ public class PlaylistFragment extends Fragment {
         });
     }
 
-    private void addSongs(List<Song> songs) {
-        this.songs = songs;
-        playlist.setSongs(songs);
-        initAdapter();
-    }
-
     private void initAdapter() {
         // Inizializza l'adapter e passa la lista di tracce
-        PlaylistAdapter playlistAdapter = new PlaylistAdapter(this, songs, playlist);
+        PlaylistAdapter playlistAdapter = new PlaylistAdapter(this, songs, playlist, token);
         // Imposta un layout manager per la RecyclerView (lista verticale)
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
 

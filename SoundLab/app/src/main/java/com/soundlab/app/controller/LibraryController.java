@@ -39,6 +39,7 @@ public class LibraryController {
                     library.setId(libraryFromIdResponse.getId());
                     library.setPlaylistNumber(libraryFromIdResponse.getPlaylistsNumber());
                     library.setPlaylists(libraryFromIdResponse.getPlaylists());
+                    library.setDefImageForPlaylists();
                     library.setInitialized(true);
 
 

@@ -31,6 +31,7 @@ import java.util.List;
 public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdapter.ViewHolder> {
 
     private final List<Playlist> playlists;
+    private final List<Playlist> playlistsAdded;
     private final Song song;
     private final PlaylistController playlistController;
     private final String token;
@@ -38,14 +39,18 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
     private final Fragment addToPlaylistFragment;
 
     // Costruttore per inizializzare l'adapter con la lista di playlist
-    public AddToPlaylistAdapter(AddToPlaylistFragment addToPlaylistFragment, List<Playlist> playlists, Song song, String token) {
+    public AddToPlaylistAdapter(AddToPlaylistFragment addToPlaylistFragment, List<Playlist> playlists,
+                                Song song, String token, List<Playlist> playlistsAdded) {
         this.playlists = playlists;
+        this.playlistsAdded = playlistsAdded;
         this.song = song;
         this.token = token;
         this.addToPlaylistFragment = addToPlaylistFragment;
         playlistController = new PlaylistController();
         updatePlaylistOrder();
     }
+
+
 
     // Metodo per aggiornare l'ordine delle playlist in base alle preferenze
     public void updatePlaylistOrder() {
@@ -70,6 +75,7 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
         return new ViewHolder(view, addToPlaylistFragment.getContext());
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         int adapterPosition = holder.getAdapterPosition();
@@ -81,7 +87,7 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
             holder.playlistName.setText(selectedPlaylist.getName());
             holder.playlistGenere.setText(selectedPlaylist.getGenre());
 
-            //holder.checkButton.setChecked(playlists.contains());
+            holder.checkButton.setChecked(playlistsAdded.contains(selectedPlaylist));
 
 
             holder.itemView.setOnClickListener(v -> {
@@ -132,6 +138,7 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
 
             @Override
             public void onFailed(String errorMessage) {
+                showErrorMessage(addToPlaylistFragment, errorMessage);
                 holder.itemView.setEnabled(true);
                 holder.checkButton.setEnabled(true);
             }

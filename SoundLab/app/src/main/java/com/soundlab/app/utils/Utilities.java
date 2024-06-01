@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.soundlab.R;
 import com.soundlab.app.model.Artist;
 import com.soundlab.app.model.Song;
 import com.soundlab.app.singleton.PlayerSingleton;
@@ -15,6 +16,7 @@ import com.soundlab.app.view.activity.MainActivity;
 import com.soundlab.app.view.fragment.PlayerFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Utilities {
 
@@ -121,6 +123,22 @@ public class Utilities {
         }
     }
 
+    public static void showErrorMessage(Activity activity, String errorMessage) {
+        if (activity != null && !activity.isFinishing()) {
+            Toast.makeText(activity.getApplicationContext(), errorMessage, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void setTrackAndImage(List<Song> songs) {
+        if (songs != null) {
+            for (Song song : songs) {
+                if (song != null) {
+                    song.setImage(R.drawable.cover_default);
+                    song.setTrack(R.raw.canzone);
+                }
+            }
+        }
+    }
 
 }
 

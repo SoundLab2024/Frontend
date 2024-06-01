@@ -5,6 +5,7 @@ import com.example.soundlab.R;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Playlist implements Serializable {
 
@@ -92,4 +93,18 @@ public class Playlist implements Serializable {
     public void setFavourite(boolean favourite) {
         this.favourite = favourite;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Playlist playlist = (Playlist) o;
+        return Objects.equals(id, playlist.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+    
 }

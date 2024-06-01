@@ -1,16 +1,15 @@
 package com.soundlab.app.view.activity;
 
-import static com.soundlab.app.utils.Constants.BASE_URL;
+import static com.soundlab.app.utils.Constants.ALREADY_AUTH_KEY;
 import static com.soundlab.app.utils.Constants.USER_EMAIL;
 import static com.soundlab.app.utils.Constants.USER_LIB;
 import static com.soundlab.app.utils.Constants.USER_NAME;
 import static com.soundlab.app.utils.Constants.USER_PAS;
 import static com.soundlab.app.utils.Constants.USER_ROLE;
 import static com.soundlab.app.utils.Constants.USER_TOKEN;
+import static com.soundlab.app.utils.Utilities.showErrorMessage;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -31,19 +30,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.soundlab.R;
-import com.soundlab.app.presenter.api.endpoint.ApiService;
-import com.soundlab.app.presenter.api.request.RegisterRequest;
+import com.soundlab.app.controller.ControllerCallback;
+import com.soundlab.app.controller.UserController;
 import com.soundlab.app.presenter.api.response.UserPayload;
-import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
 import com.soundlab.app.utils.Debouncer;
 
 import java.sql.Date;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class RegistrationActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private Spinner SceltaGenderSpinner;
@@ -54,16 +49,24 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
     private Date dataConverted;
     private EditText email_input, password_input, username_input;
     private String email, password, username;
-    private static final String TAG = "REGISTER";
+    private final Activity registrationActivity = this;
 
     // Variabile di controllo
     private boolean userSelected = false;
     private final Debouncer debouncer = new Debouncer();
+    private UserController userController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(ALREADY_AUTH_KEY, false);
+        editor.apply();
+
+        userController = new UserController();
 
         dataDiNascitaButton = findViewById(R.id.datadinascita);
         dataNascitaText = findViewById(R.id.showText);
@@ -94,53 +97,36 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
             username = username_input.getText().toString();
 
             if (controlloCampi(email, password, username, scelta, dataStringa)) {
-                debouncer.debounce(this::callRegisterRequest, 800);
+                debouncer.debounce(() -> callRegisterRequest(email, password, username, scelta, dataConverted), 800);
             }
 
         });
     }
 
-    private void callRegisterRequest() {
-        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
-        ApiService apiService = retrofit.create(ApiService.class);
-        RegisterRequest registerRequest = new RegisterRequest(email, password, username, scelta, dataConverted);
-        Log.d(TAG, registerRequest.getBirth().toString());
-
-        Call<UserPayload> call = apiService.registerUser(registerRequest);
-        call.enqueue(new Callback<UserPayload>() {
+    private void callRegisterRequest(String email, String password, String username, String scelta, Date data) {
+        userController.register(email, password, username, scelta, data, new ControllerCallback<UserPayload>() {
             @Override
-            public void onResponse(@NonNull Call<UserPayload> call, @NonNull Response<UserPayload> response) {
-                if (response.isSuccessful()) {
-                    // Registrazione riuscita, prendiamo il body dalla risposta
-                    UserPayload payload = response.body();
+            public void onSuccess(UserPayload payload) {
+                SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(USER_TOKEN, payload.getToken());
+                editor.putString(USER_NAME, payload.getUsername());
+                editor.putString(USER_EMAIL, payload.getEmail());
+                editor.putString(USER_ROLE, payload.getRole());
+                editor.putLong(USER_LIB, payload.getLibraryId());
+                editor.putString(USER_PAS, password);
+                editor.apply();
 
-                    // Per salvare l'utente
-                    SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(USER_TOKEN, payload.getToken());
-                    editor.putString(USER_NAME, payload.getUsername());
-                    editor.putString(USER_EMAIL, payload.getEmail());
-                    editor.putString(USER_ROLE, payload.getRole());
-                    editor.putLong(USER_LIB, payload.getLibraryId());
-                    editor.putString(USER_PAS, password);
-                    editor.apply();
-
-                    // Vado col popup
-                    showPopup();
-
-                } else {
-                    // Gestisci la risposta di errore, es. credenziali non valide
-                    Toast.makeText(RegistrationActivity.this, "Login fallito, riprova.", Toast.LENGTH_SHORT).show();
-                }
+                showPopup();
             }
 
             @Override
-            public void onFailure(@NonNull Call<UserPayload> call, @NonNull Throwable t) {
-                // Gestisci l'errore di rete o la conversione della risposta qui
-                Log.d(TAG, "Richiesta fallita.");
+            public void onFailed(String errorMessage) {
+                showErrorMessage(registrationActivity, errorMessage);
             }
         });
     }
+
 
     private void showPopup() {
         View popupView = LayoutInflater.from(this).inflate(R.layout.mainpopup, null);

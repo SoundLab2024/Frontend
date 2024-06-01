@@ -1,18 +1,15 @@
 package com.soundlab.app.view.activity;
 
-import static com.soundlab.app.utils.Constants.ALREADY_AUTH_KEY;
-import static com.soundlab.app.utils.Constants.BASE_URL;
 import static com.soundlab.app.utils.Constants.USER_EMAIL;
 import static com.soundlab.app.utils.Constants.USER_NAME;
 import static com.soundlab.app.utils.Constants.USER_ROLE;
 import static com.soundlab.app.utils.Constants.USER_TOKEN;
+import static com.soundlab.app.utils.Utilities.showErrorMessage;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -23,16 +20,13 @@ import android.widget.Button;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.example.soundlab.R;
-import com.soundlab.app.presenter.api.endpoint.ApiService;
-import com.soundlab.app.presenter.api.response.Payload;
-import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
-import com.soundlab.app.view.fragment.CambioUsernameFragment;
+import androidx.appcompat.app.AppCompatActivity;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
+import com.example.soundlab.R;
+import com.soundlab.app.controller.ControllerCallback;
+import com.soundlab.app.controller.UserController;
+import com.soundlab.app.presenter.api.response.Payload;
+import com.soundlab.app.view.fragment.CambioUsernameFragment;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -40,11 +34,15 @@ public class SettingsActivity extends AppCompatActivity {
     private String username;
     private String token;
     private String role;
+    private UserController userController;
+    private final Activity settingsActivity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        userController = new UserController();
 
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         role = sharedPreferences.getString(USER_ROLE, null);
@@ -75,7 +73,6 @@ public class SettingsActivity extends AppCompatActivity {
             Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
             SharedPreferences sharedPrefs = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPrefs.edit();
-            editor.putBoolean(ALREADY_AUTH_KEY, false);
             editor.apply();
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -129,44 +126,28 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void deleteAccount() {
-        Log.d("SettingsActivity", "deleteAccount() chiamato");
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
-        String id = sharedPreferences.getString(USER_EMAIL, null);
+        String email = sharedPreferences.getString(USER_EMAIL, null);
         String token = sharedPreferences.getString(USER_TOKEN, null);
 
-        Retrofit retrofit = RetrofitClient.getClient(BASE_URL);
-        ApiService apiService = retrofit.create(ApiService.class);
-
-        String authToken = "Bearer " + token;
-
-        Call<Payload> call = apiService.deleteUser(authToken, id);
-        call.enqueue(new Callback<Payload>() {
+        userController.deleteUser(email, token, new ControllerCallback<Payload>() {
             @Override
-            public void onResponse(@NonNull Call<Payload> call, @NonNull Response<Payload> response) {
-                if (response.isSuccessful()) {
-                    Log.d("SettingsActivity", "Account eliminato con successo dal backend");
+            public void onSuccess(Payload result) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.apply();
 
-                    // Rimuovi i dati dalle SharedPreferences
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.remove(USER_EMAIL);
-                    editor.remove(USER_NAME);
-                    editor.remove(USER_ROLE);
-                    editor.remove(USER_TOKEN);
-                    editor.apply();
-
-                    // Ritorna alla schermata di login
-                    Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                } else {
-                    Log.d("SettingsActivity", "Errore nell'eliminazione dell'account: " + response.code());
-                }
+                // Ritorna alla schermata di login
+                Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             }
 
             @Override
-            public void onFailure(@NonNull Call<Payload> call, @NonNull Throwable t) {
-                Log.d("SettingsActivity", "Errore nella chiamata API: ", t);
+            public void onFailed(String errorMessage) {
+                showErrorMessage(settingsActivity, errorMessage);
             }
         });
+
     }
 }
