@@ -173,7 +173,7 @@ public class HomeFragment extends Fragment {
                 textView.setText(song.getTitle());
 
                 int index = i;
-                cardView.setOnClickListener((view1 -> loadPlayer(getActivity(), index, (ArrayList<Song>) songs)));
+                cardView.setOnClickListener((view1 -> loadPlayer(requireActivity(), index, (ArrayList<Song>) songs)));
             }
             if (songs.size() == 3) {
                 HorizontalScrollView scrollView = view.findViewById(R.id.scrollView_recentListen);

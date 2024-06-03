@@ -5,6 +5,7 @@ import com.soundlab.app.model.Song;
 import com.soundlab.app.presenter.api.request.ChangePasswordRequest;
 import com.soundlab.app.presenter.api.request.DeleteSongRequest;
 import com.soundlab.app.presenter.api.request.InsertPlaylistRequest;
+import com.soundlab.app.presenter.api.request.ListenRequest;
 import com.soundlab.app.presenter.api.request.LoginRequest;
 import com.soundlab.app.presenter.api.request.RegisterRequest;
 import com.soundlab.app.presenter.api.response.LibraryFromIdResponse;
@@ -91,4 +92,12 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     @GET("data/song/search/genre/{prefix}")
     Call<List<Song>> getSongsFromGenre(@Header("Authorization") String authToken, @Path("prefix") String genre);
+
+    @Headers("Content-Type: application/json")
+    @GET("data/song/recentlyFour/")
+    Call<List<Song>> getMostPlayed(@Header("Authorization") String authToken);
+
+    @Headers("Content-Type: application/json")
+    @POST("data/listenings/new")
+    Call<Payload> postListen(@Header("Authorization") String authToken, @Body ListenRequest listenRequest);
 }

@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 
 import com.soundlab.app.model.Song;
 import com.soundlab.app.presenter.api.endpoint.ApiService;
+import com.soundlab.app.presenter.api.request.ListenRequest;
+import com.soundlab.app.presenter.api.response.Payload;
 import com.soundlab.app.presenter.api.response.RecentlyListenedResponse;
 import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
 
@@ -65,6 +67,30 @@ public class ListeningController {
             }
         }
         return songs;
+    }
+
+
+    public void postListen(String token, String userEmail, Long songId, ControllerCallback<Payload> callback) {
+        String authToken = "Bearer " + token;
+        ListenRequest listenRequest = new ListenRequest(userEmail, songId);
+
+        Call<Payload> call = apiService.postListen(authToken, listenRequest);
+
+        call.enqueue(new Callback<Payload>() {
+            @Override
+            public void onResponse(@NonNull Call<Payload> call, @NonNull Response<Payload> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailed("Impossibile aggiungere ascolto. " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Payload> call, @NonNull Throwable t) {
+                callback.onFailed("Impossibile aggiungere ascolto. " + t.getMessage());
+            }
+        });
     }
 
 

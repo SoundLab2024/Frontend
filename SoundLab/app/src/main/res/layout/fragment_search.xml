@@ -64,6 +64,7 @@
                 android:textSize="20sp" />
 
             <HorizontalScrollView
+                android:id="@+id/scroll_mostPlay"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scrollbars="none">

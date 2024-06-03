@@ -1,5 +1,8 @@
 package com.soundlab.app.service;
 
+import static com.soundlab.app.utils.Constants.USER_EMAIL;
+import static com.soundlab.app.utils.Constants.USER_TOKEN;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -21,8 +25,12 @@ import androidx.core.content.ContextCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.example.soundlab.R;
+import com.soundlab.app.controller.ControllerCallback;
+import com.soundlab.app.controller.ListeningController;
 import com.soundlab.app.model.Song;
+import com.soundlab.app.presenter.api.response.Payload;
 import com.soundlab.app.singleton.PlayerSingleton;
+import com.soundlab.app.utils.Debouncer;
 import com.soundlab.app.view.activity.MainActivity;
 
 import java.util.Objects;
@@ -34,11 +42,23 @@ public class PlayerService extends Service {
     PlayerSingleton playerSingleton = PlayerSingleton.getInstance();
     RemoteViews remoteViews;
     private BroadcastReceiver receiver;
+    private ListeningController listeningController;
+    private String token;
+    private String email;
+    private final Debouncer debouncer = new Debouncer();
 
     @Override
     public void onCreate() {
         Log.d("PlayerService", "onCreate called");
         super.onCreate();
+
+        listeningController = new ListeningController();
+
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        token = sharedPreferences.getString(USER_TOKEN, null);
+        email = sharedPreferences.getString(USER_EMAIL, null);
+
+        postListen();
 
         receiver = new BroadcastReceiver() {
             @Override
@@ -46,12 +66,19 @@ public class PlayerService extends Service {
                 if (Objects.equals(intent.getAction(), "PLAYBACK_STATE_CHANGED")) {
                     // Aggiorna l'interfaccia grafica del fragment
                     updateNotification();
+                } else if(Objects.equals(intent.getAction(), "SONG_CHANGED") ||
+                        Objects.equals(intent.getAction(), "MEDIAPLAYER_INIT") ||
+                        Objects.equals(intent.getAction(), "PLAYBACK_RESTART")) {
+                    debouncer.debounce(() -> postListen(), 10000);
                 }
             }
         };
 
         IntentFilter filter = new IntentFilter();
         filter.addAction("PLAYBACK_STATE_CHANGED");
+        filter.addAction("SONG_CHANGED");
+        filter.addAction("MEDIAPLAYER_INIT");
+        filter.addAction("PLAYBACK_RESTART");
         getApplicationContext().registerReceiver(receiver, filter);
     }
 
@@ -119,6 +146,20 @@ public class PlayerService extends Service {
     public void updateNotification() {
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         notificationManager.notify(NOTIFICATION_ID, createNotification());
+    }
+
+    private void postListen() {
+        Long songId = playerSingleton.getSong().getId();
+
+        listeningController.postListen(token, email, songId, new ControllerCallback<Payload>() {
+            @Override
+            public void onSuccess(Payload result) {}
+
+            @Override
+            public void onFailed(String errorMessage) {
+                Log.d("PlayerService", errorMessage);
+            }
+        });
     }
 
     // Metodo per la creazione del canale di notifica

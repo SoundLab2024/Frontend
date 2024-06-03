@@ -101,7 +101,7 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
                     // Gestisci il clic dell'elemento se necessario
 
                     addOrRemoveSongFromPlaylist(!isChecked, selectedPlaylist, holder);
-                }, 1500);
+                }, 500);
 
             });
 
@@ -113,7 +113,7 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
 
                 debouncer.debounce(()-> {
                     addOrRemoveSongFromPlaylist(isChecked, selectedPlaylist, holder);
-                }, 1500);
+                }, 500);
 
             });
         }
@@ -131,35 +131,31 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
     private void callDeleteSong(Long playlistId, Long songId, ViewHolder holder) {
         playlistController.deleteSong(token, songId, playlistId, new ControllerCallback<Payload>() {
             @Override
-            public void onSuccess(Payload result) {
-                holder.itemView.setEnabled(true);
-                holder.checkButton.setEnabled(true);
-            }
+            public void onSuccess(Payload result) {}
 
             @Override
             public void onFailed(String errorMessage) {
                 showErrorMessage(addToPlaylistFragment, errorMessage);
-                holder.itemView.setEnabled(true);
-                holder.checkButton.setEnabled(true);
             }
         });
+
+        holder.itemView.setEnabled(true);
+        holder.checkButton.setEnabled(true);
     }
 
     private void callInsertSong(Long playlistId, long songId, ViewHolder holder) {
         playlistController.insertSong(token, songId, playlistId, new ControllerCallback<Payload>() {
             @Override
-            public void onSuccess(Payload result) {
-                holder.itemView.setEnabled(true);
-                holder.checkButton.setEnabled(true);
-            }
+            public void onSuccess(Payload result) {}
 
             @Override
             public void onFailed(String errorMessage) {
                 showErrorMessage(addToPlaylistFragment, errorMessage);
-                holder.itemView.setEnabled(true);
-                holder.checkButton.setEnabled(true);
             }
         });
+
+        holder.itemView.setEnabled(true);
+        holder.checkButton.setEnabled(true);
     }
 
 

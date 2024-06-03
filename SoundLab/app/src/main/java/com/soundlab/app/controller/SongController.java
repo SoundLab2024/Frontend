@@ -72,5 +72,27 @@ public class SongController {
         });
     }
 
+    public void getMostPlayed(String token, ControllerCallback<List<Song>> callback) {
+        String authToken = "Bearer " + token;
+
+        Call<List<Song>> call = apiService.getMostPlayed(authToken);
+        call.enqueue(new Callback<List<Song>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Song>> call, @NonNull Response<List<Song>> response) {
+                if (response.isSuccessful()) {
+                    List<Song> songs = response.body();
+                    setTrackAndImage(songs);
+                    callback.onSuccess(songs);
+                } else {
+                    callback.onFailed("Impossible recuperare le canzoni più ascoltate. " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Song>> call, @NonNull Throwable t) {
+                callback.onFailed("Impossibile recuperare le canzoni più ascoltate. " + t.getMessage());
+            }
+        });
+    }
 
 }

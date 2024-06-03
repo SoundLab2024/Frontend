@@ -61,7 +61,6 @@ public class PlayerFragment extends Fragment {
                     startSeekBarUpdate();
                 }
                 else if (Objects.equals(intent.getAction(), "PLAYBACK_STATE_CHANGED")) {
-                    // Aggiorna l'interfaccia grafica del fragment
                     updatePlayButton();
                 } else if (Objects.equals(intent.getAction(), "SONG_CHANGED")){
                     initSeekBar();
