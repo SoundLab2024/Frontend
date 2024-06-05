@@ -21,6 +21,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.example.soundlab.R;
 import com.soundlab.app.controller.ControllerCallback;
@@ -93,15 +94,18 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Controlla se il fragment corrente è il CambioUsernameFragment
-        CambioUsernameFragment fragment = (CambioUsernameFragment) getSupportFragmentManager().findFragmentByTag("CambioUsernameFragment");
-        if (fragment != null) {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("cambio_username_fragment_tag");
+        if (fragment != null && fragment.isVisible()) {
+            // Torna al fragment precedente nel back stack
+            getSupportFragmentManager().popBackStack();
         } else {
-            super.onBackPressed();
+            // Se non ci sono fragment nel back stack, torna alla HomePageActivity
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish(); // Chiude l'attività corrente
         }
     }
+
 
     private void showDeleteAccountPopup() {
         View popupView = LayoutInflater.from(this).inflate(R.layout.popup_cancella_utente, null);

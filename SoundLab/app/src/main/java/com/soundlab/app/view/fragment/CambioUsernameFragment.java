@@ -54,6 +54,7 @@ public class CambioUsernameFragment extends Fragment {
                 // Avvia l'Intent per la SettingsActivity
                 Intent intent = new Intent(getActivity(), SettingsActivity.class);
                 startActivity(intent);
+                getActivity().finish(); // Chiude l'attività corrente
             }
         };
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
@@ -71,9 +72,9 @@ public class CambioUsernameFragment extends Fragment {
         salvaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent(getActivity(), SettingsActivity.class);
                 startActivity(intent);
+                getActivity().finish(); // Chiude l'attività corrente
             }
         });
 
