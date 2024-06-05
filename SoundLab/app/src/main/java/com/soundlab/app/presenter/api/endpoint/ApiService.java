@@ -79,6 +79,10 @@ public interface ApiService {
     Call<Payload> changeEmail(@Header("Authorization") String authToken, @Body ChangePasswordRequest changePasswordRequest);
 
     @Headers("Content-Type: application/json")
+    @POST("authentication/changeusern")
+    Call<Payload> changeUsername(@Header("Authorization") String authToken, @Body ChangePasswordRequest changePasswordRequest);
+
+    @Headers("Content-Type: application/json")
     @POST("data/playlist/addToPl")
     Call<Payload> insertSong(@Header("Authorization") String authToken, @Body Map<String, Long> body);
 

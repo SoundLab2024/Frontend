@@ -136,6 +136,36 @@ public class UserController {
         });
     }
 
+    public void changeUsername(String token, String email, String oldPassword, String newPassword, ControllerCallback<Payload> callback) {
+        String authToken = "Bearer " + token;
+
+        ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(email,oldPassword, newPassword);
+        Call<Payload> call = apiService.changeUsername(authToken, changePasswordRequest);
+        call.enqueue(new Callback<Payload>() {
+            @Override
+            public void onResponse(@NonNull Call<Payload> call, @NonNull Response<Payload> response) {
+                if (response.isSuccessful()) {
+                    Payload payload = response.body();
+                    if (payload != null) {
+                        if (payload.getStatusCode() == 200) {
+                            callback.onSuccess(response.body());
+                        } else {
+                            callback.onFailed(payload.getMsg());
+                        }
+                    } else {
+                        callback.onFailed("Impossibile cambiare l'username");
+                    }
+                } else {
+                    callback.onFailed("Errore: " + response.message());
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<Payload> call, @NonNull Throwable t) {
+                callback.onFailed("Errore: " + t.getMessage());
+            }
+        });
+    }
+
     public void deleteUser(String email, String token, ControllerCallback<Payload> callback) {
         String authToken = "Bearer " + token;
 
