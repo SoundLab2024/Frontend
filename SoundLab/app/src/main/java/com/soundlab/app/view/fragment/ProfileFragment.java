@@ -92,6 +92,9 @@ public class ProfileFragment extends Fragment {
         // Imposta il colore della barra di stato quando la vista è creata
         Utilities.changeStatusBarColorFragment(this, R.color.blue);
 
+        TextView usernameTextView = view.findViewById(R.id.username);
+        usernameTextView.setText(username);
+
         // Ottieni il riferimento al pulsante addButton e crea un listener
         CustomButton addButton = view.findViewById(R.id.addButton);
         addButton.setOnClickListener(v -> addNewPlaylist());

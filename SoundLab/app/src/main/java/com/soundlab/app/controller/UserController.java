@@ -35,7 +35,12 @@ public class UserController {
             @Override
             public void onResponse(@NonNull Call<UserPayload> call, @NonNull Response<UserPayload> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess(response.body());
+                    UserPayload userPayload = response.body();
+                    if (userPayload != null && userPayload.getStatusCode() != 200) {
+                        callback.onFailed(userPayload.getToken());
+                    } else {
+                        callback.onSuccess(response.body());
+                    }
                 } else {
                     callback.onFailed("Registrazione fallita, riprova. " + response.message());
                 }

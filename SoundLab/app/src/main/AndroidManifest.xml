@@ -16,37 +16,51 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.SoundLab"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        android:screenOrientation="portrait">
 
         <service android:name="com.soundlab.app.service.PlayerService"
+            tools:ignore="LockedOrientationActivity"
+            android:screenOrientation="portrait"
             android:foregroundServiceType="mediaPlayback"
             android:exported="false"/>
-        <!--<activity
-            android:name="view.activity.ProfileAdminActivity"
-            android:exported="false" />-->
         <activity
             android:name="com.soundlab.app.view.activity.ChangePasswordActivity"
+            tools:ignore="LockedOrientationActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name="com.soundlab.app.view.activity.ChangeEmailActivity"
+            tools:ignore="LockedOrientationActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name="com.soundlab.app.view.activity.SettingsActivity"
+            tools:ignore="LockedOrientationActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name="com.soundlab.app.view.activity.RegistrationActivity"
+            tools:ignore="LockedOrientationActivity"
+            android:screenOrientation="portrait"
             android:exported="true"
             android:theme="@style/Intro.Theme.SoundLab" />
         <activity
             android:name="com.soundlab.app.view.activity.SlideActivity"
+            tools:ignore="LockedOrientationActivity"
+            android:screenOrientation="portrait"
             android:exported="true"
             android:theme="@style/Intro.Theme.SoundLab" />
         <activity
             android:name="com.soundlab.app.view.activity.LoginActivity"
+            tools:ignore="LockedOrientationActivity"
+            android:screenOrientation="portrait"
             android:exported="true"
             android:theme="@style/Intro.Theme.SoundLab" />
         <activity
             android:name="com.soundlab.app.view.activity.SplashActivity"
+            tools:ignore="LockedOrientationActivity"
+            android:screenOrientation="portrait"
             android:exported="true"
             android:theme="@style/Splash.Theme.SoundLab">
             <intent-filter>
@@ -58,6 +72,8 @@
         <activity
             android:name="com.soundlab.app.view.activity.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
+            tools:ignore="LockedOrientationActivity"
+            android:screenOrientation="portrait"
             android:exported="true"
             android:windowSoftInputMode="adjustPan" />
     </application>

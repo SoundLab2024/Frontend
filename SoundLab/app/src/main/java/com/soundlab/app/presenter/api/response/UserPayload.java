@@ -7,13 +7,15 @@ public class UserPayload {
     private String role;
     private Long libraryId;
     private String token;
+    private int statusCode;
 
-    public UserPayload(String email, String username, String role, Long libraryId, String token) {
+    public UserPayload(String email, String username, String role, Long libraryId, String token, int statusCode) {
         this.email = email;
         this.username = username;
         this.role = role;
         this.libraryId = libraryId;
         this.token = token;
+        this.statusCode = statusCode;
     }
 
     public String getEmail() {
@@ -55,4 +57,13 @@ public class UserPayload {
     public void setToken(String token) {
         this.token = token;
     }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
 }

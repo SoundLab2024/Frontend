@@ -58,7 +58,6 @@ public class PlayerService extends Service {
         token = sharedPreferences.getString(USER_TOKEN, null);
         email = sharedPreferences.getString(USER_EMAIL, null);
 
-        postListen();
 
         receiver = new BroadcastReceiver() {
             @Override
@@ -149,7 +148,11 @@ public class PlayerService extends Service {
     }
 
     private void postListen() {
-        Long songId = playerSingleton.getSong().getId();
+        Long songId = null;
+
+        if (playerSingleton.getSong() != null) {
+            songId = playerSingleton.getSong().getId();
+        }
 
         listeningController.postListen(token, email, songId, new ControllerCallback<Payload>() {
             @Override

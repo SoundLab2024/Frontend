@@ -115,7 +115,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
                     callFavPlaylist(isChecked, holder.favouriteButton);
                 }
-            }, 500); // 300 ms di ritardo
+            }, 100);
 
         });
 

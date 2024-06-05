@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.soundlab.R;
@@ -46,6 +47,7 @@ public class PlayerFragment extends Fragment {
     private final Handler handler = new Handler();
     private Runnable runnable;
     private ImageView cover;
+    private boolean isBundleProcessed = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,12 +98,13 @@ public class PlayerFragment extends Fragment {
 
         Bundle bundle = getArguments();
 
-        if (bundle != null) {
-            boolean avoidServiceRestart = bundle.getBoolean("avoidServiceRestart", false);
-            if (!avoidServiceRestart) {
-                invokeMusicService();
+        if (!isBundleProcessed) {
+            if (bundle != null) {
+                boolean avoidServiceRestart = bundle.getBoolean("avoidServiceRestart", false);
+                if (!avoidServiceRestart) {
+                    invokeMusicService();
+                }
             }
-
         }
 
         return view;
@@ -112,6 +115,12 @@ public class PlayerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Utilities.changeStatusBarColorFragment(this, R.color.dark_purple);
 
+        // Verifica se le notifiche sono attive
+        if (!areNotificationsEnabled()) {
+            showToast("Le notifiche per l'app non sono attive!");
+        }
+
+
         initializeMediaPlayerComponents(view);
         initPlayback();
         initSeekBar();
@@ -121,6 +130,12 @@ public class PlayerFragment extends Fragment {
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).hideBottomNavigationView();
         }
+    }
+
+    // Metodo per verificare se le notifiche per l'app sono attive
+    private boolean areNotificationsEnabled() {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
+        return notificationManager.areNotificationsEnabled();
     }
 
     private void initializeMediaPlayerComponents(View view) {
@@ -265,7 +280,7 @@ public class PlayerFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        this.setArguments(null);
+        isBundleProcessed = true;
     }
 
 

@@ -101,7 +101,7 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
                     // Gestisci il clic dell'elemento se necessario
 
                     addOrRemoveSongFromPlaylist(!isChecked, selectedPlaylist, holder);
-                }, 500);
+                }, 100);
 
             });
 
@@ -111,10 +111,7 @@ public class AddToPlaylistAdapter extends RecyclerView.Adapter<AddToPlaylistAdap
                 holder.itemView.setEnabled(false);
                 holder.checkButton.setEnabled(false);
 
-                debouncer.debounce(()-> {
-                    addOrRemoveSongFromPlaylist(isChecked, selectedPlaylist, holder);
-                }, 500);
-
+                debouncer.debounce(()-> addOrRemoveSongFromPlaylist(isChecked, selectedPlaylist, holder), 100);
             });
         }
 
