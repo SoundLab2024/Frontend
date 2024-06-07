@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "856127785089",
+    "project_id": "soundlab-6b41a",
+    "storage_bucket": "soundlab-6b41a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:856127785089:android:2f5bdd591e9b6e577e2580",
+        "android_client_info": {
+          "package_name": "com.example.soundlab"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDG40vVFBGSJo2jK7VDztEiVi26J3vaWxo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

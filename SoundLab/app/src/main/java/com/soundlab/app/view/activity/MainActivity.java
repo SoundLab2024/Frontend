@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private String token;
     private String password;
     private UserController userController;
+    private FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,6 +200,15 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+
+        // test per firebase
+        Bundle bundle = new Bundle();
+        bundle.putString("id", "1");
+        bundle.putString("testo", "TestLog");
+        //bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "string");
+
+
+        mFirebaseAnalytics.logEvent("event_back", bundle);
     }
 
     // Metodo per ottenere il tag del fragment immediatamente sotto il fragment corrente
@@ -286,6 +297,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openSettingsActivity(View view) {
+        Bundle bundleAnalytics = new Bundle();
+        bundleAnalytics.putString("id", "100");
+        bundleAnalytics.putString("testo", "TestLog");
+        //bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "string");
+
+
+        mFirebaseAnalytics.logEvent("event_settings", bundleAnalytics);
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }

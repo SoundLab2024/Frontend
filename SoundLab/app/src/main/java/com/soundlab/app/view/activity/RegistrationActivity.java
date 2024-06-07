@@ -33,6 +33,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.soundlab.R;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.soundlab.app.controller.ControllerCallback;
 import com.soundlab.app.controller.UserController;
 import com.soundlab.app.presenter.api.response.UserPayload;
@@ -44,6 +45,7 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
     private Spinner SceltaGenderSpinner;
     private Button dataDiNascitaButton;
     private TextView dataNascitaText;
+    private FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     private String scelta;
     private String dataStringa = "";
     private Date dataConverted;
@@ -151,6 +153,15 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
     }
 
     private void goToHome() {
+        // test per firebase
+        Bundle bundle = new Bundle();
+        bundle.putString("id", "1");
+        bundle.putString("testo", "TestLog");
+        //bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "string");
+
+
+        mFirebaseAnalytics.logEvent("event_back", bundle);
+
         Intent intent = new Intent(this, MainActivity.class);
         this.startActivity(intent);
         this.finish();

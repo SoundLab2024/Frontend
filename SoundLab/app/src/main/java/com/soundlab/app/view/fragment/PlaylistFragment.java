@@ -4,6 +4,7 @@ import static com.soundlab.app.utils.Constants.USER_TOKEN;
 import static com.soundlab.app.utils.Utilities.showErrorMessage;
 
 import android.app.Dialog;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -49,6 +50,7 @@ import java.util.List;
 public class PlaylistFragment extends Fragment {
 
     private Playlist playlist;
+    private FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this.getActivity());
     private TextView nomePlaylist;
     private TextView genere;
     private TextView numeroBrani;
@@ -198,6 +200,14 @@ public class PlaylistFragment extends Fragment {
     }
 
     private void showDialog_confermaElimina() {
+        Bundle bundleAnalytics = new Bundle();
+        bundleAnalytics.putString("id", "1");
+        bundleAnalytics.putString("testo", "TestLog");
+        //bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "string");
+
+
+        mFirebaseAnalytics.logEvent("event_test", bundleAnalytics);
+
         // Creazione e personalizzazione del Dialog
         Dialog dialog = new Dialog(requireContext(), R.style.CustomDialogStyle);
         dialog.setContentView(R.layout.popup_elimina_playlist);
@@ -232,6 +242,14 @@ public class PlaylistFragment extends Fragment {
     }
 
     private void callDeletePlaylist(Playlist playlist) {
+        Bundle bundleAnalytics = new Bundle();
+        bundleAnalytics.putString("id", "1");
+        bundleAnalytics.putString("testo", "TestLog");
+        //bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "string");
+
+
+        mFirebaseAnalytics.logEvent("event_test", bundleAnalytics);
+
         playlistController.deletePlaylist(token, playlist.getId(), new ControllerCallback<Payload>() {
             @Override
             public void onSuccess(Payload result) {
@@ -248,6 +266,14 @@ public class PlaylistFragment extends Fragment {
     }
 
     private void showDialog_rinomina() {
+        Bundle bundleAnalytics = new Bundle();
+        bundleAnalytics.putString("id", "1");
+        bundleAnalytics.putString("testo", "TestLog");
+        //bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "string");
+
+
+        mFirebaseAnalytics.logEvent("event_test", bundleAnalytics);
+
         // Creazione e personalizzazione del Dialog
         Dialog dialog = new Dialog(requireContext(), R.style.CustomDialogStyle);
         dialog.setContentView(R.layout.popup_rinomina_playlist);
@@ -288,6 +314,14 @@ public class PlaylistFragment extends Fragment {
     }
 
     private void showDialog_cambiaGenere() {
+        Bundle bundleAnalytics = new Bundle();
+        bundleAnalytics.putString("id", "1");
+        bundleAnalytics.putString("testo", "TestLog");
+        //bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "string");
+
+
+        mFirebaseAnalytics.logEvent("event_test", bundleAnalytics);
+
         // Creazione e personalizzazione del Dialog
         Dialog dialog = new Dialog(requireContext(), R.style.CustomDialogStyle);
         dialog.setContentView(R.layout.popup_rinomina_playlist);
@@ -331,6 +365,13 @@ public class PlaylistFragment extends Fragment {
 
 
     private void modifyPlaylist(String newName, String newGenre, Playlist playlist, boolean rename) {
+        Bundle bundleAnalytics = new Bundle();
+        bundleAnalytics.putString("id", "1");
+        bundleAnalytics.putString("testo", "TestLog");
+        //bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "string");
+
+
+        mFirebaseAnalytics.logEvent("event_test", bundleAnalytics);
         playlistController.modifyPlaylist(token, newName, newGenre, playlist.getId(), new ControllerCallback<Payload>() {
             @Override
             public void onSuccess(Payload result) {

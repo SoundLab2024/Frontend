@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.soundlab.R;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.soundlab.app.controller.ControllerCallback;
 import com.soundlab.app.controller.PlaylistController;
 import com.soundlab.app.model.Library;
@@ -45,6 +46,7 @@ import java.util.List;
 public class ProfileFragment extends Fragment {
 
     RecyclerView recyclerView;
+    private FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this.getActivity());
     private TextView zeroPlaylistTextView;
     private List<Playlist> playlists;
     private Library library;
@@ -141,6 +143,15 @@ public class ProfileFragment extends Fragment {
 
 
     private void addNewPlaylist() {
+
+        Bundle bundle = new Bundle();
+        bundle.putString("id", "1");
+        bundle.putString("testo", "TestLog");
+        //bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "string");
+
+
+        mFirebaseAnalytics.logEvent("event_test", bundle);
+
         Dialog dialog = new Dialog(this.requireContext(), R.style.CustomDialogStyle);
         dialog.setContentView(R.layout.popup_add_playlist);
 
@@ -237,6 +248,7 @@ public class ProfileFragment extends Fragment {
     }
 
     public void loadPlaylistFragment(Playlist playlist) {
+
         Bundle bundle = new Bundle();
         bundle.putSerializable("playlist", playlist);
 

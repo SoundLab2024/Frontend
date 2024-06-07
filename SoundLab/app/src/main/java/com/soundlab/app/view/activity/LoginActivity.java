@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.soundlab.R;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.soundlab.app.controller.ControllerCallback;
 import com.soundlab.app.controller.UserController;
 import com.soundlab.app.presenter.api.response.UserPayload;
@@ -36,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     private UserController userController;
     private final LoginActivity loginActivity = this;
 
+    private FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +49,15 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply();
 
         userController = new UserController();
+
+        // test per firebase
+        Bundle bundle = new Bundle();
+        bundle.putString("id", "1");
+        bundle.putString("testo", "TestLog");
+        //bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "string");
+
+
+        mFirebaseAnalytics.logEvent("event_test", bundle);
 
         setUI();
     }
