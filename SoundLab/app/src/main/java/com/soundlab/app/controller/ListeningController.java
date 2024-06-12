@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.soundlab.app.model.Song;
 import com.soundlab.app.presenter.api.endpoint.ApiService;
 import com.soundlab.app.presenter.api.request.ListenRequest;
+import com.soundlab.app.presenter.api.response.AnalyticResponse;
 import com.soundlab.app.presenter.api.response.Payload;
 import com.soundlab.app.presenter.api.response.RecentlyListenedResponse;
 import com.soundlab.app.presenter.api.retrofit.RetrofitClient;
@@ -93,6 +94,28 @@ public class ListeningController {
         });
     }
 
+
+    public void getAnalyticByUsername(String token, String userEmail, ControllerCallback<List<AnalyticResponse>> callback) {
+        String authToken = "Bearer " + token;
+
+        Call<List<AnalyticResponse>> call = apiService.getAnalyticByUsername(authToken, userEmail);
+
+        call.enqueue(new Callback<List<AnalyticResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<AnalyticResponse>> call, @NonNull Response<List<AnalyticResponse>> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailed("Impossibile recuperare analitiche." + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<AnalyticResponse>> call, @NonNull Throwable t) {
+                callback.onFailed("Impossibile recuperare analitiche. " + t.getMessage());
+            }
+        });
+    }
 
 }
 

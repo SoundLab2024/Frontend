@@ -1,6 +1,13 @@
 package com.soundlab.app.view.fragment;
 
+import static com.soundlab.app.utils.Constants.USER_EMAIL;
+import static com.soundlab.app.utils.Constants.USER_TOKEN;
+import static com.soundlab.app.utils.Utilities.showErrorMessage;
+
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,48 +20,80 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import com.example.soundlab.R;
+import com.soundlab.app.controller.ControllerCallback;
+import com.soundlab.app.controller.ListeningController;
 import com.soundlab.app.model.Artist;
 import com.soundlab.app.model.Listening;
+import com.soundlab.app.presenter.api.response.AnalyticResponse;
 import com.soundlab.app.view.CustomButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 public class AnaliticheFragment extends Fragment {
 
-    private List<Listening> listeningList;
-    private List<Listening> songStatsList;
+    private List<Listening> listeningList = new ArrayList<>();
+    private HashSet<String> seenRow = new HashSet<>();
+    private List<Listening> songStatsList = new ArrayList<>();
     private EditText searchInput;
     private boolean searchByUser = true;
+    private String token;
+    private String emailUser;
+    private ListeningController listeningController;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        initializeLists();
+        //initializeLists();
+        listeningController = new ListeningController();
+
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        token = sharedPreferences.getString(USER_TOKEN, null);
+        emailUser = sharedPreferences.getString(USER_EMAIL, null);
+
 
         View view = inflater.inflate(R.layout.fragment_analitiche, container, false);
         initializeViews(view);
         return view;
     }
 
-    private void initializeLists() {
-        // Lista per memorizzare gli ascolti di un utente
-        listeningList = new ArrayList<>();
-        listeningList.add(new Listening("Utente1", null, null, null, 10, "Mattina"));
-        listeningList.add(new Listening("Utente2", null, null, null, 11, "Pomeriggio"));
-        listeningList.add(new Listening("Utente3", null, null, null, 12, "Notte"));
+    private void getAnalyticByUsername(String token, String emailUser) {
+        listeningController.getAnalyticByUsername(token, emailUser, new ControllerCallback<List<AnalyticResponse>>() {
+            @Override
+            public void onSuccess(List<AnalyticResponse> analytics) {
+                calculateAnalyticUsername(analytics);
+                displaySearchResults(listeningList);
+            }
 
-        // Lista per memorizzare le informazioni sugli artisti
-        List<Artist> singers = new ArrayList<>();
-        singers.add(new Artist(1, "Artista1", new Date(2002, 12, 12), "Italiano"));
-        singers.add(new Artist(2, "Artista2", new Date(2002, 12, 12), "Italiano"));
+            @Override
+            public void onFailed(String errorMessage) {
+                showErrorMessage(AnaliticheFragment.this, errorMessage);
+            }
+        });
+    }
 
-        // Lista per memorizzare le statistiche di una canzone
-        songStatsList = new ArrayList<>();
-        songStatsList.add(new Listening(null, "Canzone1", "Original", Arrays.asList(singers.get(0)), 11, null));
-        songStatsList.add(new Listening(null, "Canzone2", "Original", null, 10, null));
-        songStatsList.add(new Listening(null, "Canzone3", "Original", null, 20, null));
+    private void calculateAnalyticUsername(List<AnalyticResponse> analytics) {
+        seenRow.clear(); // Pulisce il set per evitare sovrapposizioni tra ricerche diverse
+        for (AnalyticResponse analytic : analytics) {
+            String username = analytic.getUser();
+            String timeSlot = analytic.getTimeSlot();
+            int totalListen = 0;
+            boolean isNewTimeSlot = seenRow.add(analytic.getTimeSlot()); // Tenta di aggiungere il timeslot al set
+
+            if (!isNewTimeSlot) {
+                continue; // Se il timeslot esiste già, saltiamo questo ciclo
+            }
+
+            for (AnalyticResponse otherAnalytic : analytics) {
+                if (username.equals(otherAnalytic.getUser()) && timeSlot.equals(otherAnalytic.getTimeSlot())) {
+                    totalListen++;
+                }
+            }
+            listeningList.add(new Listening(username, null, null, null, totalListen, timeSlot));
+
+        }
     }
 
 
@@ -87,17 +126,14 @@ public class AnaliticheFragment extends Fragment {
      * @param query La stringa di ricerca inserita dall'utente.
      */
     private void performSearch(String query) {
+        listeningList.clear();
+
         // Verifica se la query è vuota
         if (query.isEmpty()) {
             showToast("Inserisci elementi validi per la ricerca");
             return;
         }
 
-        // Verifica se la ricerca è basata sull'utente e la query non corrisponde agli ascolti
-        if (searchByUser && !searchInListeningList(query)) {
-            showToast("Errore: La ricerca non corrisponde al tipo selezionato");
-            return;
-        }
 
         // Verifica se la ricerca è basata sulla canzone e la query non corrisponde alle statistiche delle canzoni
         if (!searchByUser && !searchInSongStatsList(query)) {
@@ -107,7 +143,6 @@ public class AnaliticheFragment extends Fragment {
 
         // Esegue la ricerca in base al tipo selezionato e la mostro
         List<Listening> searchResults = searchByUser ? searchUser(query) : searchSong(query);
-        displaySearchResults(searchResults);
     }
 
 
@@ -117,16 +152,7 @@ public class AnaliticheFragment extends Fragment {
      * @param query La stringa di ricerca da cercare.
      * @return True se la query corrisponde a un utente nella lista degli ascolti, altrimenti False.
      */
-    private boolean searchInListeningList(String query) {
-        for (Listening user : listeningList) {
-            // Controlla se l'utente corrente non è nullo e se il suo nome contiene la query
-            // No sensitive-case
-            if (user.getUtente() != null && user.getUtente().toLowerCase().contains(query.toLowerCase())) {
-                return true;
-            }
-        }
-        return false;
-    }
+
 
 
     /**
@@ -153,15 +179,8 @@ public class AnaliticheFragment extends Fragment {
      * @return Una lista contenente gli ascolti corrispondenti all'utente specificato.
      */
     private List<Listening> searchUser(String query) {
-        // Lista per memorizzare i risultati della ricerca
-        List<Listening> searchResults = new ArrayList<>();
-        for (Listening user : listeningList) {
-            // Controlla se l'utente corrente non è nullo e se il suo nome contiene la query
-            if (user.getUtente() != null && user.getUtente().toLowerCase().contains(query.toLowerCase())) {
-                searchResults.add(user);
-            }
-        }
-        return searchResults;
+        getAnalyticByUsername(token, query);
+        return listeningList;
     }
 
 

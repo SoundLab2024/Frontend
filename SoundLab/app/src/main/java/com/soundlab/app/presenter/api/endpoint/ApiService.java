@@ -9,6 +9,7 @@ import com.soundlab.app.presenter.api.request.InsertPlaylistRequest;
 import com.soundlab.app.presenter.api.request.ListenRequest;
 import com.soundlab.app.presenter.api.request.LoginRequest;
 import com.soundlab.app.presenter.api.request.RegisterRequest;
+import com.soundlab.app.presenter.api.response.AnalyticResponse;
 import com.soundlab.app.presenter.api.response.LibraryFromIdResponse;
 import com.soundlab.app.presenter.api.response.Payload;
 import com.soundlab.app.presenter.api.response.RecentlyListenedResponse;
@@ -109,4 +110,10 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     @POST("data/listenings/new")
     Call<Payload> postListen(@Header("Authorization") String authToken, @Body ListenRequest listenRequest);
+
+    @Headers("Content-Type: application/json")
+    @GET("data/listenings/all/{id}")
+    Call<List<AnalyticResponse>> getAnalyticByUsername(@Header("Authorization") String authToken, @Path("id") String id);
+
+
 }
